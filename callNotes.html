@@ -1,0 +1,640 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Replacement Form</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            padding: 24px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            text-align: center;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 16px;
+        }
+
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 28px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #495057;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #6c757d;
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+
+        .field {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        input[type="password"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            color: #333;
+            background: #fff;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #74b9ff;
+            box-shadow: 0 0 0 3px rgba(116, 185, 255, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Radio group styling */
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            padding: 8px 0;
+            flex-wrap: wrap;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .radio-group input[type="radio"] {
+            width: auto;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            -webkit-appearance: radio;
+            appearance: radio;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            font-family: inherit;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-copy {
+            background-color: #0984e3;
+            color: #fff;
+        }
+
+        .btn-copy:hover {
+            background-color: #0770c2;
+        }
+
+        .btn-clear {
+            background-color: #e17055;
+            color: #fff;
+        }
+
+        .btn-clear:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-generate {
+            background-color: #00b894;
+            color: #fff;
+        }
+
+        .btn-generate:hover {
+            background-color: #00a381;
+        }
+
+        .output-area {
+            margin-top: 20px;
+        }
+
+        .output-area textarea {
+            background: #f1f3f5;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            min-height: 200px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #2d3436;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .links-section {
+            margin-top: 28px;
+            padding-top: 16px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .links-section a {
+            display: inline-block;
+            color: #0984e3;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .links-section a:hover {
+            text-decoration: underline;
+        }
+
+        .ssl-select {
+            padding: 10px 12px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+
+            .container {
+                padding: 16px;
+                border-radius: 8px;
+            }
+
+            h1 {
+                font-size: 1.25rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Equipment Replacement Info</h1>
+
+        <!-- CALL NOTES -->
+        <h2>Call Notes</h2>
+
+        <div class="field">
+            <label for="poc">Point of Contact</label>
+            <input type="text" id="poc" placeholder="Full name" data-store="poc">
+        </div>
+
+        <div class="field">
+            <label for="itPerson">IT Person</label>
+            <input type="text" id="itPerson" placeholder="IT contact name" data-store="itPerson">
+        </div>
+
+        <div class="field">
+            <label for="itPhone">Phone Number</label>
+            <input type="tel" id="itPhone" placeholder="(555) 555-5555" data-store="itPhone">
+        </div>
+
+        <div class="field">
+            <label for="itEmail">Email</label>
+            <input type="email" id="itEmail" placeholder="it@example.com" data-store="itEmail">
+        </div>
+
+        <div class="field">
+            <label for="location">Location of Machine</label>
+            <input type="text" id="location" placeholder="Building, floor, room, etc." data-store="location">
+        </div>
+
+        <div class="field">
+            <label for="newEquipmentId">New Equipment ID</label>
+            <input type="text" id="newEquipmentId" placeholder="New equipment / asset ID" data-store="newEquipmentId">
+        </div>
+
+        <div class="field">
+            <label for="equipmentId">Equipment ID Being Replaced</label>
+            <input type="text" id="equipmentId" placeholder="Old equipment / asset ID" data-store="equipmentId">
+        </div>
+
+        <!-- IP INFO -->
+        <h3>IP Info</h3>
+
+        <div class="field">
+            <label for="ip">IP Address</label>
+            <input type="text" id="ip" placeholder="192.168.1.100" data-store="ip">
+        </div>
+
+        <div class="field">
+            <label for="subnet">Subnet</label>
+            <input type="text" id="subnet" placeholder="255.255.255.0" data-store="subnet">
+        </div>
+
+        <div class="field">
+            <label for="gateway">Gateway</label>
+            <input type="text" id="gateway" placeholder="192.168.1.1" data-store="gateway">
+        </div>
+
+        <div class="field">
+            <label for="dns1">DNS 1</label>
+            <input type="text" id="dns1" placeholder="8.8.8.8" data-store="dns1">
+        </div>
+
+        <div class="field">
+            <label for="dns2">DNS 2</label>
+            <input type="text" id="dns2" placeholder="8.8.4.4" data-store="dns2">
+        </div>
+
+        <div class="field">
+            <label for="dns3">DNS 3</label>
+            <input type="text" id="dns3" placeholder="1.1.1.1" data-store="dns3">
+        </div>
+
+        <!-- SCANNING INFO -->
+        <h3>Scanning Info</h3>
+
+        <div class="field">
+            <label for="scanFolderType">Scan to Folder Type</label>
+            <select id="scanFolderType" class="ssl-select" data-store="scanFolderType">
+                <option value="">-- Select --</option>
+                <option value="SMB">SMB</option>
+                <option value="WebDAV">WebDAV</option>
+                <option value="FTP">FTP</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Fax?</label>
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="fax" value="Yes" data-store="fax"> Yes
+                </label>
+                <label>
+                    <input type="radio" name="fax" value="No" data-store="fax"> No
+                </label>
+            </div>
+        </div>
+
+        <!-- SMTP -->
+        <h4>SMTP</h4>
+
+        <div class="field">
+            <label for="smtpServer">Server</label>
+            <input type="text" id="smtpServer" placeholder="smtp.example.com" data-store="smtpServer">
+        </div>
+
+        <div class="field">
+            <label for="smtpPort">Port</label>
+            <input type="text" id="smtpPort" placeholder="587" data-store="smtpPort">
+        </div>
+
+        <div class="field">
+            <label for="smtpSsl">SSL/TLS</label>
+            <select id="smtpSsl" class="ssl-select" data-store="smtpSsl">
+                <option value="">-- Select --</option>
+                <option value="None">None</option>
+                <option value="SSL">SSL</option>
+                <option value="TLS">TLS</option>
+                <option value="STARTTLS">STARTTLS</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="smtpEmail">Email Address</label>
+            <input type="email" id="smtpEmail" placeholder="scanner@example.com" data-store="smtpEmail">
+        </div>
+
+        <div class="field">
+            <label for="smtpPassword">Password</label>
+            <input type="password" id="smtpPassword" placeholder="Password" data-store="smtpPassword">
+        </div>
+
+        <!-- ADDITIONAL INFO -->
+        <h3>Additional Info</h3>
+        <p style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">Fax details, user box, etc.</p>
+
+        <div class="field">
+            <textarea id="additionalInfo" placeholder="Enter any additional information here..." data-store="additionalInfo"></textarea>
+        </div>
+
+        <!-- OUTPUT -->
+        <div class="output-area">
+            <h3>Summary Output</h3>
+            <textarea id="outputBox" readonly placeholder="Click 'Generate Summary' to compile all info here..."></textarea>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="button-group">
+            <button class="btn-generate" onclick="generateSummary()">Generate Summary</button>
+            <button class="btn-copy" onclick="copyToClipboard()">Copy to Clipboard</button>
+            <button class="btn-clear" onclick="clearAll()">Clear All</button>
+        </div>
+
+        <!-- LINKS -->
+        <div class="links-section">
+            <h2>Links</h2>
+            <a href="https://portal.mpsmonitor.com/" target="_blank" rel="noopener noreferrer">MPS Monitor Portal ↗</a>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+        // All storable elements (excluding radios — handled separately)
+        const storableInputs = document.querySelectorAll('[data-store]:not([type="radio"])');
+        const radioButtons = document.querySelectorAll('input[type="radio"][data-store]');
+
+        // Load sessionStorage on page load
+        function loadFromStorage() {
+            storableInputs.forEach(el => {
+                const key = el.getAttribute('data-store');
+                const saved = sessionStorage.getItem(key);
+                if (saved !== null) {
+                    el.value = saved;
+                }
+            });
+
+            // Load radio buttons
+            const radioGroups = {};
+            radioButtons.forEach(radio => {
+                const name = radio.name;
+                if (!radioGroups[name]) radioGroups[name] = true;
+            });
+
+            Object.keys(radioGroups).forEach(name => {
+                const saved = sessionStorage.getItem('radio_' + name);
+                if (saved !== null) {
+                    const target = document.querySelector(`input[type="radio"][name="${name}"][value="${saved}"]`);
+                    if (target) target.checked = true;
+                }
+            });
+
+            // Load output box
+            const savedOutput = sessionStorage.getItem('outputBox');
+            if (savedOutput !== null) {
+                document.getElementById('outputBox').value = savedOutput;
+            }
+        }
+
+        // Save to sessionStorage on input
+        function setupAutoSave() {
+            storableInputs.forEach(el => {
+                const eventType = el.tagName === 'SELECT' ? 'change' : 'input';
+                el.addEventListener(eventType, () => {
+                    const key = el.getAttribute('data-store');
+                    sessionStorage.setItem(key, el.value);
+                });
+            });
+
+            // Radio buttons
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    sessionStorage.setItem('radio_' + radio.name, radio.value);
+                });
+            });
+        }
+
+        // Get value helper
+        function val(id) {
+            return document.getElementById(id).value.trim();
+        }
+
+        // Get selected radio value
+        function radioVal(name) {
+            const selected = document.querySelector(`input[type="radio"][name="${name}"]:checked`);
+            return selected ? selected.value : '';
+        }
+
+        // Generate summary text
+        function generateSummary() {
+            let lines = [];
+
+            lines.push('=== CALL NOTES ===');
+            lines.push(`Point of Contact: ${val('poc')}`);
+            lines.push(`IT Person: ${val('itPerson')}`);
+            lines.push(`  Phone: ${val('itPhone')}`);
+            lines.push(`  Email: ${val('itEmail')}`);
+            lines.push(`Location of Machine: ${val('location')}`);
+            lines.push(`New Equipment ID: ${val('newEquipmentId')}`);
+            lines.push(`Equipment ID Being Replaced: ${val('equipmentId')}`);
+
+            lines.push('');
+            lines.push('--- IP Info ---');
+            lines.push(`IP Address: ${val('ip')}`);
+            lines.push(`Subnet: ${val('subnet')}`);
+            lines.push(`Gateway: ${val('gateway')}`);
+            lines.push(`DNS 1: ${val('dns1')}`);
+            lines.push(`DNS 2: ${val('dns2')}`);
+            lines.push(`DNS 3: ${val('dns3')}`);
+
+            lines.push('');
+            lines.push('--- Scanning Info ---');
+            lines.push(`Scan to Folder Type: ${val('scanFolderType')}`);
+            lines.push(`Fax: ${radioVal('fax')}`);
+
+            lines.push('');
+            lines.push('  -- SMTP --');
+            lines.push(`  Server: ${val('smtpServer')}`);
+            lines.push(`  Port: ${val('smtpPort')}`);
+            lines.push(`  SSL/TLS: ${val('smtpSsl')}`);
+            lines.push(`  Email: ${val('smtpEmail')}`);
+            lines.push(`  Password: ${val('smtpPassword')}`);
+
+            lines.push('');
+            lines.push('--- Additional Info ---');
+            lines.push(val('additionalInfo') || '(none)');
+
+            const output = lines.join('\n');
+            document.getElementById('outputBox').value = output;
+            sessionStorage.setItem('outputBox', output);
+        }
+
+        // Copy output to clipboard
+        function copyToClipboard() {
+            const outputBox = document.getElementById('outputBox');
+            const text = outputBox.value;
+
+            if (!text) {
+                showToast('Nothing to copy — generate summary first.');
+                return;
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Copied to clipboard!');
+                }).catch(() => {
+                    fallbackCopy(outputBox);
+                });
+            } else {
+                fallbackCopy(outputBox);
+            }
+        }
+
+        // Fallback copy for older browsers / mobile
+        function fallbackCopy(textarea) {
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                showToast('Copied to clipboard!');
+            } catch (err) {
+                showToast('Failed to copy. Please select and copy manually.');
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        // Clear all fields and sessionStorage
+        function clearAll() {
+            if (!confirm('Are you sure you want to clear all fields?')) return;
+
+            storableInputs.forEach(el => {
+                const key = el.getAttribute('data-store');
+                el.value = '';
+                sessionStorage.removeItem(key);
+            });
+
+            // Clear radios
+            radioButtons.forEach(radio => {
+                radio.checked = false;
+                sessionStorage.removeItem('radio_' + radio.name);
+            });
+
+            document.getElementById('outputBox').value = '';
+            sessionStorage.removeItem('outputBox');
+
+            showToast('All fields cleared.');
+        }
+
+        // Initialize
+        loadFromStorage();
+        setupAutoSave();
+    </script>
+
+</body>
+</html>
+
+
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    
