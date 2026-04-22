@@ -67,6 +67,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            text-decoration: none;
         }
 
         .btn:hover {
@@ -118,6 +119,23 @@
         }
 
         .btn-copy.copied {
+            background-color: #f39c12;
+            color: #fff;
+        }
+
+        .btn-open {
+            background-color: #3498db;
+            color: #fff;
+            padding: 8px 18px;
+            font-size: 0.85em;
+            border-radius: 6px;
+        }
+
+        .btn-open:hover {
+            background-color: #5dade2;
+        }
+
+        .btn-open.copied {
             background-color: #f39c12;
             color: #fff;
         }
@@ -194,6 +212,13 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 14px;
+        }
+
+        .call-card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         .call-number {
@@ -275,6 +300,21 @@
                 max-width: 280px;
                 justify-content: center;
             }
+
+            .call-card-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .call-card-actions {
+                width: 100%;
+            }
+
+            .call-card-actions .btn {
+                flex: 1;
+                justify-content: center;
+                max-width: none;
+            }
         }
     </style>
 </head>
@@ -307,30 +347,41 @@
     </div>
 
     <script>
+        const CALL_NOTES_URL = 'https://charleshuff.github.io/POA/call_notes.html';
+
         /**
-         * Parses the HTML content and extracts call data.
-         * This mirrors the Python parsing logic that finds <li> elements
-         * with a 'data-call-id' attribute and extracts title, contact,
+         * Builds the formatted text string for a call entry.
+         * Used by both the copy button and the copy-and-open button.
+         */
+        function buildCallText(call) {
+            return [
+                `Title (Customer): ${call.title}`,
+                `Contact: ${call.contact}`,
+                `Item No. (Model): ${call.itemModel}`,
+                `Serial Number: ${call.serialNumber}`,
+                `Equipment ID: ${call.equipmentID}`
+            ].join('\n');
+        }
+
+        /**
+         * Parses HTML to extract call data by finding <li> elements
+         * with a 'data-call-id' attribute and pulling title, contact,
          * item number, serial number, and equipment ID from each one.
          */
         function parseCallsHTML(htmlString) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlString, 'text/html');
 
-            // Find all call list items identified by the 'data-call-id' attribute
             const callElements = doc.querySelectorAll('li[data-call-id]');
             const calls = [];
 
             callElements.forEach((call) => {
-                // Extract Title from the h3 tag
                 const titleTag = call.querySelector('h3');
                 const title = titleTag ? titleTag.textContent.trim() : 'N/A';
 
-                // Extract Contact by finding text matching phone number pattern XXX-XXX-XXXX
                 const phoneRegex = /\d{3}-\d{3}-\d{4}/;
                 let contact = 'N/A';
 
-                // Walk through all text nodes to find one with a phone number
                 const walker = document.createTreeWalker(
                     call,
                     NodeFilter.SHOW_TEXT,
@@ -346,12 +397,10 @@
                     }
                 }
 
-                // Default values for item info
                 let itemModel = 'N/A';
                 let serialNumber = 'N/A';
                 let equipmentID = 'N/A';
 
-                // Find the paragraph containing "Item No.(Model):"
                 const paragraphs = call.querySelectorAll('p');
                 for (const p of paragraphs) {
                     const pText = p.textContent.replace(/\s+/g, ' ').trim();
@@ -380,9 +429,6 @@
             return calls;
         }
 
-        /**
-         * Renders the parsed calls as styled cards in the output area.
-         */
         function renderCalls(calls) {
             const output = document.getElementById('calls-output');
 
@@ -408,9 +454,14 @@
                     <div class="call-card" id="call-${index}">
                         <div class="call-card-header">
                             <span class="call-number">Call #${index + 1}</span>
-                            <button class="btn btn-copy" onclick="copyCallToClipboard(${index})" id="copy-btn-${index}">
-                                📋 Copy to Clipboard
-                            </button>
+                            <div class="call-card-actions">
+                                <button class="btn btn-copy" onclick="copyCallToClipboard(${index})" id="copy-btn-${index}">
+                                    📋 Copy to Clipboard
+                                </button>
+                                <button class="btn btn-open" onclick="copyAndOpenCallNotes(${index})" id="open-btn-${index}">
+                                    🔗 Copy &amp; Open Call Notes
+                                </button>
+                            </div>
                         </div>
                         <div class="call-fields">
                             <div class="call-field full-width">
@@ -444,25 +495,13 @@
             showStatus(`Successfully parsed ${calls.length} call(s).`, 'success');
         }
 
-        /**
-         * Stores parsed calls globally so the copy button can access them.
-         */
         let parsedCalls = [];
 
-        /**
-         * Copies a single call's info to the clipboard in a clean text format.
-         */
         async function copyCallToClipboard(index) {
             const call = parsedCalls[index];
             if (!call) return;
 
-            const text = [
-                `Title (Customer): ${call.title}`,
-                `Contact: ${call.contact}`,
-                `Item No. (Model): ${call.itemModel}`,
-                `Serial Number: ${call.serialNumber}`,
-                `Equipment ID: ${call.equipmentID}`
-            ].join('\n');
+            const text = buildCallText(call);
 
             try {
                 await navigator.clipboard.writeText(text);
@@ -480,8 +519,41 @@
         }
 
         /**
-         * Reads HTML content from the user's clipboard and parses it.
+         * Copies the call info to clipboard, then opens the Call Notes page in a new tab.
+         * This lets the user immediately paste when the new tab loads.
          */
+        async function copyAndOpenCallNotes(index) {
+            const call = parsedCalls[index];
+            if (!call) return;
+
+            const text = buildCallText(call);
+
+            try {
+                await navigator.clipboard.writeText(text);
+
+                // Visual feedback on the button
+                const btn = document.getElementById(`open-btn-${index}`);
+                const originalText = btn.innerHTML;
+                btn.textContent = '✅ Copied! Opening...';
+                btn.classList.add('copied');
+
+                // Small delay so the user sees the feedback before the tab opens
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+
+                // Open the call notes page in a new tab
+                window.open(CALL_NOTES_URL, '_blank', 'noopener,noreferrer');
+
+            } catch (err) {
+                // If clipboard fails, still open the page but warn the user
+                showStatus('Clipboard copy failed, but opening Call Notes anyway.', 'error');
+                window.open(CALL_NOTES_URL, '_blank', 'noopener,noreferrer');
+                console.error('Clipboard write failed:', err);
+            }
+        }
+
         async function pasteFromClipboard() {
             try {
                 const clipboardText = await navigator.clipboard.readText();
@@ -501,9 +573,6 @@
             }
         }
 
-        /**
-         * Handles file upload and reads the HTML content from the selected file.
-         */
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -519,13 +588,9 @@
             };
             reader.readAsText(file);
 
-            // Reset file input so the same file can be re-uploaded
             event.target.value = '';
         }
 
-        /**
-         * Clears all parsed results from the page.
-         */
         function clearAll() {
             parsedCalls = [];
             document.getElementById('calls-output').innerHTML = `
@@ -538,9 +603,6 @@
             document.getElementById('status-bar').innerHTML = '';
         }
 
-        /**
-         * Displays a status message to the user.
-         */
         function showStatus(message, type) {
             const statusBar = document.getElementById('status-bar');
             statusBar.innerHTML = `<span class="message ${type}">${escapeHtml(message)}</span>`;
@@ -549,9 +611,6 @@
             }, 5000);
         }
 
-        /**
-         * Escapes HTML to prevent XSS when inserting user-sourced text into the page.
-         */
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
