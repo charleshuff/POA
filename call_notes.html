@@ -192,6 +192,40 @@
             display: block;
         }
 
+        .page-count-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .page-count-row .field {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .total-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 10px 14px;
+            background: #f1f3f5;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .total-display .total-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .total-display .total-value {
+            font-weight: 700;
+            color: #0984e3;
+            font-size: 1.05rem;
+        }
+
         .button-group {
             display: flex;
             gap: 10px;
@@ -333,6 +367,10 @@
 
             button {
                 min-width: 100%;
+            }
+
+            .page-count-row {
+                flex-direction: column;
             }
         }
     </style>
@@ -545,6 +583,25 @@
             </div>
         </div>
 
+        <!-- PAGE COUNTS -->
+        <h4>Page Counts</h4>
+
+        <div class="page-count-row">
+            <div class="field">
+                <label for="bwCount">Black &amp; White</label>
+                <input type="number" id="bwCount" placeholder="0" min="0" data-store="bwCount" oninput="updateTotal()">
+            </div>
+            <div class="field">
+                <label for="colorCount">Color</label>
+                <input type="number" id="colorCount" placeholder="0" min="0" data-store="colorCount" oninput="updateTotal()">
+            </div>
+        </div>
+
+        <div class="total-display">
+            <span class="total-label">Total:</span>
+            <span class="total-value" id="totalCount">0</span>
+        </div>
+
         <!-- ADDITIONAL INFO -->
         <h3>Additional Info</h3>
         <p style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">Fax details, user box, etc.</p>
@@ -587,7 +644,14 @@
 
         ipMethodSelect.addEventListener('change', toggleIpMethodOther);
 
-        // Set a field value, save to sessionStorage, and highlight it
+        // Update page count total
+        function updateTotal() {
+            const bw = parseInt(document.getElementById('bwCount').value) || 0;
+            const color = parseInt(document.getElementById('colorCount').value) || 0;
+            const total = bw + color;
+            document.getElementById('totalCount').textContent = total.toLocaleString();
+        }
+
         function setField(id, value) {
             const el = document.getElementById(id);
             if (el && value) {
@@ -598,7 +662,6 @@
             }
         }
 
-        // Parse clipboard text and auto-fill matching fields
         function parseClipboardData(text) {
             const lines = text.split('\n');
             let filled = 0;
@@ -607,7 +670,6 @@
                 const trimmed = line.trim();
                 if (!trimmed) return;
 
-                // Match "Key: Value" pattern
                 const colonIndex = trimmed.indexOf(':');
                 if (colonIndex === -1) return;
 
@@ -637,7 +699,6 @@
             return filled;
         }
 
-        // Read from clipboard and auto-fill
         function pasteFromClipboard() {
             if (navigator.clipboard && navigator.clipboard.readText) {
                 navigator.clipboard.readText().then(text => {
@@ -688,6 +749,7 @@
             }
 
             toggleIpMethodOther();
+            updateTotal();
         }
 
         function setupAutoSave() {
@@ -797,7 +859,13 @@
             // Reporting
             const mpsVal = radioVal('mps');
             const mfgVal = radioVal('mfgReporting');
-            const hasReporting = mpsVal || mfgVal;
+            const bwVal = val('bwCount');
+            const colorVal = val('colorCount');
+            const bwNum = parseInt(bwVal) || 0;
+            const colorNum = parseInt(colorVal) || 0;
+            const totalNum = bwNum + colorNum;
+            const hasPageCounts = bwVal || colorVal;
+            const hasReporting = mpsVal || mfgVal || hasPageCounts;
 
             if (hasReporting) {
                 if (lines.length > 0) lines.push('');
@@ -811,6 +879,12 @@
                 }
                 if (mfgVal) {
                     lines.push(`Manufacturer reporting enabled: ${mfgVal}`);
+                }
+                if (hasPageCounts) {
+                    lines.push('  -- Page Counts --');
+                    if (bwVal) lines.push(`  Black & White: ${bwNum.toLocaleString()}`);
+                    if (colorVal) lines.push(`  Color: ${colorNum.toLocaleString()}`);
+                    lines.push(`  Total: ${totalNum.toLocaleString()}`);
                 }
             }
 
@@ -889,6 +963,8 @@
 
             document.getElementById('outputBox').value = '';
             sessionStorage.removeItem('outputBox');
+
+            document.getElementById('totalCount').textContent = '0';
 
             toggleIpMethodOther();
 
