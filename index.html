@@ -18,619 +18,549 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equipment Replacement Form</title>
+    <title>Call List Parser</title>
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-            padding: 16px;
-        }
-
-        .container {
-            max-width: 640px;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            padding: 24px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
         }
 
         h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 24px;
             text-align: center;
-            border-bottom: 2px solid #e9ecef;
-            padding-bottom: 16px;
-        }
-
-        h2 {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-top: 28px;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #495057;
-            margin-top: 20px;
             margin-bottom: 10px;
+            color: #00d4ff;
+            font-size: 2em;
         }
 
-        h4 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #6c757d;
-            margin-top: 16px;
-            margin-bottom: 8px;
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 0.95em;
         }
 
-        .field {
-            margin-bottom: 12px;
-        }
-
-        label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #555;
-            margin-bottom: 4px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        input[type="number"],
-        input[type="password"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            color: #333;
-            background: #fff;
-            transition: border-color 0.2s;
-            -webkit-appearance: none;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: #74b9ff;
-            box-shadow: 0 0 0 3px rgba(116, 185, 255, 0.15);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        /* Radio group styling */
-        .radio-group {
+        .controls {
             display: flex;
-            gap: 20px;
-            padding: 8px 0;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
         }
 
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.95rem;
-            font-weight: 400;
-            color: #333;
-            cursor: pointer;
-        }
-
-        .radio-group input[type="radio"] {
-            width: auto;
-            padding: 0;
-            margin: 0;
-            cursor: pointer;
-            -webkit-appearance: radio;
-            appearance: radio;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 24px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            flex: 1;
-            min-width: 140px;
-            padding: 12px 20px;
+        .btn {
+            padding: 12px 28px;
             border: none;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 1em;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            font-family: inherit;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        button:active {
-            transform: scale(0.98);
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .btn-copy {
-            background-color: #0984e3;
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-paste {
+            background-color: #00d4ff;
+            color: #1a1a2e;
+        }
+
+        .btn-paste:hover {
+            background-color: #33ddff;
+        }
+
+        .btn-file {
+            background-color: #6c5ce7;
             color: #fff;
         }
 
-        .btn-copy:hover {
-            background-color: #0770c2;
+        .btn-file:hover {
+            background-color: #7f71ea;
         }
 
         .btn-clear {
-            background-color: #e17055;
+            background-color: #e74c3c;
             color: #fff;
         }
 
         .btn-clear:hover {
-            background-color: #c0392b;
+            background-color: #ec6b5e;
         }
 
-        .btn-generate {
-            background-color: #00b894;
+        .btn-copy {
+            background-color: #2ecc71;
+            color: #1a1a2e;
+            padding: 8px 18px;
+            font-size: 0.85em;
+            border-radius: 6px;
+        }
+
+        .btn-copy:hover {
+            background-color: #4cd787;
+        }
+
+        .btn-copy.copied {
+            background-color: #f39c12;
             color: #fff;
         }
 
-        .btn-generate:hover {
-            background-color: #00a381;
+        #file-input {
+            display: none;
         }
 
-        .output-area {
-            margin-top: 20px;
+        .status-bar {
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 24px;
         }
 
-        .output-area textarea {
-            background: #f1f3f5;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.85rem;
-            min-height: 200px;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #2d3436;
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            pointer-events: none;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .links-section {
-            margin-top: 28px;
-            padding-top: 16px;
-            border-top: 2px solid #e9ecef;
-        }
-
-        .links-section a {
+        .status-bar .message {
+            padding: 8px 20px;
+            border-radius: 6px;
             display: inline-block;
-            color: #0984e3;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 0;
-            font-size: 0.95rem;
+            font-size: 0.9em;
         }
 
-        .links-section a:hover {
-            text-decoration: underline;
+        .status-bar .message.success {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
         }
 
-        .ssl-select {
-            padding: 10px 12px;
+        .status-bar .message.error {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
         }
 
-        @media (max-width: 480px) {
-            body {
-                padding: 8px;
+        .status-bar .message.info {
+            background-color: rgba(0, 212, 255, 0.15);
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .calls-count {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #aaa;
+        }
+
+        .calls-count span {
+            color: #00d4ff;
+            font-weight: 700;
+        }
+
+        .calls-container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .call-card {
+            background: linear-gradient(135deg, #16213e, #1a1a3e);
+            border: 1px solid #2a2a5a;
+            border-radius: 12px;
+            padding: 20px 24px;
+            transition: border-color 0.2s ease;
+        }
+
+        .call-card:hover {
+            border-color: #00d4ff55;
+        }
+
+        .call-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .call-number {
+            background-color: #00d4ff22;
+            color: #00d4ff;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .call-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 30px;
+        }
+
+        .call-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .call-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .field-label {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            color: #666;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .field-value {
+            font-size: 1em;
+            color: #e0e0e0;
+            word-break: break-word;
+        }
+
+        .field-value.na {
+            color: #555;
+            font-style: italic;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #555;
+        }
+
+        .empty-state .icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .empty-state .hint {
+            font-size: 0.85em;
+            color: #444;
+        }
+
+        @media (max-width: 600px) {
+            .call-fields {
+                grid-template-columns: 1fr;
             }
 
-            .container {
-                padding: 16px;
-                border-radius: 8px;
-            }
-
-            h1 {
-                font-size: 1.25rem;
-            }
-
-            .button-group {
+            .controls {
                 flex-direction: column;
+                align-items: center;
             }
 
-            button {
-                min-width: 100%;
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Equipment Replacement Info</h1>
+    <h1>📋 Call List Parser</h1>
+    <p class="subtitle">Paste HTML from your clipboard or upload an HTML file to extract call information</p>
 
-        <!-- CALL NOTES -->
-        <h2>Call Notes</h2>
+    <div class="controls">
+        <button class="btn btn-paste" id="paste-btn" onclick="pasteFromClipboard()">
+            📋 Paste from Clipboard
+        </button>
+        <button class="btn btn-file" onclick="document.getElementById('file-input').click()">
+            📁 Upload HTML File
+        </button>
+        <button class="btn btn-clear" onclick="clearAll()">
+            🗑️ Clear All
+        </button>
+        <input type="file" id="file-input" accept=".html,.htm" onchange="handleFileUpload(event)">
+    </div>
 
-        <div class="field">
-            <label for="poc">Point of Contact</label>
-            <input type="text" id="poc" placeholder="Full name" data-store="poc">
-        </div>
+    <div class="status-bar" id="status-bar"></div>
 
-        <div class="field">
-            <label for="itPerson">IT Person</label>
-            <input type="text" id="itPerson" placeholder="IT contact name" data-store="itPerson">
-        </div>
-
-        <div class="field">
-            <label for="itPhone">Phone Number</label>
-            <input type="tel" id="itPhone" placeholder="(555) 555-5555" data-store="itPhone">
-        </div>
-
-        <div class="field">
-            <label for="itEmail">Email</label>
-            <input type="email" id="itEmail" placeholder="it@example.com" data-store="itEmail">
-        </div>
-
-        <div class="field">
-            <label for="location">Location of Machine</label>
-            <input type="text" id="location" placeholder="Building, floor, room, etc." data-store="location">
-        </div>
-
-        <div class="field">
-            <label for="newEquipmentId">New Equipment ID</label>
-            <input type="text" id="newEquipmentId" placeholder="New equipment / asset ID" data-store="newEquipmentId">
-        </div>
-
-        <div class="field">
-            <label for="equipmentId">Equipment ID Being Replaced</label>
-            <input type="text" id="equipmentId" placeholder="Old equipment / asset ID" data-store="equipmentId">
-        </div>
-
-        <!-- IP INFO -->
-        <h3>IP Info</h3>
-
-        <div class="field">
-            <label for="ip">IP Address</label>
-            <input type="text" id="ip" placeholder="192.168.1.100" data-store="ip">
-        </div>
-
-        <div class="field">
-            <label for="subnet">Subnet</label>
-            <input type="text" id="subnet" placeholder="255.255.255.0" data-store="subnet">
-        </div>
-
-        <div class="field">
-            <label for="gateway">Gateway</label>
-            <input type="text" id="gateway" placeholder="192.168.1.1" data-store="gateway">
-        </div>
-
-        <div class="field">
-            <label for="dns1">DNS 1</label>
-            <input type="text" id="dns1" placeholder="8.8.8.8" data-store="dns1">
-        </div>
-
-        <div class="field">
-            <label for="dns2">DNS 2</label>
-            <input type="text" id="dns2" placeholder="8.8.4.4" data-store="dns2">
-        </div>
-
-        <div class="field">
-            <label for="dns3">DNS 3</label>
-            <input type="text" id="dns3" placeholder="1.1.1.1" data-store="dns3">
-        </div>
-
-        <!-- SCANNING INFO -->
-        <h3>Scanning Info</h3>
-
-        <div class="field">
-            <label for="scanFolderType">Scan to Folder Type</label>
-            <select id="scanFolderType" class="ssl-select" data-store="scanFolderType">
-                <option value="">-- Select --</option>
-                <option value="SMB">SMB</option>
-                <option value="WebDAV">WebDAV</option>
-                <option value="FTP">FTP</option>
-            </select>
-        </div>
-
-        <div class="field">
-            <label>Fax?</label>
-            <div class="radio-group">
-                <label>
-                    <input type="radio" name="fax" value="Yes" data-store="fax"> Yes
-                </label>
-                <label>
-                    <input type="radio" name="fax" value="No" data-store="fax"> No
-                </label>
-            </div>
-        </div>
-
-        <!-- SMTP -->
-        <h4>SMTP</h4>
-
-        <div class="field">
-            <label for="smtpServer">Server</label>
-            <input type="text" id="smtpServer" placeholder="smtp.example.com" data-store="smtpServer">
-        </div>
-
-        <div class="field">
-            <label for="smtpPort">Port</label>
-            <input type="text" id="smtpPort" placeholder="587" data-store="smtpPort">
-        </div>
-
-        <div class="field">
-            <label for="smtpSsl">SSL/TLS</label>
-            <select id="smtpSsl" class="ssl-select" data-store="smtpSsl">
-                <option value="">-- Select --</option>
-                <option value="None">None</option>
-                <option value="SSL">SSL</option>
-                <option value="TLS">TLS</option>
-                <option value="STARTTLS">STARTTLS</option>
-            </select>
-        </div>
-
-        <div class="field">
-            <label for="smtpEmail">Email Address</label>
-            <input type="email" id="smtpEmail" placeholder="scanner@example.com" data-store="smtpEmail">
-        </div>
-
-        <div class="field">
-            <label for="smtpPassword">Password</label>
-            <input type="password" id="smtpPassword" placeholder="Password" data-store="smtpPassword">
-        </div>
-
-        <!-- ADDITIONAL INFO -->
-        <h3>Additional Info</h3>
-        <p style="font-size: 0.8rem; color: #888; margin-bottom: 8px;">Fax details, user box, etc.</p>
-
-        <div class="field">
-            <textarea id="additionalInfo" placeholder="Enter any additional information here..." data-store="additionalInfo"></textarea>
-        </div>
-
-        <!-- OUTPUT -->
-        <div class="output-area">
-            <h3>Summary Output</h3>
-            <textarea id="outputBox" readonly placeholder="Click 'Generate Summary' to compile all info here..."></textarea>
-        </div>
-
-        <!-- BUTTONS -->
-        <div class="button-group">
-            <button class="btn-generate" onclick="generateSummary()">Generate Summary</button>
-            <button class="btn-copy" onclick="copyToClipboard()">Copy to Clipboard</button>
-            <button class="btn-clear" onclick="clearAll()">Clear All</button>
-        </div>
-
-        <!-- LINKS -->
-        <div class="links-section">
-            <h2>Links</h2>
-            <a href="https://portal.mpsmonitor.com/" target="_blank" rel="noopener noreferrer">MPS Monitor Portal ↗</a>
+    <div id="calls-output">
+        <div class="empty-state">
+            <div class="icon">📞</div>
+            <p>No calls loaded yet</p>
+            <p class="hint">Click "Paste from Clipboard" or "Upload HTML File" to get started</p>
         </div>
     </div>
 
-    <!-- Toast notification -->
-    <div class="toast" id="toast">Copied to clipboard!</div>
-
     <script>
-        // All storable elements (excluding radios — handled separately)
-        const storableInputs = document.querySelectorAll('[data-store]:not([type="radio"])');
-        const radioButtons = document.querySelectorAll('input[type="radio"][data-store]');
+        /**
+         * Parses the HTML content and extracts call data.
+         * This mirrors the Python parsing logic that finds <li> elements
+         * with a 'data-call-id' attribute and extracts title, contact,
+         * item number, serial number, and equipment ID from each one.
+         */
+        function parseCallsHTML(htmlString) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlString, 'text/html');
 
-        // Load sessionStorage on page load
-        function loadFromStorage() {
-            storableInputs.forEach(el => {
-                const key = el.getAttribute('data-store');
-                const saved = sessionStorage.getItem(key);
-                if (saved !== null) {
-                    el.value = saved;
+            // Find all call list items identified by the 'data-call-id' attribute
+            const callElements = doc.querySelectorAll('li[data-call-id]');
+            const calls = [];
+
+            callElements.forEach((call) => {
+                // Extract Title from the h3 tag
+                const titleTag = call.querySelector('h3');
+                const title = titleTag ? titleTag.textContent.trim() : 'N/A';
+
+                // Extract Contact by finding text matching phone number pattern XXX-XXX-XXXX
+                const phoneRegex = /\d{3}-\d{3}-\d{4}/;
+                let contact = 'N/A';
+
+                // Walk through all text nodes to find one with a phone number
+                const walker = document.createTreeWalker(
+                    call,
+                    NodeFilter.SHOW_TEXT,
+                    null,
+                    false
+                );
+
+                let textNode;
+                while ((textNode = walker.nextNode())) {
+                    if (phoneRegex.test(textNode.textContent)) {
+                        contact = textNode.textContent.trim();
+                        break;
+                    }
                 }
-            });
 
-            // Load radio buttons
-            const radioGroups = {};
-            radioButtons.forEach(radio => {
-                const name = radio.name;
-                if (!radioGroups[name]) radioGroups[name] = true;
-            });
+                // Default values for item info
+                let itemModel = 'N/A';
+                let serialNumber = 'N/A';
+                let equipmentID = 'N/A';
 
-            Object.keys(radioGroups).forEach(name => {
-                const saved = sessionStorage.getItem('radio_' + name);
-                if (saved !== null) {
-                    const target = document.querySelector(`input[type="radio"][name="${name}"][value="${saved}"]`);
-                    if (target) target.checked = true;
+                // Find the paragraph containing "Item No.(Model):"
+                const paragraphs = call.querySelectorAll('p');
+                for (const p of paragraphs) {
+                    const pText = p.textContent.replace(/\s+/g, ' ').trim();
+                    if (pText.includes('Item No.(Model):')) {
+                        const match = pText.match(
+                            /Item No\.\(Model\):\s*(.*?)\s*Serial:\s*(.*?)\s*Equipment:\s*(.*)/
+                        );
+                        if (match) {
+                            itemModel = match[1].trim();
+                            serialNumber = match[2].trim();
+                            equipmentID = match[3].trim();
+                        }
+                        break;
+                    }
                 }
-            });
 
-            // Load output box
-            const savedOutput = sessionStorage.getItem('outputBox');
-            if (savedOutput !== null) {
-                document.getElementById('outputBox').value = savedOutput;
-            }
-        }
-
-        // Save to sessionStorage on input
-        function setupAutoSave() {
-            storableInputs.forEach(el => {
-                const eventType = el.tagName === 'SELECT' ? 'change' : 'input';
-                el.addEventListener(eventType, () => {
-                    const key = el.getAttribute('data-store');
-                    sessionStorage.setItem(key, el.value);
+                calls.push({
+                    title,
+                    contact,
+                    itemModel,
+                    serialNumber,
+                    equipmentID
                 });
             });
 
-            // Radio buttons
-            radioButtons.forEach(radio => {
-                radio.addEventListener('change', () => {
-                    sessionStorage.setItem('radio_' + radio.name, radio.value);
-                });
-            });
+            return calls;
         }
 
-        // Get value helper
-        function val(id) {
-            return document.getElementById(id).value.trim();
-        }
+        /**
+         * Renders the parsed calls as styled cards in the output area.
+         */
+        function renderCalls(calls) {
+            const output = document.getElementById('calls-output');
 
-        // Get selected radio value
-        function radioVal(name) {
-            const selected = document.querySelector(`input[type="radio"][name="${name}"]:checked`);
-            return selected ? selected.value : '';
-        }
-
-        // Generate summary text
-        function generateSummary() {
-            let lines = [];
-
-            lines.push('=== CALL NOTES ===');
-            lines.push(`Point of Contact: ${val('poc')}`);
-            lines.push(`IT Person: ${val('itPerson')}`);
-            lines.push(`  Phone: ${val('itPhone')}`);
-            lines.push(`  Email: ${val('itEmail')}`);
-            lines.push(`Location of Machine: ${val('location')}`);
-            lines.push(`New Equipment ID: ${val('newEquipmentId')}`);
-            lines.push(`Equipment ID Being Replaced: ${val('equipmentId')}`);
-
-            lines.push('');
-            lines.push('--- IP Info ---');
-            lines.push(`IP Address: ${val('ip')}`);
-            lines.push(`Subnet: ${val('subnet')}`);
-            lines.push(`Gateway: ${val('gateway')}`);
-            lines.push(`DNS 1: ${val('dns1')}`);
-            lines.push(`DNS 2: ${val('dns2')}`);
-            lines.push(`DNS 3: ${val('dns3')}`);
-
-            lines.push('');
-            lines.push('--- Scanning Info ---');
-            lines.push(`Scan to Folder Type: ${val('scanFolderType')}`);
-            lines.push(`Fax: ${radioVal('fax')}`);
-
-            lines.push('');
-            lines.push('  -- SMTP --');
-            lines.push(`  Server: ${val('smtpServer')}`);
-            lines.push(`  Port: ${val('smtpPort')}`);
-            lines.push(`  SSL/TLS: ${val('smtpSsl')}`);
-            lines.push(`  Email: ${val('smtpEmail')}`);
-            lines.push(`  Password: ${val('smtpPassword')}`);
-
-            lines.push('');
-            lines.push('--- Additional Info ---');
-            lines.push(val('additionalInfo') || '(none)');
-
-            const output = lines.join('\n');
-            document.getElementById('outputBox').value = output;
-            sessionStorage.setItem('outputBox', output);
-        }
-
-        // Copy output to clipboard
-        function copyToClipboard() {
-            const outputBox = document.getElementById('outputBox');
-            const text = outputBox.value;
-
-            if (!text) {
-                showToast('Nothing to copy — generate summary first.');
+            if (calls.length === 0) {
+                output.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">⚠️</div>
+                        <p>No calls found in the HTML</p>
+                        <p class="hint">Make sure the HTML contains &lt;li&gt; elements with a <code>data-call-id</code> attribute</p>
+                    </div>
+                `;
+                showStatus('No calls found in the provided HTML.', 'error');
                 return;
             }
 
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showToast('Copied to clipboard!');
-                }).catch(() => {
-                    fallbackCopy(outputBox);
-                });
-            } else {
-                fallbackCopy(outputBox);
-            }
+            let html = `<div class="calls-count">Found <span>${calls.length}</span> call(s)</div>`;
+            html += '<div class="calls-container">';
+
+            calls.forEach((call, index) => {
+                const naClass = (val) => val === 'N/A' ? 'na' : '';
+
+                html += `
+                    <div class="call-card" id="call-${index}">
+                        <div class="call-card-header">
+                            <span class="call-number">Call #${index + 1}</span>
+                            <button class="btn btn-copy" onclick="copyCallToClipboard(${index})" id="copy-btn-${index}">
+                                📋 Copy to Clipboard
+                            </button>
+                        </div>
+                        <div class="call-fields">
+                            <div class="call-field full-width">
+                                <span class="field-label">Title (Customer)</span>
+                                <span class="field-value ${naClass(call.title)}">${escapeHtml(call.title)}</span>
+                            </div>
+                            <div class="call-field">
+                                <span class="field-label">Contact</span>
+                                <span class="field-value ${naClass(call.contact)}">${escapeHtml(call.contact)}</span>
+                            </div>
+                            <div class="call-field">
+                                <span class="field-label">Item No. (Model)</span>
+                                <span class="field-value ${naClass(call.itemModel)}">${escapeHtml(call.itemModel)}</span>
+                            </div>
+                            <div class="call-field">
+                                <span class="field-label">Serial Number</span>
+                                <span class="field-value ${naClass(call.serialNumber)}">${escapeHtml(call.serialNumber)}</span>
+                            </div>
+                            <div class="call-field">
+                                <span class="field-label">Equipment ID</span>
+                                <span class="field-value ${naClass(call.equipmentID)}">${escapeHtml(call.equipmentID)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            output.innerHTML = html;
+
+            showStatus(`Successfully parsed ${calls.length} call(s).`, 'success');
         }
 
-        // Fallback copy for older browsers / mobile
-        function fallbackCopy(textarea) {
-            textarea.select();
-            textarea.setSelectionRange(0, 99999);
+        /**
+         * Stores parsed calls globally so the copy button can access them.
+         */
+        let parsedCalls = [];
+
+        /**
+         * Copies a single call's info to the clipboard in a clean text format.
+         */
+        async function copyCallToClipboard(index) {
+            const call = parsedCalls[index];
+            if (!call) return;
+
+            const text = [
+                `Title (Customer): ${call.title}`,
+                `Contact: ${call.contact}`,
+                `Item No. (Model): ${call.itemModel}`,
+                `Serial Number: ${call.serialNumber}`,
+                `Equipment ID: ${call.equipmentID}`
+            ].join('\n');
+
             try {
-                document.execCommand('copy');
-                showToast('Copied to clipboard!');
+                await navigator.clipboard.writeText(text);
+                const btn = document.getElementById(`copy-btn-${index}`);
+                btn.textContent = '✅ Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy to Clipboard';
+                    btn.classList.remove('copied');
+                }, 2000);
             } catch (err) {
-                showToast('Failed to copy. Please select and copy manually.');
+                showStatus('Failed to copy to clipboard. Check browser permissions.', 'error');
+                console.error('Clipboard write failed:', err);
             }
         }
 
-        // Show toast notification
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2200);
+        /**
+         * Reads HTML content from the user's clipboard and parses it.
+         */
+        async function pasteFromClipboard() {
+            try {
+                const clipboardText = await navigator.clipboard.readText();
+                if (!clipboardText || clipboardText.trim().length === 0) {
+                    showStatus('Clipboard is empty.', 'error');
+                    return;
+                }
+
+                parsedCalls = parseCallsHTML(clipboardText);
+                renderCalls(parsedCalls);
+            } catch (err) {
+                showStatus(
+                    'Could not read clipboard. Please allow clipboard access or try uploading a file instead.',
+                    'error'
+                );
+                console.error('Clipboard read failed:', err);
+            }
         }
 
-        // Clear all fields and sessionStorage
+        /**
+         * Handles file upload and reads the HTML content from the selected file.
+         */
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const htmlContent = e.target.result;
+                parsedCalls = parseCallsHTML(htmlContent);
+                renderCalls(parsedCalls);
+            };
+            reader.onerror = function () {
+                showStatus('Failed to read the file.', 'error');
+            };
+            reader.readAsText(file);
+
+            // Reset file input so the same file can be re-uploaded
+            event.target.value = '';
+        }
+
+        /**
+         * Clears all parsed results from the page.
+         */
         function clearAll() {
-            if (!confirm('Are you sure you want to clear all fields?')) return;
-
-            storableInputs.forEach(el => {
-                const key = el.getAttribute('data-store');
-                el.value = '';
-                sessionStorage.removeItem(key);
-            });
-
-            // Clear radios
-            radioButtons.forEach(radio => {
-                radio.checked = false;
-                sessionStorage.removeItem('radio_' + radio.name);
-            });
-
-            document.getElementById('outputBox').value = '';
-            sessionStorage.removeItem('outputBox');
-
-            showToast('All fields cleared.');
+            parsedCalls = [];
+            document.getElementById('calls-output').innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">📞</div>
+                    <p>No calls loaded yet</p>
+                    <p class="hint">Click "Paste from Clipboard" or "Upload HTML File" to get started</p>
+                </div>
+            `;
+            document.getElementById('status-bar').innerHTML = '';
         }
 
-        // Initialize
-        loadFromStorage();
-        setupAutoSave();
+        /**
+         * Displays a status message to the user.
+         */
+        function showStatus(message, type) {
+            const statusBar = document.getElementById('status-bar');
+            statusBar.innerHTML = `<span class="message ${type}">${escapeHtml(message)}</span>`;
+            setTimeout(() => {
+                statusBar.innerHTML = '';
+            }, 5000);
+        }
+
+        /**
+         * Escapes HTML to prevent XSS when inserting user-sourced text into the page.
+         */
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
     </script>
 
 </body>
 </html>
-
-
 
 							<script>
                             	
