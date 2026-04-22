@@ -44,8 +44,29 @@
         .subtitle {
             text-align: center;
             color: #888;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
             font-size: 0.95em;
+        }
+
+        .nav-link {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .nav-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 0.95em;
+            padding: 6px 16px;
+            border: 1px solid #3498db44;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link a:hover {
+            background-color: #3498db22;
+            border-color: #3498db;
+            color: #5dade2;
         }
 
         .controls {
@@ -285,6 +306,20 @@
             color: #444;
         }
 
+        .session-badge {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .session-badge span {
+            background-color: rgba(243, 156, 18, 0.15);
+            color: #f39c12;
+            border: 1px solid rgba(243, 156, 18, 0.3);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.8em;
+        }
+
         @media (max-width: 600px) {
             .call-fields {
                 grid-template-columns: 1fr;
@@ -322,6 +357,11 @@
 
     <h1>📋 Call List Parser</h1>
     <p class="subtitle">Paste HTML from your clipboard or upload an HTML file to extract call information</p>
+    <div class="nav-link">
+        <a href="https://charleshuff.github.io/POA/call_notes.html" target="_blank" rel="noopener noreferrer">
+            📝 Open Call Notes Page
+        </a>
+    </div>
 
     <div class="controls">
         <button class="btn btn-paste" id="paste-btn" onclick="pasteFromClipboard()">
@@ -348,10 +388,47 @@
 
     <script>
         const CALL_NOTES_URL = 'https://charleshuff.github.io/POA/call_notes.html';
+        const SESSION_KEY = 'callParserData';
+
+        /**
+         * Saves the parsed calls array to sessionStorage as a JSON string.
+         */
+        function saveToSession(calls) {
+            try {
+                sessionStorage.setItem(SESSION_KEY, JSON.stringify(calls));
+            } catch (err) {
+                console.warn('Failed to save to sessionStorage:', err);
+            }
+        }
+
+        /**
+         * Loads parsed calls from sessionStorage. Returns an empty array if nothing is stored.
+         */
+        function loadFromSession() {
+            try {
+                const data = sessionStorage.getItem(SESSION_KEY);
+                if (data) {
+                    return JSON.parse(data);
+                }
+            } catch (err) {
+                console.warn('Failed to load from sessionStorage:', err);
+            }
+            return [];
+        }
+
+        /**
+         * Clears the parsed calls from sessionStorage.
+         */
+        function clearSession() {
+            try {
+                sessionStorage.removeItem(SESSION_KEY);
+            } catch (err) {
+                console.warn('Failed to clear sessionStorage:', err);
+            }
+        }
 
         /**
          * Builds the formatted text string for a call entry.
-         * Used by both the copy button and the copy-and-open button.
          */
         function buildCallText(call) {
             return [
@@ -429,7 +506,12 @@
             return calls;
         }
 
-        function renderCalls(calls) {
+        /**
+         * Renders the parsed calls as styled cards.
+         * @param {Array} calls - The calls to render
+         * @param {boolean} fromSession - Whether the data was restored from sessionStorage
+         */
+        function renderCalls(calls, fromSession = false) {
             const output = document.getElementById('calls-output');
 
             if (calls.length === 0) {
@@ -440,11 +522,19 @@
                         <p class="hint">Make sure the HTML contains &lt;li&gt; elements with a <code>data-call-id</code> attribute</p>
                     </div>
                 `;
-                showStatus('No calls found in the provided HTML.', 'error');
+                if (!fromSession) {
+                    showStatus('No calls found in the provided HTML.', 'error');
+                }
                 return;
             }
 
-            let html = `<div class="calls-count">Found <span>${calls.length}</span> call(s)</div>`;
+            let html = '';
+
+            if (fromSession) {
+                html += `<div class="session-badge"><span>♻️ Restored from session</span></div>`;
+            }
+
+            html += `<div class="calls-count">Found <span>${calls.length}</span> call(s)</div>`;
             html += '<div class="calls-container">';
 
             calls.forEach((call, index) => {
@@ -492,7 +582,9 @@
             html += '</div>';
             output.innerHTML = html;
 
-            showStatus(`Successfully parsed ${calls.length} call(s).`, 'success');
+            if (!fromSession) {
+                showStatus(`Successfully parsed ${calls.length} call(s).`, 'success');
+            }
         }
 
         let parsedCalls = [];
@@ -520,7 +612,6 @@
 
         /**
          * Copies the call info to clipboard, then opens the Call Notes page in a new tab.
-         * This lets the user immediately paste when the new tab loads.
          */
         async function copyAndOpenCallNotes(index) {
             const call = parsedCalls[index];
@@ -531,23 +622,19 @@
             try {
                 await navigator.clipboard.writeText(text);
 
-                // Visual feedback on the button
                 const btn = document.getElementById(`open-btn-${index}`);
                 const originalText = btn.innerHTML;
                 btn.textContent = '✅ Copied! Opening...';
                 btn.classList.add('copied');
 
-                // Small delay so the user sees the feedback before the tab opens
                 setTimeout(() => {
                     btn.innerHTML = originalText;
                     btn.classList.remove('copied');
                 }, 2000);
 
-                // Open the call notes page in a new tab
                 window.open(CALL_NOTES_URL, '_blank', 'noopener,noreferrer');
 
             } catch (err) {
-                // If clipboard fails, still open the page but warn the user
                 showStatus('Clipboard copy failed, but opening Call Notes anyway.', 'error');
                 window.open(CALL_NOTES_URL, '_blank', 'noopener,noreferrer');
                 console.error('Clipboard write failed:', err);
@@ -563,6 +650,7 @@
                 }
 
                 parsedCalls = parseCallsHTML(clipboardText);
+                saveToSession(parsedCalls);
                 renderCalls(parsedCalls);
             } catch (err) {
                 showStatus(
@@ -581,6 +669,7 @@
             reader.onload = function (e) {
                 const htmlContent = e.target.result;
                 parsedCalls = parseCallsHTML(htmlContent);
+                saveToSession(parsedCalls);
                 renderCalls(parsedCalls);
             };
             reader.onerror = function () {
@@ -593,6 +682,7 @@
 
         function clearAll() {
             parsedCalls = [];
+            clearSession();
             document.getElementById('calls-output').innerHTML = `
                 <div class="empty-state">
                     <div class="icon">📞</div>
@@ -616,6 +706,18 @@
             div.textContent = text;
             return div.innerHTML;
         }
+
+        /**
+         * On page load, check sessionStorage for previously parsed calls
+         * and restore them automatically.
+         */
+        (function init() {
+            const savedCalls = loadFromSession();
+            if (savedCalls.length > 0) {
+                parsedCalls = savedCalls;
+                renderCalls(parsedCalls, true);
+            }
+        })();
     </script>
 
 </body>
