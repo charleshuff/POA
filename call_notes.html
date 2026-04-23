@@ -19,6 +19,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Equipment Replacement Form</title>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -275,6 +276,15 @@
 
         .btn-generate:hover {
             background-color: #00a381;
+        }
+
+        .btn-download {
+            background-color: #fdcb6e;
+            color: #2d3436;
+        }
+
+        .btn-download:hover {
+            background-color: #f9b42a;
         }
 
         .output-area {
@@ -556,9 +566,7 @@
 
         <ul class="links-list">
             <li><a href="https://portal.mpsmonitor.com/" target="_blank" rel="noopener noreferrer">MPS Monitor Portal ↗</a></li>
-            <li><a href="https://apps.kmbizhubvcare.com/vcaremobile/app/index.html#login?backUri=search" target="_blank" rel="noopener noreferrer">VCare ↗</a></li>
-	    <li><a href="https://pacificoa.sharepoint.com/sites/POALearningandDevelopment/SitePages/Remote-Monitoring-Tools.aspx" target="_blank" rel="noopener noreferrer">Sharepoint ↗</a></li>
-	    <li><a href="https://form.jotform.com/250095273606153" target="_blank" rel="noopener noreferrer">Jot Form ↗</a></li>
+            <li><a href="https://form.jotform.com/250095273606153" target="_blank" rel="noopener noreferrer">Jot Form ↗</a></li>
         </ul>
 
         <div class="field">
@@ -622,6 +630,7 @@
         <div class="button-group">
             <button class="btn-generate" onclick="generateSummary()">Generate Summary</button>
             <button class="btn-copy" onclick="copyToClipboard()">Copy to Clipboard</button>
+            <button class="btn-download" onclick="downloadPDF()">📄 Download Filled PDF</button>
             <button class="btn-clear" onclick="clearAll()">Clear All</button>
         </div>
     </div>
@@ -635,6 +644,9 @@
         const ipMethodSelect = document.getElementById('ipMethod');
         const ipMethodOtherWrapper = document.getElementById('ipMethodOtherWrapper');
 
+        // PDF file name — must be hosted in the same directory as this HTML file
+        const PDF_FILENAME = 'net_form_with_text_feilds.pdf';
+
         function toggleIpMethodOther() {
             const value = ipMethodSelect.value;
             if (value === 'Other') {
@@ -646,7 +658,6 @@
 
         ipMethodSelect.addEventListener('change', toggleIpMethodOther);
 
-        // Update page count total
         function updateTotal() {
             const bw = parseInt(document.getElementById('bwCount').value) || 0;
             const color = parseInt(document.getElementById('colorCount').value) || 0;
@@ -722,6 +733,90 @@
             }
         }
 
+        // ========== PDF DOWNLOAD ==========
+        async function downloadPDF() {
+            try {
+                // Fetch the blank PDF from the same directory
+                const existingPdfBytes = await fetch(PDF_FILENAME).then(res => {
+                    if (!res.ok) throw new Error('PDF file not found. Make sure "' + PDF_FILENAME + '" is in the same folder as this HTML file.');
+                    return res.arrayBuffer();
+                });
+
+                // Load the PDF with pdf-lib
+                const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+                const form = pdfDoc.getForm();
+
+                // Map: PDF field name → web form value
+                const fieldMap = {
+                    'customer': val('customerName'),
+                    'equipID': val('newEquipmentId'),
+                    'model': val('model'),
+                    'black': val('bwCount'),
+                    'color': val('colorCount'),
+                    'total': getTotal(),
+                    'ip': val('ip'),
+                    'subnet': val('subnet'),
+                    'gateway': val('gateway'),
+                    'dns1': val('dns1'),
+                    'dns2': val('dns2')
+                };
+
+                // Fill each field
+                let filledCount = 0;
+                for (const [pdfFieldName, value] of Object.entries(fieldMap)) {
+                    if (value) {
+                        try {
+                            const field = form.getTextField(pdfFieldName);
+                            field.setText(value);
+                            filledCount++;
+                        } catch (e) {
+                            console.warn(`Could not fill PDF field "${pdfFieldName}":`, e.message);
+                        }
+                    }
+                }
+
+                if (filledCount === 0) {
+                    showToast('No data to fill — enter at least one mapped field.');
+                    return;
+                }
+
+                // Flatten so the fields are no longer editable (optional — remove if you want editable PDF)
+                // form.flatten();
+
+                // Save and download
+                const pdfBytes = await pdfDoc.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+
+                const customerName = val('customerName') || 'form';
+                const equipId = val('newEquipmentId') || '';
+                const fileName = `Network_Install_${customerName}${equipId ? '_' + equipId : ''}.pdf`
+                    .replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                showToast(`PDF downloaded with ${filledCount} field${filledCount > 1 ? 's' : ''} filled!`);
+
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                showToast('Error: ' + error.message);
+            }
+        }
+
+        function getTotal() {
+            const bw = parseInt(document.getElementById('bwCount').value) || 0;
+            const color = parseInt(document.getElementById('colorCount').value) || 0;
+            const total = bw + color;
+            return total > 0 ? total.toString() : '';
+        }
+
+        // ========== STORAGE ==========
         function loadFromStorage() {
             storableInputs.forEach(el => {
                 const key = el.getAttribute('data-store');
@@ -800,7 +895,6 @@
         function generateSummary() {
             let lines = [];
 
-            // Call Notes
             const callNotesFields = [
                 { label: 'Customer Name', value: val('customerName') },
                 { label: 'Point of Contact', value: val('poc') },
@@ -815,7 +909,6 @@
             ];
             addSectionIfNeeded(lines, '=== CALL NOTES ===', callNotesFields);
 
-            // IP Info
             let ipMethodValue = val('ipMethod');
             if (ipMethodValue === 'Other' && val('ipMethodOther')) {
                 ipMethodValue = val('ipMethodOther');
@@ -834,7 +927,6 @@
             ];
             addSectionIfNeeded(lines, '--- IP Info ---', ipFields);
 
-            // Settings Transfer
             const settingsVal = val('settingsTransfer');
             if (settingsVal) {
                 if (lines.length > 0) lines.push('');
@@ -842,14 +934,12 @@
                 lines.push(`How settings were transferred: ${settingsVal}`);
             }
 
-            // Scanning Info
             const scanFields = [
                 { label: 'Scan to Folder Type', value: val('scanFolderType') },
                 { label: 'Fax', value: radioVal('fax') }
             ];
             addSectionIfNeeded(lines, '--- Scanning Info ---', scanFields);
 
-            // SMTP
             const smtpFields = [
                 { label: 'Server', value: val('smtpServer'), indent: true },
                 { label: 'Port', value: val('smtpPort'), indent: true },
@@ -858,7 +948,6 @@
             ];
             addSectionIfNeeded(lines, '  -- SMTP --', smtpFields);
 
-            // Reporting
             const mpsVal = radioVal('mps');
             const mfgVal = radioVal('mfgReporting');
             const bwVal = val('bwCount');
@@ -874,10 +963,10 @@
                 lines.push('--- Reporting ---');
                 if (mpsVal) {
                     lines.push(`MPS: ${mpsVal}`);
-                    // if (mpsVal === 'Yes') {
-                    //     lines.push(`MPS link: https://portal.mpsmonitor.com/`);
-                    //     lines.push(`Jot form link: https://form.jotform.com/250095273606153`);
-                    // }
+                    if (mpsVal === 'Yes') {
+                        lines.push(`MPS link: https://portal.mpsmonitor.com/`);
+                        lines.push(`Jot form link: https://form.jotform.com/250095273606153`);
+                    }
                 }
                 if (mfgVal) {
                     lines.push(`Manufacturer reporting enabled: ${mfgVal}`);
@@ -890,7 +979,6 @@
                 }
             }
 
-            // Additional Info
             const additionalText = val('additionalInfo');
             if (additionalText) {
                 if (lines.length > 0) lines.push('');
@@ -965,7 +1053,6 @@
 
             document.getElementById('outputBox').value = '';
             sessionStorage.removeItem('outputBox');
-
             document.getElementById('totalCount').textContent = '0';
 
             toggleIpMethodOther();
