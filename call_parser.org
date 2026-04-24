@@ -200,12 +200,12 @@ the parser should produce:
 
 | # | Title                    | Contact                       | Tech          | City    | Model  | Serial        | Equipment |
 |---+--------------------------+-------------------------------+---------------+---------+--------+---------------+-----------|
-| 1 | Columbia Hospitality     | CHAD FARHINGER                | Charles Huff  | Seattle | CB751I | ADXD011005724 | 8C28041   |
+| 1 | Columbia Hospitality     | Brad Bowler                   | Charles Huff  | Seattle | CB751I | ADXD011005724 | 8C28041   |
 | 2 | Columbia Hospitality     | N/A                           | Charles Huff  | Seattle | P60155 | PHNCT8P0XH    | 8C28042   |
 | 3 | Columbia Hospitality     | N/A                           | Charles Huff  | Seattle | P50145 | VNCCT8L24Z    | 8C28043   |
 | 4 | Columbia Hospitality     | N/A                           | Charles Huff  | Seattle | P50145 | VNCCT8L251    | 8C28044   |
 | 5 | Columbia Hospitality     | N/A                           | Charles Huff  | Seattle | P50145 | VNCCT8L25J    | 8C28045   |
-| 6 | Spokane at Rainier Court | BRITTANY DOUST 360-742-7117   | Charles Huff  | Seattle | CB251I | ADXM013024710 | 2S31994   |
+| 6 | Spokane at Rainier Court | Joe Blow                      | Charles Huff  | Seattle | CB251I | ADXM013024710 | 2S31994   |
 
 ** Empty State
 
