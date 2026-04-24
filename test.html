@@ -27,7 +27,7 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
     background: #f8f9fa;
     color: #222;
-    padding: 20px 10px 60px;
+    padding: 24px 8px 80px;
   }
 
   .container {
@@ -41,11 +41,11 @@
 
   h1 { text-align: center; font-size: 1.5rem; margin-bottom: 8px; }
 
-  h2 { font-size: 1.25rem; border-bottom: 2px solid #dee2e6; padding-bottom: 6px; margin-top: 28px; margin-bottom: 14px; }
-  h3 { font-size: 1.1rem; margin-top: 22px; margin-bottom: 10px; }
-  h4 { font-size: 1rem; margin-top: 16px; margin-bottom: 8px; color: #444; }
+  h2 { font-size: 1.2rem; margin-top: 28px; padding-bottom: 6px; border-bottom: 2px solid #dee2e6; margin-bottom: 12px; }
+  h3 { font-size: 1.05rem; margin-top: 22px; margin-bottom: 8px; color: #444; }
+  h4 { font-size: 0.97rem; margin-top: 16px; margin-bottom: 6px; color: #555; }
 
-  label { display: block; font-weight: 600; margin-top: 12px; margin-bottom: 4px; font-size: 0.92rem; }
+  label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 3px; margin-top: 10px; color: #333; }
 
   input[type="text"],
   input[type="tel"],
@@ -54,23 +54,18 @@
   select,
   textarea {
     width: 100%;
-    padding: 10px 12px;
+    padding: 9px 11px;
     border: 1px solid #dee2e6;
     border-radius: 8px;
-    font-size: 0.95rem;
+    font-size: 0.93rem;
     font-family: inherit;
+    background: #fff;
     transition: box-shadow 0.2s;
     -webkit-appearance: none;
     appearance: none;
-    background: #fff;
   }
 
-  input[type="text"]:focus,
-  input[type="tel"]:focus,
-  input[type="email"]:focus,
-  input[type="number"]:focus,
-  select:focus,
-  textarea:focus {
+  input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: #74b9ff;
     box-shadow: 0 0 0 3px rgba(116,185,255,0.35);
@@ -79,108 +74,89 @@
   textarea { min-height: 60px; resize: vertical; }
 
   input[type="radio"] {
-    -webkit-appearance: radio !important;
-    appearance: radio !important;
+    -webkit-appearance: radio;
+    appearance: radio;
     margin-right: 4px;
   }
 
-  .radio-group { display: flex; gap: 18px; align-items: center; margin-top: 4px; }
-  .radio-group label { display: inline-flex; align-items: center; margin-top: 0; font-weight: 400; }
+  .radio-group { display: flex; align-items: center; gap: 16px; margin-top: 4px; }
+  .radio-group label { display: inline-flex; align-items: center; gap: 4px; margin: 0; font-weight: 400; }
 
-  .field-row {
-    display: flex;
-    gap: 12px;
-  }
-  .field-row > div { flex: 1; }
+  .hint { font-size: 0.8rem; color: #888; margin-top: 2px; margin-bottom: 2px; }
+
+  .links-list { list-style: none; padding: 0; margin: 4px 0 10px 0; }
+  .links-list li { margin-bottom: 4px; }
+  .links-list a { color: #0984e3; text-decoration: none; font-weight: 500; }
+  .links-list a:hover { text-decoration: underline; }
+
+  .page-counts-row { display: flex; gap: 12px; margin-top: 4px; }
+  .page-counts-row > div { flex: 1; }
 
   .total-display {
     margin-top: 10px;
     background: #f1f3f5;
     border-radius: 8px;
-    padding: 10px 16px;
+    padding: 10px 14px;
     font-size: 1rem;
     text-align: center;
   }
   .total-display span { font-weight: 700; color: #0984e3; }
 
-  .btn-group {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 22px;
-  }
-
-  .btn-group button {
-    flex: 1 1 auto;
-    padding: 12px 14px;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    color: #fff;
-    transition: transform 0.1s;
-  }
-  .btn-group button:active { transform: scale(0.98); }
-
-  .btn-generate { background: #00b894; }
-  .btn-copy { background: #0984e3; }
-  .btn-download { background: #fdcb6e; color: #222 !important; }
-  .btn-clear { background: #e17055; }
-
-  .btn-paste {
-    display: block;
-    margin: 10px auto;
-    padding: 12px 22px;
-    background: #6c5ce7;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.1s;
-  }
-  .btn-paste:active { transform: scale(0.98); }
-
-  .hint { text-align: center; font-size: 0.82rem; color: #888; margin-top: 4px; }
-  .small-hint { font-size: 0.82rem; color: #999; margin-bottom: 4px; }
-
-  .links-list { list-style: none; padding: 0; margin: 0 0 10px 0; }
-  .links-list li { margin-bottom: 4px; }
-  .links-list a { color: #0984e3; text-decoration: none; font-weight: 500; }
-  .links-list a:hover { text-decoration: underline; }
-
   #outputBox {
     font-family: 'Courier New', Courier, monospace;
-    background: #f1f3f5;
+    background: #f5f5f5;
     min-height: 120px;
+    white-space: pre-wrap;
+    font-size: 0.88rem;
   }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .btn-row button { flex: 1; min-width: 130px; }
+
+  button {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.08s;
+    color: #fff;
+  }
+  button:active { transform: scale(0.98); }
+
+  .btn-paste { background: #6c5ce7; margin: 10px auto 0; display: block; }
+  .btn-generate { background: #00b894; }
+  .btn-copy { background: #0984e3; }
+  .btn-download { background: #fdcb6e; color: #333; }
+  .btn-clear { background: #e17055; }
 
   .hidden { display: none !important; }
 
   @keyframes flashHighlight {
     0% { background-color: #dee2e6; }
-    100% { background-color: #fff; }
+    100% { background-color: transparent; }
   }
   .flash { animation: flashHighlight 1.5s ease; }
 
   /* Toast */
   #toast {
     position: fixed;
-    bottom: 24px;
+    bottom: 30px;
     left: 50%;
-    transform: translateX(-50%) translateY(30px);
+    transform: translateX(-50%) translateY(20px);
     background: #2d3436;
     color: #fff;
     padding: 12px 24px;
     border-radius: 8px;
     font-size: 0.92rem;
     opacity: 0;
-    pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s ease;
     z-index: 9999;
-    white-space: nowrap;
+    pointer-events: none;
+    text-align: center;
+    max-width: 90vw;
   }
   #toast.show {
     opacity: 1;
@@ -189,26 +165,30 @@
 
   /* Mobile */
   @media (max-width: 480px) {
-    .container { padding: 18px 12px; }
-    .btn-group { flex-direction: column; }
-    .btn-group button { width: 100%; }
-    .field-row { flex-direction: column; gap: 0; }
+    .container { padding: 18px 10px; }
+    .btn-row { flex-direction: column; }
+    .btn-row button { min-width: 100%; }
+    .page-counts-row { flex-direction: column; }
   }
 </style>
 </head>
 <body>
 
 <div class="container">
-
-  <!-- 1. Title -->
   <h1>Equipment Replacement Info</h1>
 
-  <!-- 2. Paste from Clipboard -->
-  <button class="btn-paste" id="pasteBtn">📋 Paste from Clipboard</button>
-  <p class="hint">Paste work order info to auto-fill Customer, Contact, Model, Serial, and Equipment ID</p>
+  <!-- Paste Button -->
+  <button class="btn-paste" id="btnPaste">📋 Paste from Clipboard</button>
+  <p class="hint" style="text-align:center;margin-top:4px;">Paste work order info to auto-fill Customer, Contact, Model, Serial, and Equipment ID</p>
 
-  <!-- 3. Call Notes -->
+  <!-- Call Notes -->
   <h2>Call Notes</h2>
+  <label for="techName">Tech Name</label>
+  <input type="text" id="techName">
+
+  <label for="city">City</label>
+  <input type="text" id="city">
+
   <label for="customerName">Customer Name</label>
   <input type="text" id="customerName">
 
@@ -239,7 +219,7 @@
   <label for="equipmentId">Equipment ID Being Replaced</label>
   <input type="text" id="equipmentId">
 
-  <!-- 4. IP Info -->
+  <!-- IP Info -->
   <h3>IP Info</h3>
   <label for="ipMethod">IP Method</label>
   <select id="ipMethod">
@@ -251,7 +231,7 @@
     <option value="Other">Other</option>
   </select>
 
-  <div id="otherIpMethodWrapper" class="hidden">
+  <div id="ipMethodOtherWrap" class="hidden">
     <label for="ipMethodOther">Specify Other</label>
     <input type="text" id="ipMethodOther">
   </div>
@@ -274,15 +254,15 @@
   <label for="dns3">DNS 3</label>
   <input type="text" id="dns3">
 
-  <!-- 5. Settings Transfer -->
+  <!-- Settings Transfer -->
   <h3>Settings Transfer</h3>
   <label for="settingsTransfer">How were settings transferred?</label>
   <textarea id="settingsTransfer"></textarea>
 
-  <!-- 6. Scanning Info -->
+  <!-- Scanning Info -->
   <h3>Scanning Info</h3>
-  <label for="scanFolderType">Scan to Folder Type</label>
-  <select id="scanFolderType">
+  <label for="scanType">Scan to Folder Type</label>
+  <select id="scanType">
     <option value=""></option>
     <option value="SMB">SMB</option>
     <option value="WebDAV">WebDAV</option>
@@ -295,7 +275,7 @@
     <label><input type="radio" name="fax" value="No"> No</label>
   </div>
 
-  <!-- 7. SMTP -->
+  <!-- SMTP -->
   <h4>SMTP</h4>
   <label for="smtpServer">Server</label>
   <input type="text" id="smtpServer">
@@ -315,7 +295,7 @@
   <label for="smtpEmail">Email Address</label>
   <input type="text" id="smtpEmail">
 
-  <!-- 8. Reporting -->
+  <!-- Reporting -->
   <h3>Reporting</h3>
   <ul class="links-list">
     <li><a href="https://portal.mpsmonitor.com/" target="_blank" rel="noopener">MPS Monitor Portal ↗</a></li>
@@ -336,9 +316,9 @@
     <label><input type="radio" name="mfgReporting" value="No"> No</label>
   </div>
 
-  <!-- 9. Page Counts -->
+  <!-- Page Counts -->
   <h4>Page Counts</h4>
-  <div class="field-row">
+  <div class="page-counts-row">
     <div>
       <label for="bwCount">Black &amp; White</label>
       <input type="number" id="bwCount" min="0">
@@ -350,21 +330,21 @@
   </div>
   <div class="total-display">Total: <span id="totalDisplay">0</span></div>
 
-  <!-- 10. Additional Info -->
+  <!-- Additional Info -->
   <h3>Additional Info</h3>
-  <p class="small-hint">Fax details, user box, etc.</p>
+  <p class="hint">Fax details, user box, etc.</p>
   <textarea id="additionalInfo"></textarea>
 
-  <!-- 11. Summary Output -->
+  <!-- Summary Output -->
   <h3>Summary Output</h3>
   <textarea id="outputBox" readonly></textarea>
 
-  <!-- 12. Button Group -->
-  <div class="btn-group">
-    <button class="btn-generate" id="generateBtn">Generate Summary</button>
-    <button class="btn-copy" id="copyBtn">Copy to Clipboard</button>
-    <button class="btn-download" id="downloadBtn">📄 Download Filled PDF</button>
-    <button class="btn-clear" id="clearBtn">Clear All</button>
+  <!-- Buttons -->
+  <div class="btn-row">
+    <button class="btn-generate" id="btnGenerate">Generate Summary</button>
+    <button class="btn-copy" id="btnCopy">Copy to Clipboard</button>
+    <button class="btn-download" id="btnDownload">📄 Download Filled PDF</button>
+    <button class="btn-clear" id="btnClear">Clear All</button>
   </div>
 </div>
 
@@ -372,7 +352,7 @@
 
 <script>
 (function() {
-  // ====== TOAST ======
+  // === TOAST ===
   let toastTimer;
   function showToast(msg) {
     const t = document.getElementById('toast');
@@ -382,263 +362,218 @@
     toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
   }
 
-  // ====== HELPERS ======
-  const $ = id => document.getElementById(id);
-
-  // All saveable input/select/textarea IDs
-  const fieldIds = [
-    'customerName','poc','itPerson','itPhone','itEmail','location','model',
-    'newEquipmentId','serialNumber','equipmentId',
-    'ipMethod','ipMethodOther','ip','subnet','gateway','dns1','dns2','dns3',
+  // === FIELD IDS for sessionStorage ===
+  const textFieldIds = [
+    'techName','city','customerName','poc','itPerson','itPhone','itEmail',
+    'location','model','newEquipmentId','serialNumber','equipmentId',
+    'ip','subnet','gateway','dns1','dns2','dns3',
     'settingsTransfer',
-    'scanFolderType',
-    'smtpServer','smtpPort','smtpSsl','smtpEmail',
-    'bwCount','colorCount',
-    'additionalInfo',
-    'outputBox'
+    'smtpServer','smtpPort','smtpEmail',
+    'additionalInfo','outputBox','ipMethodOther',
+    'bwCount','colorCount'
   ];
-
+  const selectIds = ['ipMethod','scanType','smtpSsl'];
   const radioNames = ['fax','mps','mfgReporting'];
 
-  // ====== SESSION STORAGE SAVE/RESTORE ======
+  // === AUTO-SAVE ===
   function saveField(id) {
-    const el = $(id);
+    const el = document.getElementById(id);
     if (el) sessionStorage.setItem(id, el.value);
   }
   function restoreField(id) {
-    const el = $(id);
-    const val = sessionStorage.getItem(id);
-    if (el && val !== null) el.value = val;
+    const el = document.getElementById(id);
+    const v = sessionStorage.getItem(id);
+    if (el && v !== null) el.value = v;
   }
 
-  function saveRadio(name) {
-    const checked = document.querySelector(`input[name="${name}"]:checked`);
-    if (checked) sessionStorage.setItem('radio_' + name, checked.value);
-    else sessionStorage.removeItem('radio_' + name);
-  }
-  function restoreRadio(name) {
-    const val = sessionStorage.getItem('radio_' + name);
-    if (val) {
-      const el = document.querySelector(`input[name="${name}"][value="${val}"]`);
-      if (el) el.checked = true;
-    }
-  }
-
-  // Attach auto-save listeners
-  fieldIds.forEach(id => {
-    const el = $(id);
+  // Bind auto-save
+  textFieldIds.forEach(id => {
+    const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('input', () => saveField(id));
     el.addEventListener('change', () => saveField(id));
   });
-
+  selectIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', () => {
+      saveField(id);
+      if (id === 'ipMethod') toggleOtherIP();
+    });
+  });
   radioNames.forEach(name => {
     document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-      r.addEventListener('change', () => saveRadio(name));
+      r.addEventListener('change', () => {
+        sessionStorage.setItem('radio_' + name, r.value);
+      });
     });
   });
 
-  // Restore on load
-  fieldIds.forEach(restoreField);
-  radioNames.forEach(restoreRadio);
+  // === RESTORE ===
+  function restoreAll() {
+    textFieldIds.forEach(restoreField);
+    selectIds.forEach(restoreField);
+    radioNames.forEach(name => {
+      const v = sessionStorage.getItem('radio_' + name);
+      if (v) {
+        const r = document.querySelector(`input[name="${name}"][value="${v}"]`);
+        if (r) r.checked = true;
+      }
+    });
+    toggleOtherIP();
+    updateTotal();
+  }
 
-  // ====== IP METHOD "OTHER" TOGGLE ======
-  function toggleOtherIp() {
-    const wrap = $('otherIpMethodWrapper');
-    if ($('ipMethod').value === 'Other') wrap.classList.remove('hidden');
+  // === IP OTHER toggle ===
+  function toggleOtherIP() {
+    const sel = document.getElementById('ipMethod');
+    const wrap = document.getElementById('ipMethodOtherWrap');
+    if (sel.value === 'Other') wrap.classList.remove('hidden');
     else wrap.classList.add('hidden');
   }
-  $('ipMethod').addEventListener('change', toggleOtherIp);
-  toggleOtherIp(); // run on load
 
-  // ====== TOTAL DISPLAY ======
+  // === TOTAL ===
   function updateTotal() {
-    const bw = parseInt($('bwCount').value) || 0;
-    const color = parseInt($('colorCount').value) || 0;
-    $('totalDisplay').textContent = (bw + color).toLocaleString();
+    const bw = parseInt(document.getElementById('bwCount').value) || 0;
+    const c = parseInt(document.getElementById('colorCount').value) || 0;
+    document.getElementById('totalDisplay').textContent = (bw + c).toLocaleString();
   }
-  $('bwCount').addEventListener('input', updateTotal);
-  $('colorCount').addEventListener('input', updateTotal);
-  updateTotal();
+  document.getElementById('bwCount').addEventListener('input', () => { saveField('bwCount'); updateTotal(); });
+  document.getElementById('colorCount').addEventListener('input', () => { saveField('colorCount'); updateTotal(); });
 
-  // ====== PASTE FROM CLIPBOARD ======
-  $('pasteBtn').addEventListener('click', async () => {
+  // === PASTE FROM CLIPBOARD ===
+  document.getElementById('btnPaste').addEventListener('click', async () => {
     let text;
     try {
       text = await navigator.clipboard.readText();
     } catch(e) {
-      showToast('Clipboard access denied.');
+      showToast('Clipboard access denied. Please allow clipboard permission.');
       return;
     }
-    if (!text || !text.trim()) {
-      showToast('Clipboard is empty.');
-      return;
-    }
+    if (!text || !text.trim()) { showToast('Clipboard is empty.'); return; }
 
     const lines = text.split(/\r?\n/);
-    const mappings = [
-      { patterns: ['title (customer)', 'title', 'customer'], field: 'customerName' },
-      { patterns: ['contact'], field: 'poc' },
-      { patterns: ['item no. (model)', 'item no', 'model'], field: 'model' },
-      { patterns: ['serial number', 'serial'], field: 'serialNumber' },
-      { patterns: ['equipment id', 'equipment'], field: 'newEquipmentId' },
-    ];
-
-    let filled = 0;
-
+    const map = {};
     lines.forEach(line => {
-      const colonIdx = line.indexOf(':');
-      if (colonIdx < 1) return;
-      const key = line.substring(0, colonIdx).trim().toLowerCase();
-      const val = line.substring(colonIdx + 1).trim();
-      if (!val) return;
-
-      for (const m of mappings) {
-        const matched = m.patterns.some(p => key.includes(p));
-        if (matched) {
-          const el = $(m.field);
-          if (el) {
-            el.value = val;
-            saveField(m.field);
-            el.classList.remove('flash');
-            void el.offsetWidth; // reflow to restart animation
-            el.classList.add('flash');
-            filled++;
-          }
-          break;
-        }
-      }
+      const m = line.match(/^([^:]+):\s*(.*)/);
+      if (m) map[m[1].trim().toLowerCase()] = m[2].trim();
     });
 
-    if (filled === 0) showToast('No matching fields found in clipboard.');
-    else showToast(filled + ' field' + (filled > 1 ? 's' : '') + ' auto-filled.');
-  });
-
-  // ====== GENERATE SUMMARY ======
-  function v(id) { return ($(id) ? $(id).value.trim() : ''); }
-  function radioVal(name) {
-    const c = document.querySelector(`input[name="${name}"]:checked`);
-    return c ? c.value : '';
-  }
-
-  $('generateBtn').addEventListener('click', () => {
-    let lines = [];
-
-    // Call Notes
-    const callNotes = [
-      ['Customer Name', v('customerName')],
-      ['Point of Contact', v('poc')],
-      ['IT Person', v('itPerson')],
-      ['Phone', v('itPhone')],
-      ['Email', v('itEmail')],
-      ['Location of Machine', v('location')],
-      ['Model', v('model')],
-      ['New Equipment ID', v('newEquipmentId')],
-      ['Serial Number', v('serialNumber')],
-      ['Equipment ID Being Replaced', v('equipmentId')],
-    ].filter(x => x[1]);
-    if (callNotes.length) {
-      lines.push('=== CALL NOTES ===');
-      callNotes.forEach(x => lines.push(x[0] + ': ' + x[1]));
-    }
-
-    // IP Info
-    let ipMethodVal = v('ipMethod');
-    if (ipMethodVal === 'Other' && v('ipMethodOther')) ipMethodVal = v('ipMethodOther');
-    else if (ipMethodVal === 'Other') ipMethodVal = 'Other';
-    const ipFields = [
-      ['IP Method', ipMethodVal],
-      ['IP Address', v('ip')],
-      ['Subnet', v('subnet')],
-      ['Gateway', v('gateway')],
-      ['DNS 1', v('dns1')],
-      ['DNS 2', v('dns2')],
-      ['DNS 3', v('dns3')],
-    ].filter(x => x[1]);
-    if (ipFields.length) {
-      lines.push('');
-      lines.push('--- IP Info ---');
-      ipFields.forEach(x => lines.push(x[0] + ': ' + x[1]));
-    }
-
-    // Settings Transfer
-    if (v('settingsTransfer')) {
-      lines.push('');
-      lines.push('--- Settings Transfer ---');
-      lines.push('How settings were transferred: ' + v('settingsTransfer'));
-    }
-
-    // Scanning Info
-    const scanFields = [
-      ['Scan to Folder Type', v('scanFolderType')],
-      ['Fax', radioVal('fax')],
-    ].filter(x => x[1]);
-    if (scanFields.length) {
-      lines.push('');
-      lines.push('--- Scanning Info ---');
-      scanFields.forEach(x => lines.push(x[0] + ': ' + x[1]));
-    }
-
-    // SMTP
-    const smtpFields = [
-      ['Server', v('smtpServer')],
-      ['Port', v('smtpPort')],
-      ['SSL/TLS', v('smtpSsl')],
-      ['Email', v('smtpEmail')],
-    ].filter(x => x[1]);
-    if (smtpFields.length) {
-      lines.push('');
-      lines.push('-- SMTP --');
-      smtpFields.forEach(x => lines.push(x[0] + ': ' + x[1]));
-    }
-
-    // Reporting
-    const repFields = [
-      ['MPS', radioVal('mps')],
-      ['Manufacturer reporting enabled', radioVal('mfgReporting')],
-    ].filter(x => x[1]);
-
-    const bw = parseInt($('bwCount').value) || 0;
-    const color = parseInt($('colorCount').value) || 0;
-    const hasPageCounts = v('bwCount') || v('colorCount');
-
-    if (repFields.length || hasPageCounts) {
-      lines.push('');
-      lines.push('--- Reporting ---');
-      repFields.forEach(x => lines.push(x[0] + ': ' + x[1]));
-      if (hasPageCounts) {
-        lines.push('-- Page Counts --');
-        if (v('bwCount')) lines.push('Black & White: ' + bw.toLocaleString());
-        if (v('colorCount')) lines.push('Color: ' + color.toLocaleString());
-        lines.push('Total: ' + (bw + color).toLocaleString());
+    let filled = 0;
+    function tryFill(id, ...keys) {
+      for (const k of Object.keys(map)) {
+        for (const pattern of keys) {
+          if (k.includes(pattern)) {
+            const el = document.getElementById(id);
+            if (el) {
+              el.value = map[k];
+              saveField(id);
+              el.classList.remove('flash');
+              void el.offsetWidth;
+              el.classList.add('flash');
+              filled++;
+            }
+            return;
+          }
+        }
       }
     }
 
+    tryFill('customerName', 'title', 'customer');
+    tryFill('poc', 'contact');
+    tryFill('model', 'item no', 'model');
+    tryFill('serialNumber', 'serial');
+    tryFill('newEquipmentId', 'equipment id', 'equipment');
+
+    if (filled === 0) showToast('No matching fields found in clipboard text.');
+    else showToast(filled + ' field(s) auto-filled from clipboard.');
+  });
+
+  // === GENERATE SUMMARY ===
+  document.getElementById('btnGenerate').addEventListener('click', () => {
+    const v = id => (document.getElementById(id)?.value || '').trim();
+    const radio = name => { const r = document.querySelector(`input[name="${name}"]:checked`); return r ? r.value : ''; };
+
+    let ipMethodVal = v('ipMethod');
+    if (ipMethodVal === 'Other') {
+      const oth = v('ipMethodOther');
+      ipMethodVal = oth ? 'Other: ' + oth : 'Other';
+    }
+
+    // Build sections
+    const sections = [];
+
+    // Call Notes
+    const cn = [];
+    if (v('customerName')) cn.push('Customer Name: ' + v('customerName'));
+    if (v('poc')) cn.push('Point of Contact: ' + v('poc'));
+    if (v('itPerson')) cn.push('IT Person: ' + v('itPerson'));
+    if (v('itPhone')) cn.push('Phone: ' + v('itPhone'));
+    if (v('itEmail')) cn.push('Email: ' + v('itEmail'));
+    if (v('location')) cn.push('Location of Machine: ' + v('location'));
+    if (v('model')) cn.push('Model: ' + v('model'));
+    if (v('newEquipmentId')) cn.push('New Equipment ID: ' + v('newEquipmentId'));
+    if (v('serialNumber')) cn.push('Serial Number: ' + v('serialNumber'));
+    if (v('equipmentId')) cn.push('Equipment ID Being Replaced: ' + v('equipmentId'));
+    if (cn.length) sections.push('=== CALL NOTES ===\n' + cn.join('\n'));
+
+    // IP Info
+    const ip = [];
+    if (ipMethodVal) ip.push('IP Method: ' + ipMethodVal);
+    if (v('ip')) ip.push('IP Address: ' + v('ip'));
+    if (v('subnet')) ip.push('Subnet: ' + v('subnet'));
+    if (v('gateway')) ip.push('Gateway: ' + v('gateway'));
+    if (v('dns1')) ip.push('DNS 1: ' + v('dns1'));
+    if (v('dns2')) ip.push('DNS 2: ' + v('dns2'));
+    if (v('dns3')) ip.push('DNS 3: ' + v('dns3'));
+    if (ip.length) sections.push('--- IP Info ---\n' + ip.join('\n'));
+
+    // Settings Transfer
+    if (v('settingsTransfer')) sections.push('--- Settings Transfer ---\nHow settings were transferred: ' + v('settingsTransfer'));
+
+    // Scanning Info
+    const sc = [];
+    if (v('scanType')) sc.push('Scan to Folder Type: ' + v('scanType'));
+    if (radio('fax')) sc.push('Fax: ' + radio('fax'));
+    if (sc.length) sections.push('--- Scanning Info ---\n' + sc.join('\n'));
+
+    // SMTP
+    const sm = [];
+    if (v('smtpServer')) sm.push('Server: ' + v('smtpServer'));
+    if (v('smtpPort')) sm.push('Port: ' + v('smtpPort'));
+    if (v('smtpSsl')) sm.push('SSL/TLS: ' + v('smtpSsl'));
+    if (v('smtpEmail')) sm.push('Email: ' + v('smtpEmail'));
+    if (sm.length) sections.push('-- SMTP --\n' + sm.join('\n'));
+
+    // Reporting
+    const rp = [];
+    if (radio('mps')) rp.push('MPS: ' + radio('mps'));
+    if (radio('mfgReporting')) rp.push('Manufacturer reporting enabled: ' + radio('mfgReporting'));
+    // Page Counts
+    const bw = parseInt(v('bwCount')) || 0;
+    const col = parseInt(v('colorCount')) || 0;
+    const pcLines = [];
+    if (v('bwCount')) pcLines.push('Black & White: ' + bw.toLocaleString());
+    if (v('colorCount')) pcLines.push('Color: ' + col.toLocaleString());
+    if (pcLines.length) pcLines.push('Total: ' + (bw + col).toLocaleString());
+    if (pcLines.length) rp.push('-- Page Counts --\n' + pcLines.join('\n'));
+    if (rp.length) sections.push('--- Reporting ---\n' + rp.join('\n'));
+
     // Additional Info
-    if (v('additionalInfo')) {
-      lines.push('');
-      lines.push('--- Additional Info ---');
-      lines.push(v('additionalInfo'));
-    }
+    if (v('additionalInfo')) sections.push('--- Additional Info ---\n' + v('additionalInfo'));
 
-    if (lines.length === 0) {
-      showToast('No data to generate');
-      return;
-    }
+    if (sections.length === 0) { showToast('No data to generate'); return; }
 
-    const output = lines.join('\n');
-    $('outputBox').value = output;
+    const output = sections.join('\n\n');
+    document.getElementById('outputBox').value = output;
     saveField('outputBox');
     showToast('Summary generated!');
   });
 
-  // ====== COPY TO CLIPBOARD ======
-  $('copyBtn').addEventListener('click', async () => {
-    const text = $('outputBox').value;
-    if (!text.trim()) {
-      showToast('Nothing to copy — generate summary first.');
-      return;
-    }
+  // === COPY TO CLIPBOARD ===
+  document.getElementById('btnCopy').addEventListener('click', async () => {
+    const text = document.getElementById('outputBox').value;
+    if (!text.trim()) { showToast('Nothing to copy — generate summary first.'); return; }
     try {
       await navigator.clipboard.writeText(text);
       showToast('Copied to clipboard!');
@@ -657,27 +592,31 @@
     }
   });
 
-  // ====== DOWNLOAD FILLED PDF ======
-  $('downloadBtn').addEventListener('click', async () => {
-    const mappings = [
-      { pdf: 'customer', val: v('customerName') },
-      { pdf: 'equipID', val: v('newEquipmentId') },
-      { pdf: 'model', val: v('model') },
-      { pdf: 'black', val: v('bwCount') },
-      { pdf: 'color', val: v('colorCount') },
-      { pdf: 'total', val: String((parseInt($('bwCount').value)||0) + (parseInt($('colorCount').value)||0)) === '0' && !v('bwCount') && !v('colorCount') ? '' : String((parseInt($('bwCount').value)||0) + (parseInt($('colorCount').value)||0)) },
-      { pdf: 'ip', val: v('ip') },
-      { pdf: 'subnet', val: v('subnet') },
-      { pdf: 'gateway', val: v('gateway') },
-      { pdf: 'dns1', val: v('dns1') },
-      { pdf: 'dns2', val: v('dns2') },
-    ];
+  // === DOWNLOAD PDF ===
+  document.getElementById('btnDownload').addEventListener('click', async () => {
+    const v = id => (document.getElementById(id)?.value || '').trim();
+    const bw = parseInt(v('bwCount')) || 0;
+    const col = parseInt(v('colorCount')) || 0;
+    const total = bw + col;
 
-    const filled = mappings.filter(m => m.val);
-    if (filled.length === 0) {
-      showToast('No data to fill in PDF.');
-      return;
-    }
+    const mapping = {
+      'customer': v('customerName'),
+      'equipID': v('newEquipmentId'),
+      'model': v('model'),
+      'black': v('bwCount'),
+      'color': v('colorCount'),
+      'total': total ? String(total) : '',
+      'ip': v('ip'),
+      'subnet': v('subnet'),
+      'gateway': v('gateway'),
+      'dns1': v('dns1'),
+      'dns2': v('dns2'),
+      'city': v('city'),
+      'techName': v('techName')
+    };
+
+    const hasData = Object.values(mapping).some(x => x);
+    if (!hasData) { showToast('No data to fill in PDF.'); return; }
 
     let pdfBytes;
     try {
@@ -685,24 +624,21 @@
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
       pdfBytes = await resp.arrayBuffer();
     } catch(e) {
-      showToast('Failed to load PDF file.');
-      console.error(e);
+      showToast('Failed to fetch PDF: ' + e.message);
       return;
     }
 
     try {
       const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
       const form = pdfDoc.getForm();
-      let count = 0;
-
-      for (const m of mappings) {
-        if (!m.val) continue;
+      let filled = 0;
+      for (const [field, val] of Object.entries(mapping)) {
+        if (!val) continue;
         try {
-          const field = form.getTextField(m.pdf);
-          field.setText(m.val);
-          count++;
+          form.getTextField(field).setText(val);
+          filled++;
         } catch(e) {
-          console.warn('PDF field not found or error:', m.pdf, e);
+          console.warn('PDF field "' + field + '" not found or error:', e.message);
         }
       }
 
@@ -722,33 +658,38 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      showToast(count + ' field' + (count > 1 ? 's' : '') + ' filled in PDF.');
+      showToast(filled + ' field(s) filled in PDF.');
     } catch(e) {
-      showToast('Error processing PDF.');
-      console.error(e);
+      showToast('Error processing PDF: ' + e.message);
     }
   });
 
-  // ====== CLEAR ALL ======
-  $('clearBtn').addEventListener('click', () => {
+  // === CLEAR ALL ===
+  document.getElementById('btnClear').addEventListener('click', () => {
     if (!confirm('Clear all fields and saved data?')) return;
 
-    fieldIds.forEach(id => {
-      const el = $(id);
+    textFieldIds.forEach(id => {
+      const el = document.getElementById(id);
       if (el) el.value = '';
       sessionStorage.removeItem(id);
     });
-
+    selectIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+      sessionStorage.removeItem(id);
+    });
     radioNames.forEach(name => {
       document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.checked = false);
       sessionStorage.removeItem('radio_' + name);
     });
 
-    $('totalDisplay').textContent = '0';
-    toggleOtherIp();
+    document.getElementById('totalDisplay').textContent = '0';
+    toggleOtherIP();
     showToast('All fields cleared.');
   });
 
+  // === INIT ===
+  restoreAll();
 })();
 </script>
 </body>

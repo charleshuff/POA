@@ -27,6 +27,8 @@ Create a single-file HTML webpage called "Equipment Replacement Info" with the f
 
 3. SECTION: "Call Notes" (h2 with bottom border)
    Fields (all text inputs unless noted):
+   - Tech Name (id="techName")
+   - City (id="city)
    - Customer Name (id="customerName")
    - Point of Contact (id="poc")
    - IT Person (id="itPerson")
@@ -170,6 +172,8 @@ On success, show toast "Summary generated!"
   * 'gateway' ← Gateway
   * 'dns1' ← DNS 1
   * 'dns2' ← DNS 2
+  * 'city' <- City
+  * 'techName' <- techName
 - Use form.getTextField(name).setText(value) for each
 - Wrap each field fill in try/catch, log warnings to console for mismatches
 - Do NOT flatten the form (leave fields editable)
