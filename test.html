@@ -150,7 +150,6 @@
   }
   .flash { animation: flashHighlight 1.5s ease; }
 
-  /* Toast */
   #toast {
     position: fixed;
     bottom: 30px;
@@ -173,7 +172,6 @@
     transform: translateX(-50%) translateY(0);
   }
 
-  /* Mobile */
   @media (max-width: 480px) {
     .container { padding: 18px 10px; }
     .btn-row { flex-direction: column; }
@@ -189,14 +187,12 @@
 <div class="container">
   <h1>Equipment Replacement Info</h1>
 
-  <!-- Paste Buttons -->
   <div class="paste-btn-row">
     <button class="btn-paste-calls" id="btnPasteCalls">📋 Paste Calls</button>
     <button class="btn-paste-summary" id="btnPasteSummary">📋 Paste Summary</button>
   </div>
   <p class="hint" style="text-align:center;margin-top:4px;"><b>Paste Calls:</b> auto-fill from work order &nbsp;|&nbsp; <b>Paste Summary:</b> re-import a generated summary</p>
 
-  <!-- Call Notes -->
   <h2>Call Notes</h2>
   <label for="techName">Tech Name</label>
   <input type="text" id="techName">
@@ -234,7 +230,6 @@
   <label for="equipmentId">Equipment ID Being Replaced</label>
   <input type="text" id="equipmentId">
 
-  <!-- IP Info -->
   <h3>IP Info</h3>
   <label for="ipMethod">IP Method</label>
   <select id="ipMethod">
@@ -269,12 +264,10 @@
   <label for="dns3">DNS 3</label>
   <input type="text" id="dns3">
 
-  <!-- Settings Transfer -->
   <h3>Settings Transfer</h3>
   <label for="settingsTransfer">How were settings transferred?</label>
   <textarea id="settingsTransfer"></textarea>
 
-  <!-- Scanning Info -->
   <h3>Scanning Info</h3>
   <label for="scanType">Scan to Folder Type</label>
   <select id="scanType">
@@ -290,7 +283,6 @@
     <label><input type="radio" name="fax" value="No"> No</label>
   </div>
 
-  <!-- SMTP -->
   <h4>SMTP</h4>
   <label for="smtpServer">Server</label>
   <input type="text" id="smtpServer">
@@ -310,7 +302,6 @@
   <label for="smtpEmail">Email Address</label>
   <input type="text" id="smtpEmail">
 
-  <!-- Reporting -->
   <h3>Reporting</h3>
   <ul class="links-list">
     <li><a href="https://portal.mpsmonitor.com/" target="_blank" rel="noopener">MPS Monitor Portal ↗</a></li>
@@ -331,7 +322,6 @@
     <label><input type="radio" name="mfgReporting" value="No"> No</label>
   </div>
 
-  <!-- Page Counts -->
   <h4>Page Counts</h4>
   <div class="page-counts-row">
     <div>
@@ -345,16 +335,13 @@
   </div>
   <div class="total-display">Total: <span id="totalDisplay">0</span></div>
 
-  <!-- Additional Info -->
   <h3>Additional Info</h3>
   <p class="hint">Fax details, user box, etc.</p>
   <textarea id="additionalInfo"></textarea>
 
-  <!-- Summary Output -->
   <h3>Summary Output</h3>
   <textarea id="outputBox" readonly></textarea>
 
-  <!-- Buttons -->
   <div class="btn-row">
     <button class="btn-generate" id="btnGenerate">Generate Summary</button>
     <button class="btn-copy" id="btnCopy">Copy to Clipboard</button>
@@ -367,7 +354,6 @@
 
 <script>
 (function() {
-  // === TOAST ===
   let toastTimer;
   function showToast(msg) {
     const t = document.getElementById('toast');
@@ -377,7 +363,6 @@
     toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
   }
 
-  // === FIELD IDS for sessionStorage ===
   const textFieldIds = [
     'techName','city','customerName','poc','itPerson','itPhone','itEmail',
     'location','model','newEquipmentId','serialNumber','equipmentId',
@@ -390,7 +375,6 @@
   const selectIds = ['ipMethod','scanType','smtpSsl'];
   const radioNames = ['fax','mps','mfgReporting'];
 
-  // === AUTO-SAVE ===
   function saveField(id) {
     const el = document.getElementById(id);
     if (el) sessionStorage.setItem(id, el.value);
@@ -421,7 +405,6 @@
   function setSelectValue(id, value) {
     const el = document.getElementById(id);
     if (!el) return false;
-    // Try exact match first
     for (let i = 0; i < el.options.length; i++) {
       if (el.options[i].value === value) {
         el.value = value;
@@ -430,7 +413,6 @@
         return true;
       }
     }
-    // Try case-insensitive match
     for (let i = 0; i < el.options.length; i++) {
       if (el.options[i].value.toLowerCase() === value.toLowerCase()) {
         el.value = el.options[i].value;
@@ -453,7 +435,6 @@
     return false;
   }
 
-  // Bind auto-save
   textFieldIds.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -476,7 +457,6 @@
     });
   });
 
-  // === RESTORE ===
   function restoreAll() {
     textFieldIds.forEach(restoreField);
     selectIds.forEach(restoreField);
@@ -491,7 +471,6 @@
     updateTotal();
   }
 
-  // === IP OTHER toggle ===
   function toggleOtherIP() {
     const sel = document.getElementById('ipMethod');
     const wrap = document.getElementById('ipMethodOtherWrap');
@@ -499,7 +478,6 @@
     else wrap.classList.add('hidden');
   }
 
-  // === TOTAL ===
   function updateTotal() {
     const bw = parseInt(document.getElementById('bwCount').value) || 0;
     const c = parseInt(document.getElementById('colorCount').value) || 0;
@@ -508,7 +486,7 @@
   document.getElementById('bwCount').addEventListener('input', () => { saveField('bwCount'); updateTotal(); });
   document.getElementById('colorCount').addEventListener('input', () => { saveField('colorCount'); updateTotal(); });
 
-  // === PASTE CALLS (original) ===
+  // === PASTE CALLS ===
   document.getElementById('btnPasteCalls').addEventListener('click', async () => {
     let text;
     try {
@@ -548,7 +526,23 @@
     else showToast(filled + ' field(s) auto-filled from clipboard.');
   });
 
-  // === PASTE SUMMARY (new) ===
+  // === PASTE SUMMARY ===
+  // Ignored fields: everything Paste Calls handles (customerName, poc, model,
+  // serialNumber, newEquipmentId) PLUS equipmentId, location, ip, bwCount, colorCount
+  const summaryIgnoredLabels = new Set([
+    'customer name',
+    'point of contact',
+    'model',
+    'serial number',
+    'new equipment id',
+    'equipment id being replaced',
+    'location of machine',
+    'ip address',
+    'black & white',
+    'color',
+    'total'
+  ]);
+
   document.getElementById('btnPasteSummary').addEventListener('click', async () => {
     let text;
     try {
@@ -561,24 +555,12 @@
 
     let filled = 0;
 
-    // Parse "Label: Value" lines from the generated summary.
-    // The summary format uses exact labels like "Customer Name: Foo".
-    // We build a mapping from summary label → { type, target }.
     const summaryFieldMap = [
-      // Call Notes
-      { label: 'customer name', id: 'customerName' },
-      { label: 'point of contact', id: 'poc' },
       { label: 'it person', id: 'itPerson' },
       { label: 'phone', id: 'itPhone' },
-      { label: 'email', id: 'itEmail' },              // could be call notes email or SMTP email — handled by section
-      { label: 'location of machine', id: 'location' },
-      { label: 'model', id: 'model' },
-      { label: 'new equipment id', id: 'newEquipmentId' },
-      { label: 'serial number', id: 'serialNumber' },
-      { label: 'equipment id being replaced', id: 'equipmentId' },
+      { label: 'email', id: 'itEmail' },
       // IP Info
       { label: 'ip method', id: 'ipMethod', type: 'ipmethod' },
-      { label: 'ip address', id: 'ip' },
       { label: 'subnet', id: 'subnet' },
       { label: 'gateway', id: 'gateway' },
       { label: 'dns 1', id: 'dns1' },
@@ -596,16 +578,9 @@
       // Reporting
       { label: 'mps', id: null, type: 'radio', name: 'mps' },
       { label: 'manufacturer reporting enabled', id: null, type: 'radio', name: 'mfgReporting' },
-      // Page Counts
-      { label: 'black & white', id: 'bwCount', type: 'number' },
-      { label: 'color', id: 'colorCount', type: 'number' },
-      // Total is computed, don't import
     ];
 
     const lines = text.split(/\r?\n/);
-
-    // Track which section we are in so we can disambiguate "Email" (Call Notes vs SMTP)
-    // and "Server" / "Port" which only appear in SMTP.
     let currentSection = '';
     let additionalInfoLines = [];
     let inAdditionalInfo = false;
@@ -634,20 +609,22 @@
         continue;
       }
 
-      // If we're in Additional Info section, collect free text lines
       if (inAdditionalInfo) {
         if (trimmed) additionalInfoLines.push(trimmed);
         continue;
       }
 
-      // Try to parse "Label: Value"
+      // Parse "Label: Value"
       const m = trimmed.match(/^([^:]+):\s+(.*)/);
       if (!m) continue;
       const label = m[1].trim().toLowerCase();
       const value = m[2].trim();
       if (!value) continue;
 
-      // Disambiguate: "email" in SMTP section → smtpEmail, otherwise → itEmail
+      // Skip ignored fields
+      if (summaryIgnoredLabels.has(label)) continue;
+
+      // Disambiguate "email": in SMTP → smtpEmail, otherwise → itEmail
       if (label === 'email') {
         if (currentSection === 'smtp') {
           if (setFieldValue('smtpEmail', value)) filled++;
@@ -657,25 +634,21 @@
         continue;
       }
 
-      // Find matching field definition
-      let matched = false;
+      // Match against field map
       for (const def of summaryFieldMap) {
         if (label !== def.label) continue;
 
         if (def.type === 'radio') {
           if (setRadioValue(def.name, value)) filled++;
-          matched = true;
           break;
         }
 
         if (def.type === 'select') {
           if (setSelectValue(def.id, value)) filled++;
-          matched = true;
           break;
         }
 
         if (def.type === 'ipmethod') {
-          // Check if value matches a known IP method option
           const knownMethods = ['Reused', 'Mac address reservation', 'DHCP', 'IP scanner'];
           const found = knownMethods.find(km => km.toLowerCase() === value.toLowerCase());
           if (found) {
@@ -686,34 +659,22 @@
             if (otherVal) setFieldValue('ipMethodOther', otherVal);
             filled++;
           } else {
-            // Unknown method — put in Other
             setSelectValue('ipMethod', 'Other');
             setFieldValue('ipMethodOther', value);
             filled++;
           }
           toggleOtherIP();
-          matched = true;
           break;
         }
 
-        if (def.type === 'number') {
-          // Strip commas from number
-          const numVal = value.replace(/,/g, '');
-          if (setFieldValue(def.id, numVal)) filled++;
-          matched = true;
-          break;
-        }
-
-        // Default: text field
         if (def.id) {
           if (setFieldValue(def.id, value)) filled++;
-          matched = true;
           break;
         }
       }
     }
 
-    // Set additional info
+    // Additional info
     if (additionalInfoLines.length > 0) {
       if (setFieldValue('additionalInfo', additionalInfoLines.join('\n'))) filled++;
     }
@@ -738,7 +699,6 @@
 
     const sections = [];
 
-    // Call Notes
     const cn = [];
     if (v('customerName')) cn.push('Customer Name: ' + v('customerName'));
     if (v('poc')) cn.push('Point of Contact: ' + v('poc'));
@@ -752,7 +712,6 @@
     if (v('equipmentId')) cn.push('Equipment ID Being Replaced: ' + v('equipmentId'));
     if (cn.length) sections.push('=== CALL NOTES ===\n' + cn.join('\n'));
 
-    // IP Info
     const ip = [];
     if (ipMethodVal) ip.push('IP Method: ' + ipMethodVal);
     if (v('ip')) ip.push('IP Address: ' + v('ip'));
@@ -763,16 +722,13 @@
     if (v('dns3')) ip.push('DNS 3: ' + v('dns3'));
     if (ip.length) sections.push('--- IP Info ---\n' + ip.join('\n'));
 
-    // Settings Transfer
     if (v('settingsTransfer')) sections.push('--- Settings Transfer ---\nHow settings were transferred: ' + v('settingsTransfer'));
 
-    // Scanning Info
     const sc = [];
     if (v('scanType')) sc.push('Scan to Folder Type: ' + v('scanType'));
     if (radio('fax')) sc.push('Fax: ' + radio('fax'));
     if (sc.length) sections.push('--- Scanning Info ---\n' + sc.join('\n'));
 
-    // SMTP
     const sm = [];
     if (v('smtpServer')) sm.push('Server: ' + v('smtpServer'));
     if (v('smtpPort')) sm.push('Port: ' + v('smtpPort'));
@@ -780,7 +736,6 @@
     if (v('smtpEmail')) sm.push('Email: ' + v('smtpEmail'));
     if (sm.length) sections.push('-- SMTP --\n' + sm.join('\n'));
 
-    // Reporting
     const rp = [];
     if (radio('mps')) rp.push('MPS: ' + radio('mps'));
     if (radio('mfgReporting')) rp.push('Manufacturer reporting enabled: ' + radio('mfgReporting'));
@@ -793,7 +748,6 @@
     if (pcLines.length) rp.push('-- Page Counts --\n' + pcLines.join('\n'));
     if (rp.length) sections.push('--- Reporting ---\n' + rp.join('\n'));
 
-    // Additional Info
     if (v('additionalInfo')) sections.push('--- Additional Info ---\n' + v('additionalInfo'));
 
     if (sections.length === 0) { showToast('No data to generate'); return; }
@@ -922,7 +876,6 @@
     showToast('All fields cleared.');
   });
 
-  // === INIT ===
   restoreAll();
 })();
 </script>
