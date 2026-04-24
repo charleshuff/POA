@@ -16,710 +16,746 @@
                             <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Call List Parser</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📋 Call List Parser</title>
+<style>
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a2e;
-            color: #e0e0e0;
-            min-height: 100vh;
-            padding: 20px;
-        }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 20px;
+}
 
-        h1 {
-            text-align: center;
-            margin-bottom: 10px;
-            color: #00d4ff;
-            font-size: 2em;
-        }
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
 
-        .subtitle {
-            text-align: center;
-            color: #888;
-            margin-bottom: 10px;
-            font-size: 0.95em;
-        }
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
 
-        .nav-link {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+.header h1 {
+    font-size: 2rem;
+    color: #00d4ff;
+    margin-bottom: 8px;
+}
 
-        .nav-link a {
-            color: #3498db;
-            text-decoration: none;
-            font-size: 0.95em;
-            padding: 6px 16px;
-            border: 1px solid #3498db44;
-            border-radius: 20px;
-            transition: all 0.2s ease;
-        }
+.header .subtitle {
+    color: #888;
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+}
 
-        .nav-link a:hover {
-            background-color: #3498db22;
-            border-color: #3498db;
-            color: #5dade2;
-        }
+.nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
 
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
+.nav-links a {
+    display: inline-block;
+    padding: 8px 18px;
+    border: 1px solid #3498db;
+    border-radius: 50px;
+    color: #3498db;
+    text-decoration: none;
+    font-size: 0.9rem;
+    background: transparent;
+    transition: background 0.2s, color 0.2s;
+}
 
-        .btn {
-            padding: 12px 28px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
+.nav-links a:hover {
+    background: #3498db;
+    color: #fff;
+}
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
+/* Controls */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
 
-        .btn:active {
-            transform: translateY(0);
-        }
+.controls button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.2s, transform 0.1s;
+}
 
-        .btn-paste {
-            background-color: #00d4ff;
-            color: #1a1a2e;
-        }
+.controls button:hover {
+    opacity: 0.9;
+}
 
-        .btn-paste:hover {
-            background-color: #33ddff;
-        }
+.controls button:active {
+    transform: scale(0.97);
+}
 
-        .btn-file {
-            background-color: #6c5ce7;
-            color: #fff;
-        }
+.btn-paste {
+    background: #00d4ff;
+    color: #1a1a2e;
+}
 
-        .btn-file:hover {
-            background-color: #7f71ea;
-        }
+.btn-upload {
+    background: #6c5ce7;
+    color: white;
+}
 
-        .btn-clear {
-            background-color: #e74c3c;
-            color: #fff;
-        }
+.btn-clear {
+    background: #e74c3c;
+    color: white;
+}
 
-        .btn-clear:hover {
-            background-color: #ec6b5e;
-        }
+/* Status Bar */
+.status-bar {
+    text-align: center;
+    margin-bottom: 20px;
+    min-height: 24px;
+}
 
-        .btn-copy {
-            background-color: #2ecc71;
-            color: #1a1a2e;
-            padding: 8px 18px;
-            font-size: 0.85em;
-            border-radius: 6px;
-        }
+.status-msg {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    animation: fadeIn 0.3s;
+}
 
-        .btn-copy:hover {
-            background-color: #4cd787;
-        }
+.status-success {
+    background: #2ecc7133;
+    color: #2ecc71;
+}
 
-        .btn-copy.copied {
-            background-color: #f39c12;
-            color: #fff;
-        }
+.status-error {
+    background: #e74c3c33;
+    color: #e74c3c;
+}
 
-        .btn-open {
-            background-color: #3498db;
-            color: #fff;
-            padding: 8px 18px;
-            font-size: 0.85em;
-            border-radius: 6px;
-        }
+.status-info {
+    background: #3498db33;
+    color: #3498db;
+}
 
-        .btn-open:hover {
-            background-color: #5dade2;
-        }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-        .btn-open.copied {
-            background-color: #f39c12;
-            color: #fff;
-        }
+/* Session badge & call count */
+.result-header {
+    text-align: center;
+    margin-bottom: 16px;
+}
 
-        #file-input {
-            display: none;
-        }
+.session-badge {
+    display: inline-block;
+    background: #f39c1233;
+    color: #f39c12;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
 
-        .status-bar {
-            text-align: center;
-            margin-bottom: 20px;
-            min-height: 24px;
-        }
+.call-count {
+    color: #888;
+    font-size: 0.95rem;
+}
 
-        .status-bar .message {
-            padding: 8px 20px;
-            border-radius: 6px;
-            display: inline-block;
-            font-size: 0.9em;
-        }
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
 
-        .status-bar .message.success {
-            background-color: rgba(46, 204, 113, 0.15);
-            color: #2ecc71;
-            border: 1px solid rgba(46, 204, 113, 0.3);
-        }
+.empty-state .emoji {
+    font-size: 3rem;
+    margin-bottom: 12px;
+}
 
-        .status-bar .message.error {
-            background-color: rgba(231, 76, 60, 0.15);
-            color: #e74c3c;
-            border: 1px solid rgba(231, 76, 60, 0.3);
-        }
+.empty-state .msg {
+    font-size: 1.2rem;
+    color: #aaa;
+    margin-bottom: 8px;
+}
 
-        .status-bar .message.info {
-            background-color: rgba(0, 212, 255, 0.15);
-            color: #00d4ff;
-            border: 1px solid rgba(0, 212, 255, 0.3);
-        }
+.empty-state .hint {
+    font-size: 0.9rem;
+    color: #666;
+}
 
-        .calls-count {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 1.1em;
-            color: #aaa;
-        }
+/* Cards */
+.call-card {
+    background: linear-gradient(135deg, #16213e, #1a1a3e);
+    border: 1px solid #2a2a5a;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
 
-        .calls-count span {
-            color: #00d4ff;
-            font-weight: 700;
-        }
+.call-card:hover {
+    border-color: #00d4ff55;
+    box-shadow: 0 0 15px #00d4ff11;
+}
 
-        .calls-container {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 10px;
+}
 
-        .call-card {
-            background: linear-gradient(135deg, #16213e, #1a1a3e);
-            border: 1px solid #2a2a5a;
-            border-radius: 12px;
-            padding: 20px 24px;
-            transition: border-color 0.2s ease;
-        }
+.call-badge {
+    background: #00d4ff22;
+    color: #00d4ff;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
 
-        .call-card:hover {
-            border-color: #00d4ff55;
-        }
+.card-actions {
+    display: flex;
+    gap: 8px;
+}
 
-        .call-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 14px;
-        }
+.card-actions button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+}
 
-        .call-card-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+.card-actions button:hover {
+    opacity: 0.85;
+}
 
-        .call-number {
-            background-color: #00d4ff22;
-            color: #00d4ff;
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 600;
-        }
+.btn-copy {
+    background: #2ecc71;
+    color: #1a1a2e;
+}
 
-        .call-fields {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px 30px;
-        }
+.btn-copy-open {
+    background: #3498db;
+    color: white;
+}
 
-        .call-field {
-            display: flex;
-            flex-direction: column;
-        }
+.btn-copied {
+    background: #f39c12 !important;
+    color: white !important;
+}
 
-        .call-field.full-width {
-            grid-column: 1 / -1;
-        }
+/* Field Grid */
+.field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
 
-        .field-label {
-            font-size: 0.75em;
-            text-transform: uppercase;
-            color: #666;
-            letter-spacing: 0.5px;
-            margin-bottom: 3px;
-        }
+.field {
+    padding: 10px 14px;
+    background: #0d1b3a;
+    border-radius: 8px;
+}
 
-        .field-value {
-            font-size: 1em;
-            color: #e0e0e0;
-            word-break: break-word;
-        }
+.field.full-width {
+    grid-column: 1 / -1;
+}
 
-        .field-value.na {
-            color: #555;
-            font-style: italic;
-        }
+.field-label {
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    color: #666;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
 
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-            color: #555;
-        }
+.field-value {
+    font-size: 0.95rem;
+    color: #e0e0e0;
+    word-break: break-word;
+}
 
-        .empty-state .icon {
-            font-size: 4em;
-            margin-bottom: 15px;
-        }
+.field-value.na {
+    color: #555;
+    font-style: italic;
+}
 
-        .empty-state p {
-            font-size: 1.1em;
-            margin-bottom: 8px;
-        }
+/* Hidden file input */
+#fileInput {
+    display: none;
+}
 
-        .empty-state .hint {
-            font-size: 0.85em;
-            color: #444;
-        }
+/* Responsive */
+@media (max-width: 600px) {
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-        .session-badge {
-            text-align: center;
-            margin-bottom: 15px;
-        }
+    .controls button {
+        width: 100%;
+    }
 
-        .session-badge span {
-            background-color: rgba(243, 156, 18, 0.15);
-            color: #f39c12;
-            border: 1px solid rgba(243, 156, 18, 0.3);
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 0.8em;
-        }
+    .nav-links {
+        flex-direction: column;
+        align-items: center;
+    }
 
-        @media (max-width: 600px) {
-            .call-fields {
-                grid-template-columns: 1fr;
-            }
+    .field-grid {
+        grid-template-columns: 1fr;
+    }
 
-            .controls {
-                flex-direction: column;
-                align-items: center;
-            }
+    .field.full-width {
+        grid-column: 1;
+    }
 
-            .btn {
-                width: 100%;
-                max-width: 280px;
-                justify-content: center;
-            }
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-            .call-card-header {
-                flex-direction: column;
-                gap: 10px;
-            }
+    .card-actions {
+        width: 100%;
+    }
 
-            .call-card-actions {
-                width: 100%;
-            }
-
-            .call-card-actions .btn {
-                flex: 1;
-                justify-content: center;
-                max-width: none;
-            }
-        }
-    </style>
+    .card-actions button {
+        flex: 1;
+    }
+}
+</style>
 </head>
 <body>
 
-    <h1>📋 Call List Parser</h1>
-    <p class="subtitle">Paste HTML from your clipboard or upload an HTML file to extract call information</p>
-    <div class="nav-link">
-        <a href="https://charleshuff.github.io/POA/call_notes.html" target="_blank" rel="noopener noreferrer">
-            📝 Open Call Notes Page
-        </a>
-    </div>
-
-    <div class="controls">
-        <button class="btn btn-paste" id="paste-btn" onclick="pasteFromClipboard()">
-            📋 Paste from Clipboard
-        </button>
-        <button class="btn btn-file" onclick="document.getElementById('file-input').click()">
-            📁 Upload HTML File
-        </button>
-        <button class="btn btn-clear" onclick="clearAll()">
-            🗑️ Clear All
-        </button>
-        <input type="file" id="file-input" accept=".html,.htm" onchange="handleFileUpload(event)">
-    </div>
-
-    <div class="status-bar" id="status-bar"></div>
-
-    <div id="calls-output">
-        <div class="empty-state">
-            <div class="icon">📞</div>
-            <p>No calls loaded yet</p>
-            <p class="hint">Click "Paste from Clipboard" or "Upload HTML File" to get started</p>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>📋 Call List Parser</h1>
+        <p class="subtitle">Paste HTML from your clipboard or upload an HTML file to extract call information</p>
+        <div class="nav-links">
+            <a href="https://charleshuff.github.io/POA/call_notes.html" target="_blank" rel="noopener noreferrer">📝 Open Call Notes Page</a>
+            <a href="https://etms.pacificoffice.com/" target="_blank" rel="noopener noreferrer">🌐 Open ETMS</a>
         </div>
     </div>
 
-    <script>
-        const CALL_NOTES_URL = 'https://charleshuff.github.io/POA/call_notes.html';
-        const SESSION_KEY = 'callParserData';
+    <!-- Controls -->
+    <div class="controls">
+        <button class="btn-paste" id="btnPaste">📋 Paste from Clipboard</button>
+        <button class="btn-upload" id="btnUpload">📁 Upload HTML File</button>
+        <button class="btn-clear" id="btnClear">🗑️ Clear All</button>
+    </div>
+    <input type="file" id="fileInput" accept=".html,.htm">
 
-        /**
-         * Saves the parsed calls array to sessionStorage as a JSON string.
-         */
-        function saveToSession(calls) {
-            try {
-                sessionStorage.setItem(SESSION_KEY, JSON.stringify(calls));
-            } catch (err) {
-                console.warn('Failed to save to sessionStorage:', err);
-            }
-        }
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar"></div>
 
-        /**
-         * Loads parsed calls from sessionStorage. Returns an empty array if nothing is stored.
-         */
-        function loadFromSession() {
-            try {
-                const data = sessionStorage.getItem(SESSION_KEY);
-                if (data) {
-                    return JSON.parse(data);
+    <!-- Result Header -->
+    <div class="result-header" id="resultHeader"></div>
+
+    <!-- Call Cards Container -->
+    <div id="callCards"></div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    const STORAGE_KEY = 'callParserData';
+    const CALL_NOTES_URL = 'https://charleshuff.github.io/POA/call_notes.html';
+
+    let statusTimer = null;
+
+    // --- Utility: Escape HTML to prevent XSS ---
+    function escapeHTML(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    // --- Status Messages ---
+    function showStatus(message, type) {
+        const bar = document.getElementById('statusBar');
+        const cls = type === 'success' ? 'status-success' : type === 'error' ? 'status-error' : 'status-info';
+        bar.innerHTML = '<span class="status-msg ' + cls + '">' + escapeHTML(message) + '</span>';
+        if (statusTimer) clearTimeout(statusTimer);
+        statusTimer = setTimeout(function() {
+            bar.innerHTML = '';
+        }, 5000);
+    }
+
+    // --- Parse ETMS HTML ---
+    function parseETMS(htmlString) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlString, 'text/html');
+
+        // Extract technician name (global)
+        let techName = 'N/A';
+        const settingsPanel = doc.querySelector('#settingsPanel');
+        if (settingsPanel) {
+            const strong = settingsPanel.querySelector('strong');
+            if (strong) {
+                const raw = strong.textContent.trim();
+                const match = raw.match(/^(.+?)\s*\(/);
+                if (match) {
+                    techName = match[1].trim();
+                } else {
+                    techName = raw;
                 }
-            } catch (err) {
-                console.warn('Failed to load from sessionStorage:', err);
             }
-            return [];
-        }
-
-        /**
-         * Clears the parsed calls from sessionStorage.
-         */
-        function clearSession() {
-            try {
-                sessionStorage.removeItem(SESSION_KEY);
-            } catch (err) {
-                console.warn('Failed to clear sessionStorage:', err);
+        } else {
+            // Fallback: look for <a href="#settingsPanel">
+            const fallbackLink = doc.querySelector('a[href="#settingsPanel"]');
+            if (fallbackLink) {
+                const raw = fallbackLink.textContent.trim();
+                const match = raw.match(/^(.+?)\s*\(/);
+                if (match) {
+                    techName = match[1].trim();
+                } else {
+                    techName = raw;
+                }
             }
         }
 
-        /**
-         * Builds the formatted text string for a call entry.
-         */
-        function buildCallText(call) {
-            return [
-                `Title (Customer): ${call.title}`,
-                `Contact: ${call.contact}`,
-                `Item No. (Model): ${call.itemModel}`,
-                `Serial Number: ${call.serialNumber}`,
-                `Equipment ID: ${call.equipmentID}`
-            ].join('\n');
-        }
+        // Extract calls
+        const callItems = doc.querySelectorAll('li[data-call-id]');
+        const calls = [];
 
-        /**
-         * Parses HTML to extract call data by finding <li> elements
-         * with a 'data-call-id' attribute and pulling title, contact,
-         * item number, serial number, and equipment ID from each one.
-         */
-        function parseCallsHTML(htmlString) {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlString, 'text/html');
+        callItems.forEach(function(li, index) {
+            // Title (Customer)
+            let title = 'N/A';
+            const h3 = li.querySelector('h3');
+            if (h3) {
+                title = h3.textContent.trim() || 'N/A';
+            }
 
-            const callElements = doc.querySelectorAll('li[data-call-id]');
-            const calls = [];
+            // Get all <p> elements inside the <li>
+            const paragraphs = li.querySelectorAll('p');
 
-            callElements.forEach((call) => {
-                const titleTag = call.querySelector('h3');
-                const title = titleTag ? titleTag.textContent.trim() : 'N/A';
+            // Contact
+            let contact = 'N/A';
+            // City
+            let city = 'N/A';
+            // Item No.(Model), Serial, Equipment
+            let itemNo = 'N/A';
+            let serial = 'N/A';
+            let equipmentId = 'N/A';
 
-                const phoneRegex = /\d{3}-\d{3}-\d{4}/;
-                let contact = 'N/A';
+            paragraphs.forEach(function(p) {
+                const text = p.textContent || '';
+                const style = p.getAttribute('style') || '';
 
-                const walker = document.createTreeWalker(
-                    call,
-                    NodeFilter.SHOW_TEXT,
-                    null,
-                    false
-                );
-
-                let textNode;
-                while ((textNode = walker.nextNode())) {
-                    if (phoneRegex.test(textNode.textContent)) {
-                        contact = textNode.textContent.trim();
-                        break;
+                // Check for Item No.(Model) line
+                if (text.indexOf('Item No.(Model):') !== -1) {
+                    const regex = /Item No\.\(Model\):\s*(.*?)\s*Serial:\s*(.*?)\s*Equipment:\s*(.*)/;
+                    const m = text.match(regex);
+                    if (m) {
+                        itemNo = m[1].trim() || 'N/A';
+                        serial = m[2].trim() || 'N/A';
+                        equipmentId = m[3].trim() || 'N/A';
                     }
-                }
-
-                let itemModel = 'N/A';
-                let serialNumber = 'N/A';
-                let equipmentID = 'N/A';
-
-                const paragraphs = call.querySelectorAll('p');
-                for (const p of paragraphs) {
-                    const pText = p.textContent.replace(/\s+/g, ' ').trim();
-                    if (pText.includes('Item No.(Model):')) {
-                        const match = pText.match(
-                            /Item No\.\(Model\):\s*(.*?)\s*Serial:\s*(.*?)\s*Equipment:\s*(.*)/
-                        );
-                        if (match) {
-                            itemModel = match[1].trim();
-                            serialNumber = match[2].trim();
-                            equipmentID = match[3].trim();
-                        }
-                        break;
-                    }
-                }
-
-                calls.push({
-                    title,
-                    contact,
-                    itemModel,
-                    serialNumber,
-                    equipmentID
-                });
-            });
-
-            return calls;
-        }
-
-        /**
-         * Renders the parsed calls as styled cards.
-         * @param {Array} calls - The calls to render
-         * @param {boolean} fromSession - Whether the data was restored from sessionStorage
-         */
-        function renderCalls(calls, fromSession = false) {
-            const output = document.getElementById('calls-output');
-
-            if (calls.length === 0) {
-                output.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">⚠️</div>
-                        <p>No calls found in the HTML</p>
-                        <p class="hint">Make sure the HTML contains &lt;li&gt; elements with a <code>data-call-id</code> attribute</p>
-                    </div>
-                `;
-                if (!fromSession) {
-                    showStatus('No calls found in the provided HTML.', 'error');
-                }
-                return;
-            }
-
-            let html = '';
-
-            if (fromSession) {
-                html += `<div class="session-badge"><span>♻️ Restored from session</span></div>`;
-            }
-
-            html += `<div class="calls-count">Found <span>${calls.length}</span> call(s)</div>`;
-            html += '<div class="calls-container">';
-
-            calls.forEach((call, index) => {
-                const naClass = (val) => val === 'N/A' ? 'na' : '';
-
-                html += `
-                    <div class="call-card" id="call-${index}">
-                        <div class="call-card-header">
-                            <span class="call-number">Call #${index + 1}</span>
-                            <div class="call-card-actions">
-                                <button class="btn btn-copy" onclick="copyCallToClipboard(${index})" id="copy-btn-${index}">
-                                    📋 Copy to Clipboard
-                                </button>
-                                <button class="btn btn-open" onclick="copyAndOpenCallNotes(${index})" id="open-btn-${index}">
-                                    🔗 Copy &amp; Open Call Notes
-                                </button>
-                            </div>
-                        </div>
-                        <div class="call-fields">
-                            <div class="call-field full-width">
-                                <span class="field-label">Title (Customer)</span>
-                                <span class="field-value ${naClass(call.title)}">${escapeHtml(call.title)}</span>
-                            </div>
-                            <div class="call-field">
-                                <span class="field-label">Contact</span>
-                                <span class="field-value ${naClass(call.contact)}">${escapeHtml(call.contact)}</span>
-                            </div>
-                            <div class="call-field">
-                                <span class="field-label">Item No. (Model)</span>
-                                <span class="field-value ${naClass(call.itemModel)}">${escapeHtml(call.itemModel)}</span>
-                            </div>
-                            <div class="call-field">
-                                <span class="field-label">Serial Number</span>
-                                <span class="field-value ${naClass(call.serialNumber)}">${escapeHtml(call.serialNumber)}</span>
-                            </div>
-                            <div class="call-field">
-                                <span class="field-label">Equipment ID</span>
-                                <span class="field-value ${naClass(call.equipmentID)}">${escapeHtml(call.equipmentID)}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            html += '</div>';
-            output.innerHTML = html;
-
-            if (!fromSession) {
-                showStatus(`Successfully parsed ${calls.length} call(s).`, 'success');
-            }
-        }
-
-        let parsedCalls = [];
-
-        async function copyCallToClipboard(index) {
-            const call = parsedCalls[index];
-            if (!call) return;
-
-            const text = buildCallText(call);
-
-            try {
-                await navigator.clipboard.writeText(text);
-                const btn = document.getElementById(`copy-btn-${index}`);
-                btn.textContent = '✅ Copied!';
-                btn.classList.add('copied');
-                setTimeout(() => {
-                    btn.textContent = '📋 Copy to Clipboard';
-                    btn.classList.remove('copied');
-                }, 2000);
-            } catch (err) {
-                showStatus('Failed to copy to clipboard. Check browser permissions.', 'error');
-                console.error('Clipboard write failed:', err);
-            }
-        }
-
-        /**
-         * Copies the call info to clipboard, then opens the Call Notes page in a new tab.
-         */
-        async function copyAndOpenCallNotes(index) {
-            const call = parsedCalls[index];
-            if (!call) return;
-
-            const text = buildCallText(call);
-
-            try {
-                await navigator.clipboard.writeText(text);
-
-                const btn = document.getElementById(`open-btn-${index}`);
-                const originalText = btn.innerHTML;
-                btn.textContent = '✅ Copied! Opening...';
-                btn.classList.add('copied');
-
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.classList.remove('copied');
-                }, 2000);
-
-                window.open(CALL_NOTES_URL, '_blank', 'noopener,noreferrer');
-
-            } catch (err) {
-                showStatus('Clipboard copy failed, but opening Call Notes anyway.', 'error');
-                window.open(CALL_NOTES_URL, '_blank', 'noopener,noreferrer');
-                console.error('Clipboard write failed:', err);
-            }
-        }
-
-        async function pasteFromClipboard() {
-            try {
-                const clipboardText = await navigator.clipboard.readText();
-                if (!clipboardText || clipboardText.trim().length === 0) {
-                    showStatus('Clipboard is empty.', 'error');
                     return;
                 }
 
-                parsedCalls = parseCallsHTML(clipboardText);
-                saveToSession(parsedCalls);
-                renderCalls(parsedCalls);
-            } catch (err) {
-                showStatus(
-                    'Could not read clipboard. Please allow clipboard access or try uploading a file instead.',
-                    'error'
-                );
-                console.error('Clipboard read failed:', err);
+                // Check for City (contains | but not "Call Type")
+                if (text.indexOf('|') !== -1 && text.indexOf('Call Type') === -1) {
+                    const parts = text.split('|');
+                    if (parts.length >= 2) {
+                        const afterPipe = parts[1].trim();
+                        const cityMatch = afterPipe.match(/^([A-Za-z\s.'\-]+),/);
+                        if (cityMatch) {
+                            city = cityMatch[1].trim();
+                        }
+                    }
+                    return;
+                }
+
+                // Check for Contact
+                if (style.indexOf('white-space') !== -1 && style.indexOf('normal') !== -1) {
+                    // Must contain a <strong> child
+                    const strongEl = p.querySelector('strong');
+                    if (!strongEl) return;
+
+                    // Must NOT contain these strings
+                    if (text.indexOf('|') !== -1) return;
+                    if (text.indexOf('Description:') !== -1) return;
+                    if (text.indexOf('Equipment Note:') !== -1) return;
+                    if (text.indexOf('Hours:') !== -1) return;
+                    if (text.indexOf('Item No.(Model):') !== -1) return;
+
+                    const contactText = strongEl.textContent.trim();
+                    if (/^[\s\-]+$/.test(contactText)) {
+                        contact = 'N/A';
+                    } else {
+                        contact = contactText || 'N/A';
+                    }
+                }
+            });
+
+            calls.push({
+                title: title,
+                contact: contact,
+                technician: techName,
+                city: city,
+                itemNo: itemNo,
+                serial: serial,
+                equipmentId: equipmentId
+            });
+        });
+
+        return calls;
+    }
+
+    // --- Format call for clipboard ---
+    function formatCallText(call) {
+        return 'Title (Customer): ' + call.title + '\n' +
+               'Contact: ' + call.contact + '\n' +
+               'Technician: ' + call.technician + '\n' +
+               'City: ' + call.city + '\n' +
+               'Item No. (Model): ' + call.itemNo + '\n' +
+               'Serial Number: ' + call.serial + '\n' +
+               'Equipment ID: ' + call.equipmentId;
+    }
+
+    // --- Render call cards ---
+    function renderCalls(calls, restored) {
+        const container = document.getElementById('callCards');
+        const header = document.getElementById('resultHeader');
+
+        container.innerHTML = '';
+        header.innerHTML = '';
+
+        if (calls.length === 0) {
+            container.innerHTML =
+                '<div class="empty-state">' +
+                    '<div class="emoji">⚠️</div>' +
+                    '<div class="msg">No calls found in the HTML</div>' +
+                    '<div class="hint">Expected &lt;li data-call-id="..."&gt; elements in the source HTML</div>' +
+                '</div>';
+            return;
+        }
+
+        let headerHTML = '';
+        if (restored) {
+            headerHTML += '<div class="session-badge">♻️ Restored from session</div><br>';
+        }
+        headerHTML += '<span class="call-count">' + calls.length + ' call' + (calls.length !== 1 ? 's' : '') + ' loaded</span>';
+        header.innerHTML = headerHTML;
+
+        calls.forEach(function(call, i) {
+            const num = i + 1;
+            const card = document.createElement('div');
+            card.className = 'call-card';
+
+            function fieldHTML(label, value, fullWidth) {
+                const isNA = value === 'N/A';
+                return '<div class="field' + (fullWidth ? ' full-width' : '') + '">' +
+                    '<div class="field-label">' + escapeHTML(label) + '</div>' +
+                    '<div class="field-value' + (isNA ? ' na' : '') + '">' + escapeHTML(value) + '</div>' +
+                '</div>';
             }
+
+            card.innerHTML =
+                '<div class="card-header">' +
+                    '<span class="call-badge">Call #' + num + '</span>' +
+                    '<div class="card-actions">' +
+                        '<button class="btn-copy" data-index="' + i + '">📋 Copy to Clipboard</button>' +
+                        '<button class="btn-copy-open" data-index="' + i + '">🔗 Copy &amp; Open Call Notes</button>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="field-grid">' +
+                    fieldHTML('Title (Customer)', call.title, true) +
+                    fieldHTML('Contact', call.contact, false) +
+                    fieldHTML('Technician', call.technician, false) +
+                    fieldHTML('City', call.city, false) +
+                    fieldHTML('Item No. (Model)', call.itemNo, false) +
+                    fieldHTML('Serial Number', call.serial, false) +
+                    fieldHTML('Equipment ID', call.equipmentId, false) +
+                '</div>';
+
+            container.appendChild(card);
+        });
+
+        // Attach copy handlers
+        container.querySelectorAll('.btn-copy').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var idx = parseInt(btn.getAttribute('data-index'), 10);
+                var text = formatCallText(calls[idx]);
+                try {
+                    navigator.clipboard.writeText(text).then(function() {
+                        btn.textContent = '✅ Copied!';
+                        btn.classList.add('btn-copied');
+                        setTimeout(function() {
+                            btn.textContent = '📋 Copy to Clipboard';
+                            btn.classList.remove('btn-copied');
+                        }, 2000);
+                    }).catch(function() {
+                        showStatus('Failed to copy to clipboard', 'error');
+                    });
+                } catch (e) {
+                    showStatus('Clipboard API not available', 'error');
+                }
+            });
+        });
+
+        container.querySelectorAll('.btn-copy-open').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var idx = parseInt(btn.getAttribute('data-index'), 10);
+                var text = formatCallText(calls[idx]);
+                try {
+                    navigator.clipboard.writeText(text).then(function() {
+                        btn.textContent = '✅ Copied! Opening...';
+                        btn.classList.add('btn-copied');
+                        window.open(CALL_NOTES_URL, '_blank', 'noopener,noreferrer');
+                        setTimeout(function() {
+                            btn.innerHTML = '🔗 Copy &amp; Open Call Notes';
+                            btn.classList.remove('btn-copied');
+                        }, 2000);
+                    }).catch(function() {
+                        showStatus('Failed to copy to clipboard', 'error');
+                    });
+                } catch (e) {
+                    showStatus('Clipboard API not available', 'error');
+                }
+            });
+        });
+    }
+
+    // --- Show empty state ---
+    function showEmpty() {
+        const container = document.getElementById('callCards');
+        const header = document.getElementById('resultHeader');
+        header.innerHTML = '';
+        container.innerHTML =
+            '<div class="empty-state">' +
+                '<div class="emoji">📞</div>' +
+                '<div class="msg">No calls loaded yet</div>' +
+                '<div class="hint">Click \'Paste from Clipboard\' or \'Upload HTML File\' to get started</div>' +
+            '</div>';
+    }
+
+    // --- Session Storage ---
+    function saveCalls(calls) {
+        try {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(calls));
+        } catch (e) {
+            // silently fail
         }
+    }
 
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const htmlContent = e.target.result;
-                parsedCalls = parseCallsHTML(htmlContent);
-                saveToSession(parsedCalls);
-                renderCalls(parsedCalls);
-            };
-            reader.onerror = function () {
-                showStatus('Failed to read the file.', 'error');
-            };
-            reader.readAsText(file);
-
-            event.target.value = '';
-        }
-
-        function clearAll() {
-            parsedCalls = [];
-            clearSession();
-            document.getElementById('calls-output').innerHTML = `
-                <div class="empty-state">
-                    <div class="icon">📞</div>
-                    <p>No calls loaded yet</p>
-                    <p class="hint">Click "Paste from Clipboard" or "Upload HTML File" to get started</p>
-                </div>
-            `;
-            document.getElementById('status-bar').innerHTML = '';
-        }
-
-        function showStatus(message, type) {
-            const statusBar = document.getElementById('status-bar');
-            statusBar.innerHTML = `<span class="message ${type}">${escapeHtml(message)}</span>`;
-            setTimeout(() => {
-                statusBar.innerHTML = '';
-            }, 5000);
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        /**
-         * On page load, check sessionStorage for previously parsed calls
-         * and restore them automatically.
-         */
-        (function init() {
-            const savedCalls = loadFromSession();
-            if (savedCalls.length > 0) {
-                parsedCalls = savedCalls;
-                renderCalls(parsedCalls, true);
+    function loadCalls() {
+        try {
+            const data = sessionStorage.getItem(STORAGE_KEY);
+            if (data) {
+                return JSON.parse(data);
             }
-        })();
-    </script>
+        } catch (e) {
+            // silently fail
+        }
+        return null;
+    }
 
+    function clearCalls() {
+        try {
+            sessionStorage.removeItem(STORAGE_KEY);
+        } catch (e) {
+            // silently fail
+        }
+    }
+
+    // --- Handle parsed HTML ---
+    function handleParsedHTML(htmlString, source) {
+        var calls = parseETMS(htmlString);
+        saveCalls(calls);
+        renderCalls(calls, false);
+        if (calls.length > 0) {
+            showStatus('✅ Successfully parsed ' + calls.length + ' call' + (calls.length !== 1 ? 's' : '') + ' from ' + source, 'success');
+        } else {
+            showStatus('⚠️ No calls found in the provided HTML', 'error');
+        }
+    }
+
+    // --- Event Listeners ---
+
+    // Paste from Clipboard
+    document.getElementById('btnPaste').addEventListener('click', function() {
+        try {
+            navigator.clipboard.readText().then(function(text) {
+                if (!text || text.trim() === '') {
+                    showStatus('Clipboard is empty', 'error');
+                    return;
+                }
+                handleParsedHTML(text, 'clipboard');
+            }).catch(function(err) {
+                showStatus('Failed to read clipboard: ' + err.message, 'error');
+            });
+        } catch (e) {
+            showStatus('Clipboard API not available. Try uploading a file instead.', 'error');
+        }
+    });
+
+    // Upload HTML File
+    document.getElementById('btnUpload').addEventListener('click', function() {
+        document.getElementById('fileInput').click();
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            handleParsedHTML(ev.target.result, 'file upload');
+        };
+        reader.onerror = function() {
+            showStatus('Failed to read the file', 'error');
+        };
+        reader.readAsText(file);
+        // Reset so same file can be re-uploaded
+        e.target.value = '';
+    });
+
+    // Clear All
+    document.getElementById('btnClear').addEventListener('click', function() {
+        clearCalls();
+        showEmpty();
+        showStatus('🗑️ All data cleared', 'info');
+    });
+
+    // --- Init: Check session storage ---
+    var saved = loadCalls();
+    if (saved && saved.length > 0) {
+        renderCalls(saved, true);
+        showStatus('♻️ Restored ' + saved.length + ' call' + (saved.length !== 1 ? 's' : '') + ' from session', 'info');
+    } else {
+        showEmpty();
+    }
+
+})();
+</script>
 </body>
 </html>
 

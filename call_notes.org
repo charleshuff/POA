@@ -264,21 +264,22 @@ Total: {number with commas}
 - Use =pdf-lib= (=PDFLib= global) to load and fill the PDF.
 - Map these *exact* PDF field names to web form values:
 
-| PDF Field Name | Web Form Source     |
-|----------------+---------------------|
-| customer       | Customer Name       |
-| equipID        | New Equipment ID    |
-| model          | Model               |
-| black          | Black & White count |
-| color          | Color count         |
-| total          | bw + color as string|
-| ip             | IP Address          |
-| subnet         | Subnet              |
-| gateway        | Gateway             |
-| dns1           | DNS 1               |
-| dns2           | DNS 2               |
-| city           | City                |
-| techName       | Tech Name           |
+| PDF Field Name | Web Form Source      |
+|----------------+----------------------|
+| customer       | Customer Name        |
+| equipID        | New Equipment ID     |
+| model          | Model                |
+| black          | Black & White count  |
+| color          | Color count          |
+| total          | bw + color as string |
+| ip             | IP Address           |
+| subnet         | Subnet               |
+| gateway        | Gateway              |
+| dns1           | DNS 1                |
+| dns2           | DNS 2                |
+| city           | City                 |
+| techName       | Tech Name            |
+| location       | Location of Machine  |
 
 - Use =form.getTextField(name).setText(value)= for each field.
 - Wrap each field fill in =try/catch=; log warnings to console for mismatches.
