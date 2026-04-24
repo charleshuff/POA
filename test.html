@@ -16,491 +16,740 @@
                             <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equipment Replacement Info</title>
-    <style>
-        :root {
-            --bg: #f8f9fa;
-            --card: #ffffff;
-            --border: #dee2e6;
-            --focus-ring: #74b9ff;
-            --text: #333333;
-            --hint: #6c757d;
-            --success: #2ecc71;
-            --blue: #3498db;
-            --gold: #f1c40f;
-            --clear: #e67e22;
-            --purple: #9b59b6;
-        }
-        body {
-            background: var(--bg);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
-            margin: 0;
-            padding: 20px;
-            color: var(--text);
-        }
-        .container {
-            background: var(--card);
-            max-width: 640px;
-            margin: 0 auto;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        h1 { text-align: center; margin: 0 0 15px; font-size: 1.5rem; }
-        h2 { border-bottom: 2px solid var(--border); padding-bottom: 5px; margin: 20px 0 10px; }
-        h3 { margin: 18px 0 10px; }
-        h4 { margin: 15px 0 8px; }
-        .hint { font-size: 0.85rem; color: var(--hint); margin: 0 0 10px; display: block; }
-        input, select, textarea {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px;
-            width: 100%;
-            box-sizing: border-box;
-            margin: 4px 0 10px;
-            font-family: inherit;
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--focus-ring);
-            box-shadow: 0 0 0 3px rgba(116, 185, 255, 0.3);
-            outline: none;
-        }
-        select { -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path fill='%23333' d='M2 4l4 4 4-4z'/></svg>"); background-repeat: no-repeat; background-position: right 12px center; }
-        input[type="radio"] { -webkit-appearance: radio; width: auto; margin-right: 6px; cursor: pointer; }
-        .radio-group { display: flex; gap: 15px; margin: 5px 0 12px; align-items: center; }
-        .page-counts { display: flex; gap: 10px; margin-bottom: 5px; }
-        #totalDisplay {
-            background: #e9ecef;
-            border-radius: 8px;
-            padding: 8px 12px;
-            text-align: center;
-            font-weight: bold;
-            color: #0066cc;
-            margin-bottom: 10px;
-        }
-        .link-list { list-style: none; padding: 0; margin: 0 0 10px; }
-        .link-list li { margin-bottom: 5px; }
-        .link-list a { color: var(--blue); text-decoration: none; font-weight: 500; }
-        .link-list a:hover { text-decoration: underline; }
-        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
-        button {
-            border: none;
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-size: 0.95rem;
-            cursor: pointer;
-            flex: 1;
-            min-width: 120px;
-            transition: transform 0.1s;
-            font-weight: 500;
-        }
-        button:active { transform: scale(0.98); }
-        #pasteBtn { background: var(--purple); color: #fff; display: block; margin: 0 auto 10px; width: auto; }
-        .btn-generate { background: var(--success); color: #fff; }
-        .btn-copy { background: var(--blue); color: #fff; }
-        .btn-download { background: var(--gold); color: #333; }
-        .btn-clear { background: var(--clear); color: #fff; }
-        #outputBox { font-family: monospace; background: #eee; min-height: 120px; resize: vertical; }
-        .hidden { display: none; }
-        .flash { animation: flashBg 1.5s ease-out; }
-        @keyframes flashBg {
-            0% { background-color: #dcdcdc; }
-            100% { background-color: transparent; }
-        }
-        .toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
-        .toast { background: #2d3436; color: #fff; padding: 10px 20px; border-radius: 20px; opacity: 0; transform: translateY(20px); transition: all 0.3s ease; margin-bottom: 8px; pointer-events: auto; font-size: 0.9rem; max-width: 90vw; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        @media (max-width: 480px) {
-            body { padding: 10px; }
-            .container { padding: 15px; }
-            .btn-group { flex-direction: column; }
-            button { width: 100%; min-width: auto; }
-            .page-counts { flex-direction: column; gap: 5px; }
-            .radio-group { flex-direction: column; gap: 5px; align-items: flex-start; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equipment Replacement Info</title>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+    background: #f8f9fa;
+    color: #222;
+    padding: 20px 10px 60px;
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    padding: 32px 28px;
+  }
+
+  h1 { text-align: center; font-size: 1.5rem; margin-bottom: 8px; }
+
+  h2 { font-size: 1.25rem; border-bottom: 2px solid #dee2e6; padding-bottom: 6px; margin-top: 28px; margin-bottom: 14px; }
+  h3 { font-size: 1.1rem; margin-top: 22px; margin-bottom: 10px; }
+  h4 { font-size: 1rem; margin-top: 16px; margin-bottom: 8px; color: #444; }
+
+  label { display: block; font-weight: 600; margin-top: 12px; margin-bottom: 4px; font-size: 0.92rem; }
+
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: box-shadow 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #fff;
+  }
+
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  input[type="email"]:focus,
+  input[type="number"]:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: #74b9ff;
+    box-shadow: 0 0 0 3px rgba(116,185,255,0.35);
+  }
+
+  textarea { min-height: 60px; resize: vertical; }
+
+  input[type="radio"] {
+    -webkit-appearance: radio !important;
+    appearance: radio !important;
+    margin-right: 4px;
+  }
+
+  .radio-group { display: flex; gap: 18px; align-items: center; margin-top: 4px; }
+  .radio-group label { display: inline-flex; align-items: center; margin-top: 0; font-weight: 400; }
+
+  .field-row {
+    display: flex;
+    gap: 12px;
+  }
+  .field-row > div { flex: 1; }
+
+  .total-display {
+    margin-top: 10px;
+    background: #f1f3f5;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 1rem;
+    text-align: center;
+  }
+  .total-display span { font-weight: 700; color: #0984e3; }
+
+  .btn-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+
+  .btn-group button {
+    flex: 1 1 auto;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+    transition: transform 0.1s;
+  }
+  .btn-group button:active { transform: scale(0.98); }
+
+  .btn-generate { background: #00b894; }
+  .btn-copy { background: #0984e3; }
+  .btn-download { background: #fdcb6e; color: #222 !important; }
+  .btn-clear { background: #e17055; }
+
+  .btn-paste {
+    display: block;
+    margin: 10px auto;
+    padding: 12px 22px;
+    background: #6c5ce7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .btn-paste:active { transform: scale(0.98); }
+
+  .hint { text-align: center; font-size: 0.82rem; color: #888; margin-top: 4px; }
+  .small-hint { font-size: 0.82rem; color: #999; margin-bottom: 4px; }
+
+  .links-list { list-style: none; padding: 0; margin: 0 0 10px 0; }
+  .links-list li { margin-bottom: 4px; }
+  .links-list a { color: #0984e3; text-decoration: none; font-weight: 500; }
+  .links-list a:hover { text-decoration: underline; }
+
+  #outputBox {
+    font-family: 'Courier New', Courier, monospace;
+    background: #f1f3f5;
+    min-height: 120px;
+  }
+
+  .hidden { display: none !important; }
+
+  @keyframes flashHighlight {
+    0% { background-color: #dee2e6; }
+    100% { background-color: #fff; }
+  }
+  .flash { animation: flashHighlight 1.5s ease; }
+
+  /* Toast */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(30px);
+    background: #2d3436;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Mobile */
+  @media (max-width: 480px) {
+    .container { padding: 18px 12px; }
+    .btn-group { flex-direction: column; }
+    .btn-group button { width: 100%; }
+    .field-row { flex-direction: column; gap: 0; }
+  }
+</style>
 </head>
 <body>
+
 <div class="container">
-    <h1>Equipment Replacement Info</h1>
-    <button id="pasteBtn">📋 Paste from Clipboard</button>
-    <span class="hint">Paste work order info to auto-fill Customer, Contact, Model, Serial, and Equipment ID</span>
 
-    <h2>Call Notes</h2>
-    <input type="text" id="customerName" placeholder="Customer Name">
-    <input type="text" id="poc" placeholder="Point of Contact">
-    <input type="text" id="itPerson" placeholder="IT Person">
-    <input type="tel" id="itPhone" placeholder="Phone Number">
-    <input type="email" id="itEmail" placeholder="Email">
-    <input type="text" id="location" placeholder="Location of Machine">
-    <input type="text" id="model" placeholder="Model">
-    <input type="text" id="newEquipmentId" placeholder="New Equipment ID">
-    <input type="text" id="serialNumber" placeholder="Serial Number">
-    <input type="text" id="equipmentId" placeholder="Equipment ID Being Replaced">
+  <!-- 1. Title -->
+  <h1>Equipment Replacement Info</h1>
 
-    <h3>IP Info</h3>
-    <select id="ipMethod">
-        <option value="">IP Method</option>
-        <option value="Reused">Reused</option>
-        <option value="Mac address reservation">Mac address reservation</option>
-        <option value="DHCP">DHCP</option>
-        <option value="IP scanner">IP scanner</option>
-        <option value="Other">Other</option>
-    </select>
-    <input type="text" id="ipOther" class="hidden" placeholder="Specify Other">
-    <input type="text" id="ip" placeholder="IP Address">
-    <input type="text" id="subnet" placeholder="Subnet">
-    <input type="text" id="gateway" placeholder="Gateway">
-    <input type="text" id="dns1" placeholder="DNS 1">
-    <input type="text" id="dns2" placeholder="DNS 2">
-    <input type="text" id="dns3" placeholder="DNS 3">
+  <!-- 2. Paste from Clipboard -->
+  <button class="btn-paste" id="pasteBtn">📋 Paste from Clipboard</button>
+  <p class="hint">Paste work order info to auto-fill Customer, Contact, Model, Serial, and Equipment ID</p>
 
-    <h3>Settings Transfer</h3>
-    <textarea id="settingsTransfer" rows="3" placeholder="How were settings transferred?"></textarea>
+  <!-- 3. Call Notes -->
+  <h2>Call Notes</h2>
+  <label for="customerName">Customer Name</label>
+  <input type="text" id="customerName">
 
-    <h3>Scanning Info</h3>
-    <select id="scanType">
-        <option value="">Scan to Folder Type</option>
-        <option value="SMB">SMB</option>
-        <option value="WebDAV">WebDAV</option>
-        <option value="FTP">FTP</option>
-    </select>
-    <div class="radio-group">
-        <span>Fax?</span>
-        <label><input type="radio" name="fax" value="Yes"> Yes</label>
-        <label><input type="radio" name="fax" value="No"> No</label>
+  <label for="poc">Point of Contact</label>
+  <input type="text" id="poc">
+
+  <label for="itPerson">IT Person</label>
+  <input type="text" id="itPerson">
+
+  <label for="itPhone">Phone Number</label>
+  <input type="tel" id="itPhone">
+
+  <label for="itEmail">Email</label>
+  <input type="email" id="itEmail">
+
+  <label for="location">Location of Machine</label>
+  <input type="text" id="location">
+
+  <label for="model">Model</label>
+  <input type="text" id="model">
+
+  <label for="newEquipmentId">New Equipment ID</label>
+  <input type="text" id="newEquipmentId">
+
+  <label for="serialNumber">Serial Number</label>
+  <input type="text" id="serialNumber">
+
+  <label for="equipmentId">Equipment ID Being Replaced</label>
+  <input type="text" id="equipmentId">
+
+  <!-- 4. IP Info -->
+  <h3>IP Info</h3>
+  <label for="ipMethod">IP Method</label>
+  <select id="ipMethod">
+    <option value=""></option>
+    <option value="Reused">Reused</option>
+    <option value="Mac address reservation">Mac address reservation</option>
+    <option value="DHCP">DHCP</option>
+    <option value="IP scanner">IP scanner</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <div id="otherIpMethodWrapper" class="hidden">
+    <label for="ipMethodOther">Specify Other</label>
+    <input type="text" id="ipMethodOther">
+  </div>
+
+  <label for="ip">IP Address</label>
+  <input type="text" id="ip">
+
+  <label for="subnet">Subnet</label>
+  <input type="text" id="subnet">
+
+  <label for="gateway">Gateway</label>
+  <input type="text" id="gateway">
+
+  <label for="dns1">DNS 1</label>
+  <input type="text" id="dns1">
+
+  <label for="dns2">DNS 2</label>
+  <input type="text" id="dns2">
+
+  <label for="dns3">DNS 3</label>
+  <input type="text" id="dns3">
+
+  <!-- 5. Settings Transfer -->
+  <h3>Settings Transfer</h3>
+  <label for="settingsTransfer">How were settings transferred?</label>
+  <textarea id="settingsTransfer"></textarea>
+
+  <!-- 6. Scanning Info -->
+  <h3>Scanning Info</h3>
+  <label for="scanFolderType">Scan to Folder Type</label>
+  <select id="scanFolderType">
+    <option value=""></option>
+    <option value="SMB">SMB</option>
+    <option value="WebDAV">WebDAV</option>
+    <option value="FTP">FTP</option>
+  </select>
+
+  <label>Fax?</label>
+  <div class="radio-group">
+    <label><input type="radio" name="fax" value="Yes"> Yes</label>
+    <label><input type="radio" name="fax" value="No"> No</label>
+  </div>
+
+  <!-- 7. SMTP -->
+  <h4>SMTP</h4>
+  <label for="smtpServer">Server</label>
+  <input type="text" id="smtpServer">
+
+  <label for="smtpPort">Port</label>
+  <input type="text" id="smtpPort">
+
+  <label for="smtpSsl">SSL/TLS</label>
+  <select id="smtpSsl">
+    <option value=""></option>
+    <option value="None">None</option>
+    <option value="SSL">SSL</option>
+    <option value="TLS">TLS</option>
+    <option value="STARTTLS">STARTTLS</option>
+  </select>
+
+  <label for="smtpEmail">Email Address</label>
+  <input type="text" id="smtpEmail">
+
+  <!-- 8. Reporting -->
+  <h3>Reporting</h3>
+  <ul class="links-list">
+    <li><a href="https://portal.mpsmonitor.com/" target="_blank" rel="noopener">MPS Monitor Portal ↗</a></li>
+    <li><a href="https://form.jotform.com/250095273606153" target="_blank" rel="noopener">Jot Form ↗</a></li>
+    <li><a href="https://apps.kmbizhubvcare.com/vcaremobile/app/index.html#login?backUri=search" target="_blank" rel="noopener">Vcare ↗</a></li>
+    <li><a href="https://pacificoa.sharepoint.com/sites/POALearningandDevelopment/SitePages/Remote-Monitoring-Tools.aspx" target="_blank" rel="noopener">Sharepoint ↗</a></li>
+  </ul>
+
+  <label>MPS?</label>
+  <div class="radio-group">
+    <label><input type="radio" name="mps" value="Yes"> Yes</label>
+    <label><input type="radio" name="mps" value="No"> No</label>
+  </div>
+
+  <label>Was manufacturer reporting enabled?</label>
+  <div class="radio-group">
+    <label><input type="radio" name="mfgReporting" value="Yes"> Yes</label>
+    <label><input type="radio" name="mfgReporting" value="No"> No</label>
+  </div>
+
+  <!-- 9. Page Counts -->
+  <h4>Page Counts</h4>
+  <div class="field-row">
+    <div>
+      <label for="bwCount">Black &amp; White</label>
+      <input type="number" id="bwCount" min="0">
     </div>
-
-    <h4>SMTP</h4>
-    <input type="text" id="smtpServer" placeholder="Server">
-    <input type="text" id="smtpPort" placeholder="Port">
-    <select id="smtpSSL">
-        <option value="">SSL/TLS</option>
-        <option value="None">None</option>
-        <option value="SSL">SSL</option>
-        <option value="TLS">TLS</option>
-        <option value="STARTTLS">STARTTLS</option>
-    </select>
-    <input type="email" id="smtpEmail" placeholder="Email Address">
-
-    <h3>Reporting</h3>
-    <ul class="link-list">
-        <li><a href="https://portal.mpsmonitor.com/" target="_blank" rel="noopener">MPS Monitor Portal ↗</a></li>
-        <li><a href="https://form.jotform.com/250095273606153" target="_blank" rel="noopener">Jot Form ↗</a></li>
-    </ul>
-    <div class="radio-group">
-        <span>MPS?</span>
-        <label><input type="radio" name="mps" value="Yes"> Yes</label>
-        <label><input type="radio" name="mps" value="No"> No</label>
+    <div>
+      <label for="colorCount">Color</label>
+      <input type="number" id="colorCount" min="0">
     </div>
-    <div class="radio-group">
-        <span>Was manufacturer reporting enabled?</span>
-        <label><input type="radio" name="mfgReporting" value="Yes"> Yes</label>
-        <label><input type="radio" name="mfgReporting" value="No"> No</label>
-    </div>
+  </div>
+  <div class="total-display">Total: <span id="totalDisplay">0</span></div>
 
-    <h4>Page Counts</h4>
-    <div class="page-counts">
-        <input type="number" id="bwCount" placeholder="Black & White">
-        <input type="number" id="colorCount" placeholder="Color">
-    </div>
-    <div id="totalDisplay">Total: 0</div>
+  <!-- 10. Additional Info -->
+  <h3>Additional Info</h3>
+  <p class="small-hint">Fax details, user box, etc.</p>
+  <textarea id="additionalInfo"></textarea>
 
-    <h3>Additional Info</h3>
-    <span class="hint">Fax details, user box, etc.</span>
-    <textarea id="additionalInfo" rows="3" placeholder="Additional Info"></textarea>
+  <!-- 11. Summary Output -->
+  <h3>Summary Output</h3>
+  <textarea id="outputBox" readonly></textarea>
 
-    <h3>Summary Output</h3>
-    <textarea id="outputBox" readonly placeholder="Generated summary will appear here..."></textarea>
-
-    <div class="btn-group">
-        <button class="btn-generate" id="generateBtn">Generate Summary</button>
-        <button class="btn-copy" id="copyBtn">Copy to Clipboard</button>
-        <button class="btn-download" id="downloadBtn">📄 Download Filled PDF</button>
-        <button class="btn-clear" id="clearBtn">Clear All</button>
-    </div>
+  <!-- 12. Button Group -->
+  <div class="btn-group">
+    <button class="btn-generate" id="generateBtn">Generate Summary</button>
+    <button class="btn-copy" id="copyBtn">Copy to Clipboard</button>
+    <button class="btn-download" id="downloadBtn">📄 Download Filled PDF</button>
+    <button class="btn-clear" id="clearBtn">Clear All</button>
+  </div>
 </div>
 
-<div class="toast-container" id="toastContainer"></div>
+<div id="toast"></div>
 
-<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Field & Radio IDs
-    const textFields = ['customerName','poc','itPerson','itPhone','itEmail','location','model','newEquipmentId','serialNumber','equipmentId','ipMethod','ipOther','ip','subnet','gateway','dns1','dns2','dns3','settingsTransfer','scanType','smtpServer','smtpPort','smtpSSL','smtpEmail','bwCount','colorCount','additionalInfo','outputBox'];
-    const radioNames = ['fax','mps','mfgReporting'];
+(function() {
+  // ====== TOAST ======
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
 
-    // Elements
-    const get = id => document.getElementById(id);
-    const toastContainer = get('toastContainer');
+  // ====== HELPERS ======
+  const $ = id => document.getElementById(id);
 
-    // Toast Function
-    function showToast(msg) {
-        const t = document.createElement('div');
-        t.className = 'toast';
-        t.textContent = msg;
-        toastContainer.appendChild(t);
-        requestAnimationFrame(() => t.classList.add('show'));
-        setTimeout(() => {
-            t.classList.remove('show');
-            setTimeout(() => t.remove(), 300);
-        }, 2200);
+  // All saveable input/select/textarea IDs
+  const fieldIds = [
+    'customerName','poc','itPerson','itPhone','itEmail','location','model',
+    'newEquipmentId','serialNumber','equipmentId',
+    'ipMethod','ipMethodOther','ip','subnet','gateway','dns1','dns2','dns3',
+    'settingsTransfer',
+    'scanFolderType',
+    'smtpServer','smtpPort','smtpSsl','smtpEmail',
+    'bwCount','colorCount',
+    'additionalInfo',
+    'outputBox'
+  ];
+
+  const radioNames = ['fax','mps','mfgReporting'];
+
+  // ====== SESSION STORAGE SAVE/RESTORE ======
+  function saveField(id) {
+    const el = $(id);
+    if (el) sessionStorage.setItem(id, el.value);
+  }
+  function restoreField(id) {
+    const el = $(id);
+    const val = sessionStorage.getItem(id);
+    if (el && val !== null) el.value = val;
+  }
+
+  function saveRadio(name) {
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    if (checked) sessionStorage.setItem('radio_' + name, checked.value);
+    else sessionStorage.removeItem('radio_' + name);
+  }
+  function restoreRadio(name) {
+    const val = sessionStorage.getItem('radio_' + name);
+    if (val) {
+      const el = document.querySelector(`input[name="${name}"][value="${val}"]`);
+      if (el) el.checked = true;
+    }
+  }
+
+  // Attach auto-save listeners
+  fieldIds.forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.addEventListener('input', () => saveField(id));
+    el.addEventListener('change', () => saveField(id));
+  });
+
+  radioNames.forEach(name => {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+      r.addEventListener('change', () => saveRadio(name));
+    });
+  });
+
+  // Restore on load
+  fieldIds.forEach(restoreField);
+  radioNames.forEach(restoreRadio);
+
+  // ====== IP METHOD "OTHER" TOGGLE ======
+  function toggleOtherIp() {
+    const wrap = $('otherIpMethodWrapper');
+    if ($('ipMethod').value === 'Other') wrap.classList.remove('hidden');
+    else wrap.classList.add('hidden');
+  }
+  $('ipMethod').addEventListener('change', toggleOtherIp);
+  toggleOtherIp(); // run on load
+
+  // ====== TOTAL DISPLAY ======
+  function updateTotal() {
+    const bw = parseInt($('bwCount').value) || 0;
+    const color = parseInt($('colorCount').value) || 0;
+    $('totalDisplay').textContent = (bw + color).toLocaleString();
+  }
+  $('bwCount').addEventListener('input', updateTotal);
+  $('colorCount').addEventListener('input', updateTotal);
+  updateTotal();
+
+  // ====== PASTE FROM CLIPBOARD ======
+  $('pasteBtn').addEventListener('click', async () => {
+    let text;
+    try {
+      text = await navigator.clipboard.readText();
+    } catch(e) {
+      showToast('Clipboard access denied.');
+      return;
+    }
+    if (!text || !text.trim()) {
+      showToast('Clipboard is empty.');
+      return;
     }
 
-    // Save/Restore Logic
-    function saveAll() {
-        textFields.forEach(id => sessionStorage.setItem(id, get(id).value));
-        radioNames.forEach(name => {
-            const checked = document.querySelector(`input[name="${name}"]:checked`);
-            if (checked) sessionStorage.setItem(`radio_${name}`, checked.value);
-            else sessionStorage.removeItem(`radio_${name}`);
-        });
-    }
+    const lines = text.split(/\r?\n/);
+    const mappings = [
+      { patterns: ['title (customer)', 'title', 'customer'], field: 'customerName' },
+      { patterns: ['contact'], field: 'poc' },
+      { patterns: ['item no. (model)', 'item no', 'model'], field: 'model' },
+      { patterns: ['serial number', 'serial'], field: 'serialNumber' },
+      { patterns: ['equipment id', 'equipment'], field: 'newEquipmentId' },
+    ];
 
-    function loadAll() {
-        textFields.forEach(id => {
-            const val = sessionStorage.getItem(id);
-            if (val !== null) get(id).value = val;
-        });
-        radioNames.forEach(name => {
-            const val = sessionStorage.getItem(`radio_${name}`);
-            if (val) {
-                const radio = document.querySelector(`input[name="${name}"][value="${val}"]`);
-                if (radio) radio.checked = true;
-            }
-        });
-        updateOtherVis();
-        calcTotal();
-        if (get('outputBox').value) { /* kept restored */ }
-    }
+    let filled = 0;
 
-    // Conditional IP Field
-    function updateOtherVis() {
-        const v = get('ipMethod').value;
-        const otherInput = get('ipOther');
-        if (v === 'Other') otherInput.classList.remove('hidden');
-        else { otherInput.classList.add('hidden'); otherInput.value = ''; }
-    }
+    lines.forEach(line => {
+      const colonIdx = line.indexOf(':');
+      if (colonIdx < 1) return;
+      const key = line.substring(0, colonIdx).trim().toLowerCase();
+      const val = line.substring(colonIdx + 1).trim();
+      if (!val) return;
 
-    // Event Listeners for Auto-save
-    textFields.forEach(id => get(id).addEventListener('input', saveAll));
-    textFields.forEach(id => get(id).addEventListener('change', saveAll));
-    radioNames.forEach(name => document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.addEventListener('change', saveAll)));
-
-    // Page Count Calc
-    function calcTotal() {
-        const bw = parseInt(get('bwCount').value) || 0;
-        const col = parseInt(get('colorCount').value) || 0;
-        const total = bw + col;
-        get('totalDisplay').textContent = `Total: ${total.toLocaleString()}`;
-        saveAll();
-    }
-    ['input','change'].forEach(evt => {
-        get('bwCount').addEventListener(evt, calcTotal);
-        get('colorCount').addEventListener(evt, calcTotal);
+      for (const m of mappings) {
+        const matched = m.patterns.some(p => key.includes(p));
+        if (matched) {
+          const el = $(m.field);
+          if (el) {
+            el.value = val;
+            saveField(m.field);
+            el.classList.remove('flash');
+            void el.offsetWidth; // reflow to restart animation
+            el.classList.add('flash');
+            filled++;
+          }
+          break;
+        }
+      }
     });
 
-    // Init
-    get('ipMethod').addEventListener('change', updateOtherVis);
-    loadAll();
+    if (filled === 0) showToast('No matching fields found in clipboard.');
+    else showToast(filled + ' field' + (filled > 1 ? 's' : '') + ' auto-filled.');
+  });
 
-    // Clipboard Paste
-    get('pasteBtn').addEventListener('click', async () => {
-        try {
-            const text = await navigator.clipboard.readText();
-            if (!text.trim()) { showToast('Clipboard is empty'); return; }
-            const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-            let filledCount = 0;
-            const map = [
-                { keys: ['title', 'customer'], id: 'customerName' },
-                { keys: ['contact'], id: 'poc' },
-                { keys: ['item no', 'model'], id: 'model' },
-                { keys: ['serial'], id: 'serialNumber' },
-                { keys: ['equipment id', 'equipment'], id: 'newEquipmentId' }
-            ];
-            lines.forEach(line => {
-                const match = line.match(/^(.+?):\s*(.+)$/);
-                if (!match) return;
-                const key = match[1].trim().toLowerCase();
-                const val = match[2].trim();
-                map.forEach(m => {
-                    if (m.id === filledCount || get(m.id).value) return; // avoid overwriting non-empty
-                    if (m.keys.some(k => key.includes(k))) {
-                        get(m.id).value = val;
-                        filledCount++;
-                        get(m.id).classList.add('flash');
-                        setTimeout(() => get(m.id).classList.remove('flash'), 1500);
-                    }
-                });
-            });
-            saveAll();
-            filledCount > 0 ? showToast(`${filledCount} field(s) auto-filled`) : showToast('No matching keys found');
-        } catch (e) {
-            showToast('Clipboard access denied or error');
-        }
-    });
+  // ====== GENERATE SUMMARY ======
+  function v(id) { return ($(id) ? $(id).value.trim() : ''); }
+  function radioVal(name) {
+    const c = document.querySelector(`input[name="${name}"]:checked`);
+    return c ? c.value : '';
+  }
 
-    // Generate Summary
-    function generateSummary() {
-        const getVal = id => get(id).value.trim();
-        let sections = [];
+  $('generateBtn').addEventListener('click', () => {
+    let lines = [];
 
-        // Call Notes
-        let cn = [];
-        const cnMap = [
-            { l: 'Customer Name', v: getVal('customerName') },
-            { l: 'Point of Contact', v: getVal('poc') },
-            { l: 'IT Person', v: getVal('itPerson') },
-            { l: '  Phone', v: getVal('itPhone') },
-            { l: '  Email', v: getVal('itEmail') },
-            { l: 'Location of Machine', v: getVal('location') },
-            { l: 'Model', v: getVal('model') },
-            { l: 'New Equipment ID', v: getVal('newEquipmentId') },
-            { l: 'Serial Number', v: getVal('serialNumber') },
-            { l: 'Equipment ID Being Replaced', v: getVal('equipmentId') }
-        ];
-        cnMap.forEach(i => i.v && cn.push(`${i.l}: ${i.v}`));
-        if (cn.length) sections.push(`=== CALL NOTES ===\n${cn.join('\n')}`);
-
-        // IP Info
-        let ip = [];
-        const ipMeth = getVal('ipMethod') === 'Other' ? getVal('ipOther') : getVal('ipMethod');
-        if (ipMeth) ip.push(`IP Method: ${ipMeth}`);
-        ['ip','subnet','gateway','dns1','dns2','dns3'].forEach((id, i) => {
-            const v = getVal(id);
-            if (v) ip.push(`DNS ${i-3 > 0 ? i-3 : '1'}: ${v}`); // wait, logic fix below
-        });
-        // Rebuild IP mapping cleanly
-        let ipLines = [];
-        if (ipMeth) ipLines.push(`IP Method: ${ipMeth}`);
-        if (getVal('ip')) ipLines.push(`IP Address: ${getVal('ip')}`);
-        if (getVal('subnet')) ipLines.push(`Subnet: ${getVal('subnet')}`);
-        if (getVal('gateway')) ipLines.push(`Gateway: ${getVal('gateway')}`);
-        if (getVal('dns1')) ipLines.push(`DNS 1: ${getVal('dns1')}`);
-        if (getVal('dns2')) ipLines.push(`DNS 2: ${getVal('dns2')}`);
-        if (getVal('dns3')) ipLines.push(`DNS 3: ${getVal('dns3')}`);
-        if (ipLines.length) sections.push(`--- IP Info ---\n${ipLines.join('\n')}`);
-
-        // Settings Transfer
-        const st = getVal('settingsTransfer');
-        if (st) sections.push(`--- Settings Transfer ---\nHow settings were transferred: ${st}`);
-
-        // Scanning Info
-        let sc = [];
-        const scan = getVal('scanType');
-        if (scan) sc.push(`Scan to Folder Type: ${scan}`);
-        const fax = document.querySelector('input[name="fax"]:checked');
-        if (fax) sc.push(`Fax: ${fax.value}`);
-        
-        let smtp = [];
-        if (getVal('smtpServer')) smtp.push(`  Server: ${getVal('smtpServer')}`);
-        if (getVal('smtpPort')) smtp.push(`  Port: ${getVal('smtpPort')}`);
-        if (getVal('smtpSSL')) smtp.push(`  SSL/TLS: ${getVal('smtpSSL')}`);
-        if (getVal('smtpEmail')) smtp.push(`  Email: ${getVal('smtpEmail')}`);
-        if (smtp.length) sc.push(`  -- SMTP --\n${smtp.join('\n')}`);
-        if (sc.length) sections.push(`--- Scanning Info ---\n${sc.join('\n')}`);
-
-        // Reporting
-        let rep = [];
-        const mps = document.querySelector('input[name="mps"]:checked');
-        if (mps) rep.push(`MPS: ${mps.value}`);
-        const mfg = document.querySelector('input[name="mfgReporting"]:checked');
-        if (mfg) rep.push(`Manufacturer reporting enabled: ${mfg.value}`);
-        
-        let pc = [];
-        const bw = parseInt(getVal('bwCount')) || 0;
-        const col = parseInt(getVal('colorCount')) || 0;
-        if (bw || col) {
-            pc.push(`  Black & White: ${bw.toLocaleString()}`);
-            pc.push(`  Color: ${col.toLocaleString()}`);
-            pc.push(`  Total: ${(bw+col).toLocaleString()}`);
-            rep.push(`  -- Page Counts --\n${pc.join('\n')}`);
-        }
-        if (rep.length) sections.push(`--- Reporting ---\n${rep.join('\n')}`);
-
-        // Additional Info
-        const ai = getVal('additionalInfo');
-        if (ai) sections.push(`--- Additional Info ---\n${ai}`);
-
-        if (!sections.length) { showToast('No data to generate'); return; }
-
-        const summary = sections.join('\n\n');
-        get('outputBox').value = summary;
-        saveAll();
-        showToast('Summary generated!');
+    // Call Notes
+    const callNotes = [
+      ['Customer Name', v('customerName')],
+      ['Point of Contact', v('poc')],
+      ['IT Person', v('itPerson')],
+      ['Phone', v('itPhone')],
+      ['Email', v('itEmail')],
+      ['Location of Machine', v('location')],
+      ['Model', v('model')],
+      ['New Equipment ID', v('newEquipmentId')],
+      ['Serial Number', v('serialNumber')],
+      ['Equipment ID Being Replaced', v('equipmentId')],
+    ].filter(x => x[1]);
+    if (callNotes.length) {
+      lines.push('=== CALL NOTES ===');
+      callNotes.forEach(x => lines.push(x[0] + ': ' + x[1]));
     }
-    get('generateBtn').addEventListener('click', generateSummary);
 
-    // Copy
-    get('copyBtn').addEventListener('click', async () => {
-        const txt = get('outputBox').value;
-        if (!txt) { showToast('Nothing to copy — generate summary first.'); return; }
-        try {
-            await navigator.clipboard.writeText(txt);
-        } catch {
-            const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select();
-            document.execCommand('copy'); document.body.removeChild(ta);
-        }
+    // IP Info
+    let ipMethodVal = v('ipMethod');
+    if (ipMethodVal === 'Other' && v('ipMethodOther')) ipMethodVal = v('ipMethodOther');
+    else if (ipMethodVal === 'Other') ipMethodVal = 'Other';
+    const ipFields = [
+      ['IP Method', ipMethodVal],
+      ['IP Address', v('ip')],
+      ['Subnet', v('subnet')],
+      ['Gateway', v('gateway')],
+      ['DNS 1', v('dns1')],
+      ['DNS 2', v('dns2')],
+      ['DNS 3', v('dns3')],
+    ].filter(x => x[1]);
+    if (ipFields.length) {
+      lines.push('');
+      lines.push('--- IP Info ---');
+      ipFields.forEach(x => lines.push(x[0] + ': ' + x[1]));
+    }
+
+    // Settings Transfer
+    if (v('settingsTransfer')) {
+      lines.push('');
+      lines.push('--- Settings Transfer ---');
+      lines.push('How settings were transferred: ' + v('settingsTransfer'));
+    }
+
+    // Scanning Info
+    const scanFields = [
+      ['Scan to Folder Type', v('scanFolderType')],
+      ['Fax', radioVal('fax')],
+    ].filter(x => x[1]);
+    if (scanFields.length) {
+      lines.push('');
+      lines.push('--- Scanning Info ---');
+      scanFields.forEach(x => lines.push(x[0] + ': ' + x[1]));
+    }
+
+    // SMTP
+    const smtpFields = [
+      ['Server', v('smtpServer')],
+      ['Port', v('smtpPort')],
+      ['SSL/TLS', v('smtpSsl')],
+      ['Email', v('smtpEmail')],
+    ].filter(x => x[1]);
+    if (smtpFields.length) {
+      lines.push('');
+      lines.push('-- SMTP --');
+      smtpFields.forEach(x => lines.push(x[0] + ': ' + x[1]));
+    }
+
+    // Reporting
+    const repFields = [
+      ['MPS', radioVal('mps')],
+      ['Manufacturer reporting enabled', radioVal('mfgReporting')],
+    ].filter(x => x[1]);
+
+    const bw = parseInt($('bwCount').value) || 0;
+    const color = parseInt($('colorCount').value) || 0;
+    const hasPageCounts = v('bwCount') || v('colorCount');
+
+    if (repFields.length || hasPageCounts) {
+      lines.push('');
+      lines.push('--- Reporting ---');
+      repFields.forEach(x => lines.push(x[0] + ': ' + x[1]));
+      if (hasPageCounts) {
+        lines.push('-- Page Counts --');
+        if (v('bwCount')) lines.push('Black & White: ' + bw.toLocaleString());
+        if (v('colorCount')) lines.push('Color: ' + color.toLocaleString());
+        lines.push('Total: ' + (bw + color).toLocaleString());
+      }
+    }
+
+    // Additional Info
+    if (v('additionalInfo')) {
+      lines.push('');
+      lines.push('--- Additional Info ---');
+      lines.push(v('additionalInfo'));
+    }
+
+    if (lines.length === 0) {
+      showToast('No data to generate');
+      return;
+    }
+
+    const output = lines.join('\n');
+    $('outputBox').value = output;
+    saveField('outputBox');
+    showToast('Summary generated!');
+  });
+
+  // ====== COPY TO CLIPBOARD ======
+  $('copyBtn').addEventListener('click', async () => {
+    const text = $('outputBox').value;
+    if (!text.trim()) {
+      showToast('Nothing to copy — generate summary first.');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Copied to clipboard!');
+    } catch(e) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
         showToast('Copied to clipboard!');
-    });
+      } catch(e2) {
+        showToast('Failed to copy.');
+      }
+    }
+  });
 
-    // Download PDF
-    get('downloadBtn').addEventListener('click', async () => {
+  // ====== DOWNLOAD FILLED PDF ======
+  $('downloadBtn').addEventListener('click', async () => {
+    const mappings = [
+      { pdf: 'customer', val: v('customerName') },
+      { pdf: 'equipID', val: v('newEquipmentId') },
+      { pdf: 'model', val: v('model') },
+      { pdf: 'black', val: v('bwCount') },
+      { pdf: 'color', val: v('colorCount') },
+      { pdf: 'total', val: String((parseInt($('bwCount').value)||0) + (parseInt($('colorCount').value)||0)) === '0' && !v('bwCount') && !v('colorCount') ? '' : String((parseInt($('bwCount').value)||0) + (parseInt($('colorCount').value)||0)) },
+      { pdf: 'ip', val: v('ip') },
+      { pdf: 'subnet', val: v('subnet') },
+      { pdf: 'gateway', val: v('gateway') },
+      { pdf: 'dns1', val: v('dns1') },
+      { pdf: 'dns2', val: v('dns2') },
+    ];
+
+    const filled = mappings.filter(m => m.val);
+    if (filled.length === 0) {
+      showToast('No data to fill in PDF.');
+      return;
+    }
+
+    let pdfBytes;
+    try {
+      const resp = await fetch('net_form_with_text_feilds.pdf');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      pdfBytes = await resp.arrayBuffer();
+    } catch(e) {
+      showToast('Failed to load PDF file.');
+      console.error(e);
+      return;
+    }
+
+    try {
+      const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+      const form = pdfDoc.getForm();
+      let count = 0;
+
+      for (const m of mappings) {
+        if (!m.val) continue;
         try {
-            const resp = await fetch('net_form_with_text_feilds.pdf');
-            if (!resp.ok) throw new Error('PDF fetch failed');
-            const pdfBytes = await resp.arrayBuffer();
-            const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
-            const form = pdfDoc.getForm();
-            const fieldsMap = {
-                'customer': getVal('customerName'),
-                'equipID': getVal('newEquipmentId'),
-                'model': getVal('model'),
-                'black': getVal('bwCount'),
-                'color': getVal('colorCount'),
-                'total': `${(parseInt(getVal('bwCount'))||0) + (parseInt(getVal('colorCount'))||0)}`,
-                'ip': getVal('ip'),
-                'subnet': getVal('subnet'),
-                'gateway': getVal('gateway'),
-                'dns1': getVal('dns1'),
-                'dns2': getVal('dns2')
-            };
-            let filledCount = 0;
-            for (const [pdfField, val] of Object.entries(fieldsMap)) {
-                if (!val) continue;
-                try {
-                    const field = form.getTextField(pdfField);
-                    field.setText(val);
-                    filledCount++;
-                } catch (e) { console.warn(`Field mismatch: ${pdfField}`, e); }
-            }
-            if (filledCount === 0) { showToast('No mapped data to fill PDF'); return; }
-            const fileName = `Network_Install_${(getVal('customerName')||'NOCUST').replace(/[^\w\-\.]/g, '_')}_${(getVal('newEquipmentId')||'NOID').replace(/[^\w\-\.]/g, '_')}.pdf`;
-            const outBytes = await pdfDoc.save({ updateFieldAppearances: true, userPassword: null, ownerPassword: null }); // keep editable
-            const blob = new Blob([outBytes], { type: 'application/pdf' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob); a.download = fileName; a.click(); URL.revokeObjectURL(a.href);
-            showToast(`Download started (${filledCount} fields filled)`);
-        } catch (e) {
-            showToast('PDF download error: ' + e.message);
+          const field = form.getTextField(m.pdf);
+          field.setText(m.val);
+          count++;
+        } catch(e) {
+          console.warn('PDF field not found or error:', m.pdf, e);
         }
+      }
+
+      const savedBytes = await pdfDoc.save();
+      const custName = v('customerName') || 'Unknown';
+      const equipId = v('newEquipmentId') || 'NoID';
+      const sanitize = s => s.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+      const filename = 'Network_Install_' + sanitize(custName) + '_' + sanitize(equipId) + '.pdf';
+
+      const blob = new Blob([savedBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast(count + ' field' + (count > 1 ? 's' : '') + ' filled in PDF.');
+    } catch(e) {
+      showToast('Error processing PDF.');
+      console.error(e);
+    }
+  });
+
+  // ====== CLEAR ALL ======
+  $('clearBtn').addEventListener('click', () => {
+    if (!confirm('Clear all fields and saved data?')) return;
+
+    fieldIds.forEach(id => {
+      const el = $(id);
+      if (el) el.value = '';
+      sessionStorage.removeItem(id);
     });
 
-    // Clear All
-    get('clearBtn').addEventListener('click', () => {
-        if (!confirm('Are you sure you want to clear all fields?')) return;
-        textFields.forEach(id => { get(id).value = ''; sessionStorage.removeItem(id); });
-        radioNames.forEach(name => {
-            document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.checked = false);
-            sessionStorage.removeItem(`radio_${name}`);
-        });
-        updateOtherVis();
-        calcTotal();
-        showToast('All fields cleared.');
+    radioNames.forEach(name => {
+      document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.checked = false);
+      sessionStorage.removeItem('radio_' + name);
     });
-});
+
+    $('totalDisplay').textContent = '0';
+    toggleOtherIp();
+    showToast('All fields cleared.');
+  });
+
+})();
 </script>
 </body>
 </html>
