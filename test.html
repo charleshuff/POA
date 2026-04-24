@@ -110,6 +110,15 @@
     font-size: 0.88rem;
   }
 
+  .paste-btn-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .paste-btn-row button { flex: 1; min-width: 140px; max-width: 240px; }
+
   .btn-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
   .btn-row button { flex: 1; min-width: 130px; }
 
@@ -126,7 +135,8 @@
   }
   button:active { transform: scale(0.98); }
 
-  .btn-paste { background: #6c5ce7; margin: 10px auto 0; display: block; }
+  .btn-paste-calls { background: #6c5ce7; }
+  .btn-paste-summary { background: #a29bfe; }
   .btn-generate { background: #00b894; }
   .btn-copy { background: #0984e3; }
   .btn-download { background: #fdcb6e; color: #333; }
@@ -168,6 +178,8 @@
     .container { padding: 18px 10px; }
     .btn-row { flex-direction: column; }
     .btn-row button { min-width: 100%; }
+    .paste-btn-row { flex-direction: column; align-items: stretch; }
+    .paste-btn-row button { max-width: 100%; }
     .page-counts-row { flex-direction: column; }
   }
 </style>
@@ -177,9 +189,12 @@
 <div class="container">
   <h1>Equipment Replacement Info</h1>
 
-  <!-- Paste Button -->
-  <button class="btn-paste" id="btnPaste">📋 Paste from Clipboard</button>
-  <p class="hint" style="text-align:center;margin-top:4px;">Paste work order info to auto-fill Customer, Contact, Model, Serial, and Equipment ID</p>
+  <!-- Paste Buttons -->
+  <div class="paste-btn-row">
+    <button class="btn-paste-calls" id="btnPasteCalls">📋 Paste Calls</button>
+    <button class="btn-paste-summary" id="btnPasteSummary">📋 Paste Summary</button>
+  </div>
+  <p class="hint" style="text-align:center;margin-top:4px;"><b>Paste Calls:</b> auto-fill from work order &nbsp;|&nbsp; <b>Paste Summary:</b> re-import a generated summary</p>
 
   <!-- Call Notes -->
   <h2>Call Notes</h2>
@@ -386,6 +401,58 @@
     if (el && v !== null) el.value = v;
   }
 
+  function flashField(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  }
+
+  function setFieldValue(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return false;
+    el.value = value;
+    saveField(id);
+    flashField(id);
+    return true;
+  }
+
+  function setSelectValue(id, value) {
+    const el = document.getElementById(id);
+    if (!el) return false;
+    // Try exact match first
+    for (let i = 0; i < el.options.length; i++) {
+      if (el.options[i].value === value) {
+        el.value = value;
+        saveField(id);
+        flashField(id);
+        return true;
+      }
+    }
+    // Try case-insensitive match
+    for (let i = 0; i < el.options.length; i++) {
+      if (el.options[i].value.toLowerCase() === value.toLowerCase()) {
+        el.value = el.options[i].value;
+        saveField(id);
+        flashField(id);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function setRadioValue(name, value) {
+    if (!value) return false;
+    const r = document.querySelector(`input[name="${name}"][value="${value}"]`);
+    if (r) {
+      r.checked = true;
+      sessionStorage.setItem('radio_' + name, value);
+      return true;
+    }
+    return false;
+  }
+
   // Bind auto-save
   textFieldIds.forEach(id => {
     const el = document.getElementById(id);
@@ -441,8 +508,8 @@
   document.getElementById('bwCount').addEventListener('input', () => { saveField('bwCount'); updateTotal(); });
   document.getElementById('colorCount').addEventListener('input', () => { saveField('colorCount'); updateTotal(); });
 
-  // === PASTE FROM CLIPBOARD ===
-  document.getElementById('btnPaste').addEventListener('click', async () => {
+  // === PASTE CALLS (original) ===
+  document.getElementById('btnPasteCalls').addEventListener('click', async () => {
     let text;
     try {
       text = await navigator.clipboard.readText();
@@ -464,15 +531,7 @@
       for (const k of Object.keys(map)) {
         for (const pattern of keys) {
           if (k.includes(pattern)) {
-            const el = document.getElementById(id);
-            if (el) {
-              el.value = map[k];
-              saveField(id);
-              el.classList.remove('flash');
-              void el.offsetWidth;
-              el.classList.add('flash');
-              filled++;
-            }
+            if (setFieldValue(id, map[k])) filled++;
             return;
           }
         }
@@ -489,6 +548,183 @@
     else showToast(filled + ' field(s) auto-filled from clipboard.');
   });
 
+  // === PASTE SUMMARY (new) ===
+  document.getElementById('btnPasteSummary').addEventListener('click', async () => {
+    let text;
+    try {
+      text = await navigator.clipboard.readText();
+    } catch(e) {
+      showToast('Clipboard access denied. Please allow clipboard permission.');
+      return;
+    }
+    if (!text || !text.trim()) { showToast('Clipboard is empty.'); return; }
+
+    let filled = 0;
+
+    // Parse "Label: Value" lines from the generated summary.
+    // The summary format uses exact labels like "Customer Name: Foo".
+    // We build a mapping from summary label → { type, target }.
+    const summaryFieldMap = [
+      // Call Notes
+      { label: 'customer name', id: 'customerName' },
+      { label: 'point of contact', id: 'poc' },
+      { label: 'it person', id: 'itPerson' },
+      { label: 'phone', id: 'itPhone' },
+      { label: 'email', id: 'itEmail' },              // could be call notes email or SMTP email — handled by section
+      { label: 'location of machine', id: 'location' },
+      { label: 'model', id: 'model' },
+      { label: 'new equipment id', id: 'newEquipmentId' },
+      { label: 'serial number', id: 'serialNumber' },
+      { label: 'equipment id being replaced', id: 'equipmentId' },
+      // IP Info
+      { label: 'ip method', id: 'ipMethod', type: 'ipmethod' },
+      { label: 'ip address', id: 'ip' },
+      { label: 'subnet', id: 'subnet' },
+      { label: 'gateway', id: 'gateway' },
+      { label: 'dns 1', id: 'dns1' },
+      { label: 'dns 2', id: 'dns2' },
+      { label: 'dns 3', id: 'dns3' },
+      // Settings Transfer
+      { label: 'how settings were transferred', id: 'settingsTransfer' },
+      // Scanning Info
+      { label: 'scan to folder type', id: 'scanType', type: 'select' },
+      { label: 'fax', id: null, type: 'radio', name: 'fax' },
+      // SMTP
+      { label: 'server', id: 'smtpServer' },
+      { label: 'port', id: 'smtpPort' },
+      { label: 'ssl/tls', id: 'smtpSsl', type: 'select' },
+      // Reporting
+      { label: 'mps', id: null, type: 'radio', name: 'mps' },
+      { label: 'manufacturer reporting enabled', id: null, type: 'radio', name: 'mfgReporting' },
+      // Page Counts
+      { label: 'black & white', id: 'bwCount', type: 'number' },
+      { label: 'color', id: 'colorCount', type: 'number' },
+      // Total is computed, don't import
+    ];
+
+    const lines = text.split(/\r?\n/);
+
+    // Track which section we are in so we can disambiguate "Email" (Call Notes vs SMTP)
+    // and "Server" / "Port" which only appear in SMTP.
+    let currentSection = '';
+    let additionalInfoLines = [];
+    let inAdditionalInfo = false;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmed = line.trim();
+
+      // Detect section headers
+      if (trimmed.startsWith('===') || trimmed.startsWith('---') || trimmed.startsWith('--')) {
+        const sectionName = trimmed.replace(/^[=\-\s]+/, '').replace(/[=\-\s]+$/, '').toLowerCase();
+        if (sectionName.includes('additional info')) {
+          inAdditionalInfo = true;
+          currentSection = 'additional info';
+          continue;
+        }
+        if (sectionName.includes('smtp')) currentSection = 'smtp';
+        else if (sectionName.includes('call notes')) currentSection = 'call notes';
+        else if (sectionName.includes('ip info')) currentSection = 'ip info';
+        else if (sectionName.includes('settings')) currentSection = 'settings';
+        else if (sectionName.includes('scanning')) currentSection = 'scanning';
+        else if (sectionName.includes('reporting')) currentSection = 'reporting';
+        else if (sectionName.includes('page counts')) currentSection = 'page counts';
+        else currentSection = sectionName;
+        inAdditionalInfo = false;
+        continue;
+      }
+
+      // If we're in Additional Info section, collect free text lines
+      if (inAdditionalInfo) {
+        if (trimmed) additionalInfoLines.push(trimmed);
+        continue;
+      }
+
+      // Try to parse "Label: Value"
+      const m = trimmed.match(/^([^:]+):\s+(.*)/);
+      if (!m) continue;
+      const label = m[1].trim().toLowerCase();
+      const value = m[2].trim();
+      if (!value) continue;
+
+      // Disambiguate: "email" in SMTP section → smtpEmail, otherwise → itEmail
+      if (label === 'email') {
+        if (currentSection === 'smtp') {
+          if (setFieldValue('smtpEmail', value)) filled++;
+        } else {
+          if (setFieldValue('itEmail', value)) filled++;
+        }
+        continue;
+      }
+
+      // Find matching field definition
+      let matched = false;
+      for (const def of summaryFieldMap) {
+        if (label !== def.label) continue;
+
+        if (def.type === 'radio') {
+          if (setRadioValue(def.name, value)) filled++;
+          matched = true;
+          break;
+        }
+
+        if (def.type === 'select') {
+          if (setSelectValue(def.id, value)) filled++;
+          matched = true;
+          break;
+        }
+
+        if (def.type === 'ipmethod') {
+          // Check if value matches a known IP method option
+          const knownMethods = ['Reused', 'Mac address reservation', 'DHCP', 'IP scanner'];
+          const found = knownMethods.find(km => km.toLowerCase() === value.toLowerCase());
+          if (found) {
+            if (setSelectValue('ipMethod', found)) filled++;
+          } else if (value.toLowerCase().startsWith('other:')) {
+            setSelectValue('ipMethod', 'Other');
+            const otherVal = value.replace(/^other:\s*/i, '').trim();
+            if (otherVal) setFieldValue('ipMethodOther', otherVal);
+            filled++;
+          } else {
+            // Unknown method — put in Other
+            setSelectValue('ipMethod', 'Other');
+            setFieldValue('ipMethodOther', value);
+            filled++;
+          }
+          toggleOtherIP();
+          matched = true;
+          break;
+        }
+
+        if (def.type === 'number') {
+          // Strip commas from number
+          const numVal = value.replace(/,/g, '');
+          if (setFieldValue(def.id, numVal)) filled++;
+          matched = true;
+          break;
+        }
+
+        // Default: text field
+        if (def.id) {
+          if (setFieldValue(def.id, value)) filled++;
+          matched = true;
+          break;
+        }
+      }
+    }
+
+    // Set additional info
+    if (additionalInfoLines.length > 0) {
+      if (setFieldValue('additionalInfo', additionalInfoLines.join('\n'))) filled++;
+    }
+
+    toggleOtherIP();
+    updateTotal();
+
+    if (filled === 0) showToast('No matching summary fields found in clipboard.');
+    else showToast(filled + ' field(s) imported from summary.');
+  });
+
   // === GENERATE SUMMARY ===
   document.getElementById('btnGenerate').addEventListener('click', () => {
     const v = id => (document.getElementById(id)?.value || '').trim();
@@ -500,7 +736,6 @@
       ipMethodVal = oth ? 'Other: ' + oth : 'Other';
     }
 
-    // Build sections
     const sections = [];
 
     // Call Notes
@@ -549,7 +784,6 @@
     const rp = [];
     if (radio('mps')) rp.push('MPS: ' + radio('mps'));
     if (radio('mfgReporting')) rp.push('Manufacturer reporting enabled: ' + radio('mfgReporting'));
-    // Page Counts
     const bw = parseInt(v('bwCount')) || 0;
     const col = parseInt(v('colorCount')) || 0;
     const pcLines = [];
@@ -631,12 +865,12 @@
     try {
       const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
       const form = pdfDoc.getForm();
-      let filled = 0;
+      let filledCount = 0;
       for (const [field, val] of Object.entries(mapping)) {
         if (!val) continue;
         try {
           form.getTextField(field).setText(val);
-          filled++;
+          filledCount++;
         } catch(e) {
           console.warn('PDF field "' + field + '" not found or error:', e.message);
         }
@@ -658,7 +892,7 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      showToast(filled + ' field(s) filled in PDF.');
+      showToast(filledCount + ' field(s) filled in PDF.');
     } catch(e) {
       showToast('Error processing PDF: ' + e.message);
     }
