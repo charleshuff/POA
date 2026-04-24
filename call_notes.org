@@ -34,13 +34,15 @@ Paste Calls: auto-fill from work order  |  Paste Summary: re-import a generated 
 - On click, read clipboard text via =navigator.clipboard.readText()=.
 - Parse clipboard line by line for ="Key: Value"= patterns.
 - Map keys to form fields (case-insensitive partial matching on the key):
-  | Clipboard Key Contains | Maps To Form Field   |
-  |------------------------+----------------------|
-  | "title" or "customer"  | Customer Name        |
-  | "contact"              | Point of Contact     |
-  | "item no" or "model"   | Model                |
-  | "serial"               | Serial Number        |
-  | "equipment id" or "equipment" | New Equipment ID |
+  | Clipboard Key Contains        | Maps To Form Field |
+  |-------------------------------+--------------------|
+  | "title" or "customer"         | Customer Name      |
+  | "contact"                     | Point of Contact   |
+  | "item no" or "model"          | Model              |
+  | "serial"                      | Serial Number      |
+  | "equipment id" or "equipment" | New Equipment ID   |
+  | "City"                        | City               |
+  | "Technician"                  | Tech Name          |
 - Auto-filled fields flash with a subtle gray highlight animation (CSS =@keyframes=, 1.5s fade from =#dee2e6= to transparent).
 - Show toast with count of fields filled.
 - Handle errors: empty clipboard, no matches found, clipboard access denied.

@@ -22,14 +22,12 @@
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
     background: #f8f9fa;
-    color: #222;
-    padding: 24px 8px 80px;
+    min-height: 100vh;
+    padding: 24px 8px;
   }
-
   .container {
     max-width: 640px;
     margin: 0 auto;
@@ -38,118 +36,88 @@
     box-shadow: 0 2px 16px rgba(0,0,0,0.07);
     padding: 32px 28px;
   }
-
-  h1 { text-align: center; font-size: 1.5rem; margin-bottom: 8px; }
-
-  h2 { font-size: 1.2rem; margin-top: 28px; padding-bottom: 6px; border-bottom: 2px solid #dee2e6; margin-bottom: 12px; }
-  h3 { font-size: 1.05rem; margin-top: 22px; margin-bottom: 8px; color: #444; }
-  h4 { font-size: 0.97rem; margin-top: 16px; margin-bottom: 6px; color: #555; }
-
-  label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 3px; margin-top: 10px; color: #333; }
-
-  input[type="text"],
-  input[type="tel"],
-  input[type="email"],
-  input[type="number"],
-  select,
-  textarea {
+  h1 { text-align: center; font-size: 1.5rem; color: #222; margin-bottom: 18px; }
+  h2 { font-size: 1.18rem; color: #2d3436; border-bottom: 2px solid #dee2e6; padding-bottom: 6px; margin: 28px 0 14px; }
+  h3 { font-size: 1.05rem; color: #444; margin: 22px 0 10px; }
+  h4 { font-size: 0.97rem; color: #555; margin: 18px 0 8px; }
+  label { display: block; font-size: 0.88rem; font-weight: 600; color: #333; margin-bottom: 4px; margin-top: 12px; }
+  input[type="text"], input[type="tel"], input[type="email"], input[type="number"], select, textarea {
     width: 100%;
     padding: 9px 11px;
     border: 1px solid #dee2e6;
     border-radius: 8px;
-    font-size: 0.93rem;
+    font-size: 0.95rem;
     font-family: inherit;
-    background: #fff;
-    transition: box-shadow 0.2s;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
     -webkit-appearance: none;
     appearance: none;
   }
-
-  input:focus, select:focus, textarea:focus {
-    outline: none;
+  input[type="text"]:focus, input[type="tel"]:focus, input[type="email"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
     border-color: #74b9ff;
     box-shadow: 0 0 0 3px rgba(116,185,255,0.35);
   }
-
   textarea { min-height: 60px; resize: vertical; }
-
-  input[type="radio"] {
+  .radio-group { display: flex; align-items: center; gap: 16px; margin-top: 4px; }
+  .radio-group label { display: inline-flex; align-items: center; gap: 5px; margin: 0; font-weight: 500; cursor: pointer; }
+  .radio-group input[type="radio"] {
     -webkit-appearance: radio;
     appearance: radio;
-    margin-right: 4px;
+    margin: 0;
   }
-
-  .radio-group { display: flex; align-items: center; gap: 16px; margin-top: 4px; }
-  .radio-group label { display: inline-flex; align-items: center; gap: 4px; margin: 0; font-weight: 400; }
-
-  .hint { font-size: 0.8rem; color: #888; margin-top: 2px; margin-bottom: 2px; }
-
-  .links-list { list-style: none; padding: 0; margin: 4px 0 10px 0; }
-  .links-list li { margin-bottom: 4px; }
-  .links-list a { color: #0984e3; text-decoration: none; font-weight: 500; }
-  .links-list a:hover { text-decoration: underline; }
-
-  .page-counts-row { display: flex; gap: 12px; margin-top: 4px; }
-  .page-counts-row > div { flex: 1; }
-
-  .total-display {
-    margin-top: 10px;
-    background: #f1f3f5;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 1rem;
-    text-align: center;
-  }
-  .total-display span { font-weight: 700; color: #0984e3; }
-
-  #outputBox {
-    font-family: 'Courier New', Courier, monospace;
-    background: #f5f5f5;
-    min-height: 120px;
-    white-space: pre-wrap;
-    font-size: 0.88rem;
-  }
-
-  .paste-btn-row {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 10px;
-    flex-wrap: wrap;
-  }
-  .paste-btn-row button { flex: 1; min-width: 140px; max-width: 240px; }
-
-  .btn-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
-  .btn-row button { flex: 1; min-width: 130px; }
-
-  button {
+  .paste-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 4px; flex-wrap: wrap; }
+  .paste-row .btn { flex: 1 1 auto; min-width: 170px; }
+  .hint { text-align: center; font-size: 0.78rem; color: #888; margin-bottom: 14px; }
+  .btn {
+    display: inline-block;
+    padding: 10px 18px;
     border: none;
     border-radius: 8px;
-    padding: 11px 16px;
     font-size: 0.95rem;
-    font-family: inherit;
     font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.08s;
     color: #fff;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    text-align: center;
   }
-  button:active { transform: scale(0.98); }
-
+  .btn:active { transform: scale(0.98); }
+  .btn:hover { opacity: 0.92; }
   .btn-paste-calls { background: #6c5ce7; }
   .btn-paste-summary { background: #a29bfe; }
   .btn-generate { background: #00b894; }
   .btn-copy { background: #0984e3; }
   .btn-download { background: #fdcb6e; color: #333; }
   .btn-clear { background: #e17055; }
-
+  .btn-group { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 22px; }
+  .btn-group .btn { flex: 1 1 auto; min-width: 140px; }
   .hidden { display: none !important; }
-
+  .page-counts-row { display: flex; gap: 14px; }
+  .page-counts-row .field { flex: 1; }
+  .total-display {
+    background: #f1f3f5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 1rem;
+    text-align: center;
+  }
+  .total-display span { font-weight: 700; color: #0984e3; }
+  #outputBox {
+    font-family: 'Courier New', Courier, monospace;
+    background: #f5f5f5;
+    width: 100%;
+    min-height: 120px;
+    resize: vertical;
+  }
+  .links-list { list-style: none; padding: 0; margin: 0 0 10px 0; }
+  .links-list li { margin: 5px 0; }
+  .links-list a { color: #0984e3; text-decoration: none; font-weight: 500; font-size: 0.93rem; }
+  .links-list a:hover { text-decoration: underline; }
   @keyframes flashHighlight {
-    0% { background-color: #dee2e6; }
-    100% { background-color: transparent; }
+    from { background-color: #dee2e6; }
+    to { background-color: transparent; }
   }
   .flash { animation: flashHighlight 1.5s ease; }
-
   #toast {
     position: fixed;
     bottom: 30px;
@@ -159,41 +127,40 @@
     color: #fff;
     padding: 12px 24px;
     border-radius: 8px;
-    font-size: 0.92rem;
+    font-size: 0.93rem;
     opacity: 0;
     transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 9999;
     pointer-events: none;
-    text-align: center;
+    z-index: 9999;
     max-width: 90vw;
+    text-align: center;
   }
   #toast.show {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
-
   @media (max-width: 480px) {
     .container { padding: 18px 10px; }
-    .btn-row { flex-direction: column; }
-    .btn-row button { min-width: 100%; }
-    .paste-btn-row { flex-direction: column; align-items: stretch; }
-    .paste-btn-row button { max-width: 100%; }
+    .paste-row { flex-direction: column; }
+    .paste-row .btn { width: 100%; min-width: unset; }
+    .btn-group { flex-direction: column; }
+    .btn-group .btn { width: 100%; min-width: unset; }
     .page-counts-row { flex-direction: column; }
   }
 </style>
 </head>
 <body>
-
 <div class="container">
   <h1>Equipment Replacement Info</h1>
 
-  <div class="paste-btn-row">
-    <button class="btn-paste-calls" id="btnPasteCalls">📋 Paste Calls</button>
-    <button class="btn-paste-summary" id="btnPasteSummary">📋 Paste Summary</button>
+  <div class="paste-row">
+    <button class="btn btn-paste-calls" onclick="pasteCalls()">📋 Paste Calls</button>
+    <button class="btn btn-paste-summary" onclick="pasteSummary()">📋 Paste Summary</button>
   </div>
-  <p class="hint" style="text-align:center;margin-top:4px;"><b>Paste Calls:</b> auto-fill from work order &nbsp;|&nbsp; <b>Paste Summary:</b> re-import a generated summary</p>
+  <div class="hint">Paste Calls: auto-fill from work order &nbsp;|&nbsp; Paste Summary: re-import a generated summary</div>
 
   <h2>Call Notes</h2>
+
   <label for="techName">Tech Name</label>
   <input type="text" id="techName">
 
@@ -231,8 +198,9 @@
   <input type="text" id="equipmentId">
 
   <h3>IP Info</h3>
+
   <label for="ipMethod">IP Method</label>
-  <select id="ipMethod">
+  <select id="ipMethod" onchange="toggleOtherIP()">
     <option value=""></option>
     <option value="Reused">Reused</option>
     <option value="Mac address reservation">Mac address reservation</option>
@@ -240,7 +208,6 @@
     <option value="IP scanner">IP scanner</option>
     <option value="Other">Other</option>
   </select>
-
   <div id="ipMethodOtherWrap" class="hidden">
     <label for="ipMethodOther">Specify Other</label>
     <input type="text" id="ipMethodOther">
@@ -269,6 +236,7 @@
   <textarea id="settingsTransfer"></textarea>
 
   <h3>Scanning Info</h3>
+
   <label for="scanType">Scan to Folder Type</label>
   <select id="scanType">
     <option value=""></option>
@@ -284,6 +252,7 @@
   </div>
 
   <h4>SMTP</h4>
+
   <label for="smtpServer">Server</label>
   <input type="text" id="smtpServer">
 
@@ -300,9 +269,10 @@
   </select>
 
   <label for="smtpEmail">Email Address</label>
-  <input type="text" id="smtpEmail">
+  <input type="email" id="smtpEmail">
 
   <h3>Reporting</h3>
+
   <ul class="links-list">
     <li><a href="https://portal.mpsmonitor.com/" target="_blank" rel="noopener">MPS Monitor Portal ↗</a></li>
     <li><a href="https://form.jotform.com/250095273606153" target="_blank" rel="noopener">Jot Form ↗</a></li>
@@ -324,29 +294,29 @@
 
   <h4>Page Counts</h4>
   <div class="page-counts-row">
-    <div>
+    <div class="field">
       <label for="bwCount">Black &amp; White</label>
-      <input type="number" id="bwCount" min="0">
+      <input type="number" min="0" id="bwCount">
     </div>
-    <div>
+    <div class="field">
       <label for="colorCount">Color</label>
-      <input type="number" id="colorCount" min="0">
+      <input type="number" min="0" id="colorCount">
     </div>
   </div>
   <div class="total-display">Total: <span id="totalDisplay">0</span></div>
 
   <h3>Additional Info</h3>
-  <p class="hint">Fax details, user box, etc.</p>
+  <div style="font-size:0.8rem;color:#888;margin-bottom:4px;">Fax details, user box, etc.</div>
   <textarea id="additionalInfo"></textarea>
 
   <h3>Summary Output</h3>
   <textarea id="outputBox" readonly></textarea>
 
-  <div class="btn-row">
-    <button class="btn-generate" id="btnGenerate">Generate Summary</button>
-    <button class="btn-copy" id="btnCopy">Copy to Clipboard</button>
-    <button class="btn-download" id="btnDownload">📄 Download Filled PDF</button>
-    <button class="btn-clear" id="btnClear">Clear All</button>
+  <div class="btn-group">
+    <button class="btn btn-generate" onclick="generateSummary()">Generate Summary</button>
+    <button class="btn btn-copy" onclick="copyToClipboard()">Copy to Clipboard</button>
+    <button class="btn btn-download" onclick="downloadPDF()">📄 Download Filled PDF</button>
+    <button class="btn btn-clear" onclick="clearAll()">Clear All</button>
   </div>
 </div>
 
@@ -354,421 +324,426 @@
 
 <script>
 (function() {
-  let toastTimer;
+
+  /* ---------- TOAST ---------- */
+  var toastTimer;
   function showToast(msg) {
-    const t = document.getElementById('toast');
+    var t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+    toastTimer = setTimeout(function() { t.classList.remove('show'); }, 2200);
   }
+  window.showToast = showToast;
 
-  const textFieldIds = [
+  /* ---------- TOGGLE OTHER IP ---------- */
+  function toggleOtherIP() {
+    var sel = document.getElementById('ipMethod');
+    var wrap = document.getElementById('ipMethodOtherWrap');
+    if (sel.value === 'Other') {
+      wrap.classList.remove('hidden');
+    } else {
+      wrap.classList.add('hidden');
+    }
+  }
+  window.toggleOtherIP = toggleOtherIP;
+
+  /* ---------- TOTAL UPDATE ---------- */
+  function updateTotal() {
+    var bw = parseInt(document.getElementById('bwCount').value) || 0;
+    var c  = parseInt(document.getElementById('colorCount').value) || 0;
+    document.getElementById('totalDisplay').textContent = (bw + c).toLocaleString();
+  }
+  window.updateTotal = updateTotal;
+
+  /* ---------- SESSION STORAGE: AUTO-SAVE ---------- */
+  var fieldIds = [
     'techName','city','customerName','poc','itPerson','itPhone','itEmail',
     'location','model','newEquipmentId','serialNumber','equipmentId',
-    'ip','subnet','gateway','dns1','dns2','dns3',
-    'settingsTransfer',
-    'smtpServer','smtpPort','smtpEmail',
-    'additionalInfo','outputBox','ipMethodOther',
-    'bwCount','colorCount'
+    'ipMethod','ipMethodOther','ip','subnet','gateway','dns1','dns2','dns3',
+    'settingsTransfer','scanType','smtpServer','smtpPort','smtpSsl','smtpEmail',
+    'bwCount','colorCount','additionalInfo','outputBox'
   ];
-  const selectIds = ['ipMethod','scanType','smtpSsl'];
-  const radioNames = ['fax','mps','mfgReporting'];
 
-  function saveField(id) {
-    const el = document.getElementById(id);
-    if (el) sessionStorage.setItem(id, el.value);
-  }
-  function restoreField(id) {
-    const el = document.getElementById(id);
-    const v = sessionStorage.getItem(id);
-    if (el && v !== null) el.value = v;
-  }
-
-  function flashField(id) {
-    const el = document.getElementById(id);
+  fieldIds.forEach(function(id) {
+    var el = document.getElementById(id);
     if (!el) return;
+    el.addEventListener('input', function() {
+      sessionStorage.setItem(id, el.value);
+      if (id === 'bwCount' || id === 'colorCount') updateTotal();
+    });
+    el.addEventListener('change', function() {
+      sessionStorage.setItem(id, el.value);
+      if (id === 'ipMethod') toggleOtherIP();
+      if (id === 'bwCount' || id === 'colorCount') updateTotal();
+    });
+  });
+
+  // Radio buttons
+  var radios = document.querySelectorAll('input[type="radio"]');
+  radios.forEach(function(r) {
+    r.addEventListener('change', function() {
+      sessionStorage.setItem('radio_' + r.name, r.value);
+    });
+  });
+
+  /* ---------- SESSION STORAGE: RESTORE ---------- */
+  function restoreAll() {
+    fieldIds.forEach(function(id) {
+      var val = sessionStorage.getItem(id);
+      var el = document.getElementById(id);
+      if (val !== null && el) { el.value = val; }
+    });
+    // radios
+    ['fax','mps','mfgReporting'].forEach(function(name) {
+      var val = sessionStorage.getItem('radio_' + name);
+      if (val) {
+        var rb = document.querySelector('input[name="'+name+'"][value="'+val+'"]');
+        if (rb) rb.checked = true;
+      }
+    });
+    toggleOtherIP();
+    updateTotal();
+  }
+  restoreAll();
+
+  /* ---------- FLASH ANIMATION ---------- */
+  function flashField(el) {
     el.classList.remove('flash');
     void el.offsetWidth;
     el.classList.add('flash');
   }
 
-  function setFieldValue(id, value) {
-    const el = document.getElementById(id);
-    if (!el) return false;
-    el.value = value;
-    saveField(id);
-    flashField(id);
-    return true;
-  }
-
-  function setSelectValue(id, value) {
-    const el = document.getElementById(id);
-    if (!el) return false;
-    for (let i = 0; i < el.options.length; i++) {
-      if (el.options[i].value === value) {
-        el.value = value;
-        saveField(id);
-        flashField(id);
-        return true;
-      }
-    }
-    for (let i = 0; i < el.options.length; i++) {
-      if (el.options[i].value.toLowerCase() === value.toLowerCase()) {
-        el.value = el.options[i].value;
-        saveField(id);
-        flashField(id);
-        return true;
-      }
-    }
-    return false;
-  }
-
-  function setRadioValue(name, value) {
-    if (!value) return false;
-    const r = document.querySelector(`input[name="${name}"][value="${value}"]`);
-    if (r) {
-      r.checked = true;
-      sessionStorage.setItem('radio_' + name, value);
-      return true;
-    }
-    return false;
-  }
-
-  textFieldIds.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener('input', () => saveField(id));
-    el.addEventListener('change', () => saveField(id));
-  });
-  selectIds.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener('change', () => {
-      saveField(id);
-      if (id === 'ipMethod') toggleOtherIP();
-    });
-  });
-  radioNames.forEach(name => {
-    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-      r.addEventListener('change', () => {
-        sessionStorage.setItem('radio_' + name, r.value);
-      });
-    });
-  });
-
-  function restoreAll() {
-    textFieldIds.forEach(restoreField);
-    selectIds.forEach(restoreField);
-    radioNames.forEach(name => {
-      const v = sessionStorage.getItem('radio_' + name);
-      if (v) {
-        const r = document.querySelector(`input[name="${name}"][value="${v}"]`);
-        if (r) r.checked = true;
-      }
-    });
-    toggleOtherIP();
-    updateTotal();
-  }
-
-  function toggleOtherIP() {
-    const sel = document.getElementById('ipMethod');
-    const wrap = document.getElementById('ipMethodOtherWrap');
-    if (sel.value === 'Other') wrap.classList.remove('hidden');
-    else wrap.classList.add('hidden');
-  }
-
-  function updateTotal() {
-    const bw = parseInt(document.getElementById('bwCount').value) || 0;
-    const c = parseInt(document.getElementById('colorCount').value) || 0;
-    document.getElementById('totalDisplay').textContent = (bw + c).toLocaleString();
-  }
-  document.getElementById('bwCount').addEventListener('input', () => { saveField('bwCount'); updateTotal(); });
-  document.getElementById('colorCount').addEventListener('input', () => { saveField('colorCount'); updateTotal(); });
-
-  // === PASTE CALLS ===
-  document.getElementById('btnPasteCalls').addEventListener('click', async () => {
-    let text;
+  /* ---------- PASTE CALLS ---------- */
+  window.pasteCalls = async function() {
+    var text;
     try {
       text = await navigator.clipboard.readText();
     } catch(e) {
-      showToast('Clipboard access denied. Please allow clipboard permission.');
-      return;
+      showToast('Clipboard access denied.'); return;
     }
     if (!text || !text.trim()) { showToast('Clipboard is empty.'); return; }
 
-    const lines = text.split(/\r?\n/);
-    const map = {};
-    lines.forEach(line => {
-      const m = line.match(/^([^:]+):\s*(.*)/);
-      if (m) map[m[1].trim().toLowerCase()] = m[2].trim();
-    });
-
-    let filled = 0;
-    function tryFill(id, ...keys) {
-      for (const k of Object.keys(map)) {
-        for (const pattern of keys) {
-          if (k.includes(pattern)) {
-            if (setFieldValue(id, map[k])) filled++;
-            return;
-          }
-        }
-      }
-    }
-
-    tryFill('customerName', 'title', 'customer');
-    tryFill('poc', 'contact');
-    tryFill('model', 'item no', 'model');
-    tryFill('serialNumber', 'serial');
-    tryFill('newEquipmentId', 'equipment id', 'equipment');
-
-    if (filled === 0) showToast('No matching fields found in clipboard text.');
-    else showToast(filled + ' field(s) auto-filled from clipboard.');
-  });
-
-  // === PASTE SUMMARY ===
-  // Ignored fields: everything Paste Calls handles (customerName, poc, model,
-  // serialNumber, newEquipmentId) PLUS equipmentId, location, ip, bwCount, colorCount
-  const summaryIgnoredLabels = new Set([
-    'customer name',
-    'point of contact',
-    'model',
-    'serial number',
-    'new equipment id',
-    'equipment id being replaced',
-    'location of machine',
-    'ip address',
-    'black & white',
-    'color',
-    'total'
-  ]);
-
-  document.getElementById('btnPasteSummary').addEventListener('click', async () => {
-    let text;
-    try {
-      text = await navigator.clipboard.readText();
-    } catch(e) {
-      showToast('Clipboard access denied. Please allow clipboard permission.');
-      return;
-    }
-    if (!text || !text.trim()) { showToast('Clipboard is empty.'); return; }
-
-    let filled = 0;
-
-    const summaryFieldMap = [
-      { label: 'it person', id: 'itPerson' },
-      { label: 'phone', id: 'itPhone' },
-      { label: 'email', id: 'itEmail' },
-      // IP Info
-      { label: 'ip method', id: 'ipMethod', type: 'ipmethod' },
-      { label: 'subnet', id: 'subnet' },
-      { label: 'gateway', id: 'gateway' },
-      { label: 'dns 1', id: 'dns1' },
-      { label: 'dns 2', id: 'dns2' },
-      { label: 'dns 3', id: 'dns3' },
-      // Settings Transfer
-      { label: 'how settings were transferred', id: 'settingsTransfer' },
-      // Scanning Info
-      { label: 'scan to folder type', id: 'scanType', type: 'select' },
-      { label: 'fax', id: null, type: 'radio', name: 'fax' },
-      // SMTP
-      { label: 'server', id: 'smtpServer' },
-      { label: 'port', id: 'smtpPort' },
-      { label: 'ssl/tls', id: 'smtpSsl', type: 'select' },
-      // Reporting
-      { label: 'mps', id: null, type: 'radio', name: 'mps' },
-      { label: 'manufacturer reporting enabled', id: null, type: 'radio', name: 'mfgReporting' },
+    var lines = text.split('\n');
+    var count = 0;
+    var mapping = [
+      { keys: ['title','customer'], id: 'customerName' },
+      { keys: ['contact'], id: 'poc' },
+      { keys: ['item no','model'], id: 'model' },
+      { keys: ['serial'], id: 'serialNumber' },
+      { keys: ['equipment id','equipment'], id: 'newEquipmentId' },
+      { keys: ['city'], id: 'city' },
+      { keys: ['technician'], id: 'techName' }
     ];
 
-    const lines = text.split(/\r?\n/);
-    let currentSection = '';
-    let additionalInfoLines = [];
-    let inAdditionalInfo = false;
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const trimmed = line.trim();
-
-      // Detect section headers
-      if (trimmed.startsWith('===') || trimmed.startsWith('---') || trimmed.startsWith('--')) {
-        const sectionName = trimmed.replace(/^[=\-\s]+/, '').replace(/[=\-\s]+$/, '').toLowerCase();
-        if (sectionName.includes('additional info')) {
-          inAdditionalInfo = true;
-          currentSection = 'additional info';
-          continue;
-        }
-        if (sectionName.includes('smtp')) currentSection = 'smtp';
-        else if (sectionName.includes('call notes')) currentSection = 'call notes';
-        else if (sectionName.includes('ip info')) currentSection = 'ip info';
-        else if (sectionName.includes('settings')) currentSection = 'settings';
-        else if (sectionName.includes('scanning')) currentSection = 'scanning';
-        else if (sectionName.includes('reporting')) currentSection = 'reporting';
-        else if (sectionName.includes('page counts')) currentSection = 'page counts';
-        else currentSection = sectionName;
-        inAdditionalInfo = false;
-        continue;
-      }
-
-      if (inAdditionalInfo) {
-        if (trimmed) additionalInfoLines.push(trimmed);
-        continue;
-      }
-
-      // Parse "Label: Value"
-      const m = trimmed.match(/^([^:]+):\s+(.*)/);
-      if (!m) continue;
-      const label = m[1].trim().toLowerCase();
-      const value = m[2].trim();
-      if (!value) continue;
-
-      // Skip ignored fields
-      if (summaryIgnoredLabels.has(label)) continue;
-
-      // Disambiguate "email": in SMTP → smtpEmail, otherwise → itEmail
-      if (label === 'email') {
-        if (currentSection === 'smtp') {
-          if (setFieldValue('smtpEmail', value)) filled++;
-        } else {
-          if (setFieldValue('itEmail', value)) filled++;
-        }
-        continue;
-      }
-
-      // Match against field map
-      for (const def of summaryFieldMap) {
-        if (label !== def.label) continue;
-
-        if (def.type === 'radio') {
-          if (setRadioValue(def.name, value)) filled++;
-          break;
-        }
-
-        if (def.type === 'select') {
-          if (setSelectValue(def.id, value)) filled++;
-          break;
-        }
-
-        if (def.type === 'ipmethod') {
-          const knownMethods = ['Reused', 'Mac address reservation', 'DHCP', 'IP scanner'];
-          const found = knownMethods.find(km => km.toLowerCase() === value.toLowerCase());
-          if (found) {
-            if (setSelectValue('ipMethod', found)) filled++;
-          } else if (value.toLowerCase().startsWith('other:')) {
-            setSelectValue('ipMethod', 'Other');
-            const otherVal = value.replace(/^other:\s*/i, '').trim();
-            if (otherVal) setFieldValue('ipMethodOther', otherVal);
-            filled++;
-          } else {
-            setSelectValue('ipMethod', 'Other');
-            setFieldValue('ipMethodOther', value);
-            filled++;
+    lines.forEach(function(line) {
+      var m = line.match(/^([^:]+):\s*(.+)/);
+      if (!m) return;
+      var key = m[1].trim().toLowerCase();
+      var val = m[2].trim();
+      mapping.forEach(function(map) {
+        map.keys.forEach(function(k) {
+          if (key.indexOf(k) !== -1) {
+            var el = document.getElementById(map.id);
+            if (el) {
+              el.value = val;
+              sessionStorage.setItem(map.id, val);
+              flashField(el);
+              count++;
+            }
           }
-          toggleOtherIP();
-          break;
-        }
+        });
+      });
+    });
+    if (count === 0) { showToast('No matching fields found.'); }
+    else { showToast(count + ' field(s) filled from clipboard.'); }
+  };
 
-        if (def.id) {
-          if (setFieldValue(def.id, value)) filled++;
-          break;
+  /* ---------- PASTE SUMMARY ---------- */
+  window.pasteSummary = async function() {
+    var text;
+    try {
+      text = await navigator.clipboard.readText();
+    } catch(e) {
+      showToast('Clipboard access denied.'); return;
+    }
+    if (!text || !text.trim()) { showToast('Clipboard is empty.'); return; }
+
+    var ignoredLabels = new Set([
+      'customer name','point of contact','model','serial number',
+      'new equipment id','equipment id being replaced',
+      'location of machine','ip address','black & white','color','total'
+    ]);
+
+    var labelMap = {
+      'it person': { id: 'itPerson', type: 'text' },
+      'phone': { id: 'itPhone', type: 'text' },
+      'email': { id: 'itEmail', type: 'text', smtpId: 'smtpEmail' },
+      'ip method': { id: 'ipMethod', type: 'ipmethod' },
+      'subnet': { id: 'subnet', type: 'text' },
+      'gateway': { id: 'gateway', type: 'text' },
+      'dns 1': { id: 'dns1', type: 'text' },
+      'dns 2': { id: 'dns2', type: 'text' },
+      'dns 3': { id: 'dns3', type: 'text' },
+      'how settings were transferred': { id: 'settingsTransfer', type: 'text' },
+      'scan to folder type': { id: 'scanType', type: 'select' },
+      'fax': { id: null, type: 'radio', name: 'fax' },
+      'server': { id: 'smtpServer', type: 'text' },
+      'port': { id: 'smtpPort', type: 'text' },
+      'ssl/tls': { id: 'smtpSsl', type: 'select' },
+      'mps': { id: null, type: 'radio', name: 'mps' },
+      'manufacturer reporting enabled': { id: null, type: 'radio', name: 'mfgReporting' }
+    };
+
+    var lines = text.split('\n');
+    var section = '';
+    var count = 0;
+    var inAdditional = false;
+    var additionalLines = [];
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      var trimmed = line.trim();
+
+      // Section header detection
+      if (/^===/.test(trimmed) || /^---/.test(trimmed) || /^--/.test(trimmed)) {
+        var headerText = trimmed.replace(/^[=\-\s]+/, '').replace(/[=\-\s]+$/, '').toLowerCase();
+        if (headerText.indexOf('smtp') !== -1) section = 'smtp';
+        else if (headerText.indexOf('additional') !== -1) { inAdditional = true; section = 'additional'; }
+        else if (headerText) { section = headerText; inAdditional = false; }
+        continue;
+      }
+
+      if (inAdditional) {
+        if (trimmed) additionalLines.push(trimmed);
+        continue;
+      }
+
+      var m = trimmed.match(/^([^:]+):\s*(.*)/);
+      if (!m) continue;
+      var label = m[1].trim();
+      var val = m[2].trim();
+      var labelLower = label.toLowerCase();
+
+      if (ignoredLabels.has(labelLower)) continue;
+
+      var mapEntry = labelMap[labelLower];
+      if (!mapEntry) continue;
+
+      // Email disambiguation
+      if (labelLower === 'email') {
+        var targetId = (section === 'smtp') ? 'smtpEmail' : 'itEmail';
+        var el = document.getElementById(targetId);
+        if (el) {
+          el.value = val;
+          sessionStorage.setItem(targetId, val);
+          flashField(el);
+          count++;
         }
+        continue;
+      }
+
+      if (mapEntry.type === 'text') {
+        var el = document.getElementById(mapEntry.id);
+        if (el) {
+          el.value = val;
+          sessionStorage.setItem(mapEntry.id, val);
+          flashField(el);
+          count++;
+        }
+      } else if (mapEntry.type === 'select') {
+        var sel = document.getElementById(mapEntry.id);
+        if (sel) {
+          var opts = sel.options;
+          var found = false;
+          for (var j = 0; j < opts.length; j++) {
+            if (opts[j].value.toLowerCase() === val.toLowerCase()) {
+              sel.value = opts[j].value;
+              found = true; break;
+            }
+          }
+          if (!found) sel.value = val;
+          sessionStorage.setItem(mapEntry.id, sel.value);
+          flashField(sel);
+          count++;
+        }
+      } else if (mapEntry.type === 'radio') {
+        var rb = document.querySelector('input[name="'+mapEntry.name+'"][value="'+val+'"]');
+        if (rb) {
+          rb.checked = true;
+          sessionStorage.setItem('radio_' + mapEntry.name, val);
+          flashField(rb.parentElement);
+          count++;
+        }
+      } else if (mapEntry.type === 'ipmethod') {
+        var sel = document.getElementById('ipMethod');
+        var knownOpts = ['reused','mac address reservation','dhcp','ip scanner'];
+        var valLower = val.toLowerCase();
+        if (knownOpts.indexOf(valLower) !== -1) {
+          // match option
+          for (var j = 0; j < sel.options.length; j++) {
+            if (sel.options[j].value.toLowerCase() === valLower) {
+              sel.value = sel.options[j].value; break;
+            }
+          }
+          sessionStorage.setItem('ipMethod', sel.value);
+        } else if (valLower.indexOf('other:') === 0) {
+          sel.value = 'Other';
+          var otherVal = val.substring(6).trim();
+          document.getElementById('ipMethodOther').value = otherVal;
+          sessionStorage.setItem('ipMethod', 'Other');
+          sessionStorage.setItem('ipMethodOther', otherVal);
+        } else {
+          sel.value = 'Other';
+          document.getElementById('ipMethodOther').value = val;
+          sessionStorage.setItem('ipMethod', 'Other');
+          sessionStorage.setItem('ipMethodOther', val);
+        }
+        toggleOtherIP();
+        flashField(sel);
+        count++;
       }
     }
 
-    // Additional info
-    if (additionalInfoLines.length > 0) {
-      if (setFieldValue('additionalInfo', additionalInfoLines.join('\n'))) filled++;
+    if (additionalLines.length > 0) {
+      var aiEl = document.getElementById('additionalInfo');
+      aiEl.value = additionalLines.join('\n');
+      sessionStorage.setItem('additionalInfo', aiEl.value);
+      flashField(aiEl);
+      count++;
     }
 
-    toggleOtherIP();
-    updateTotal();
+    if (count === 0) showToast('No matching fields found.');
+    else showToast(count + ' field(s) imported from summary.');
+  };
 
-    if (filled === 0) showToast('No matching summary fields found in clipboard.');
-    else showToast(filled + ' field(s) imported from summary.');
-  });
+  /* ---------- GENERATE SUMMARY ---------- */
+  window.generateSummary = function() {
+    var v = function(id) { return (document.getElementById(id).value || '').trim(); };
+    var rv = function(name) {
+      var checked = document.querySelector('input[name="'+name+'"]:checked');
+      return checked ? checked.value : '';
+    };
 
-  // === GENERATE SUMMARY ===
-  document.getElementById('btnGenerate').addEventListener('click', () => {
-    const v = id => (document.getElementById(id)?.value || '').trim();
-    const radio = name => { const r = document.querySelector(`input[name="${name}"]:checked`); return r ? r.value : ''; };
+    var out = '';
+    var any = false;
 
-    let ipMethodVal = v('ipMethod');
+    // Call Notes
+    var callFields = [
+      ['Customer Name', v('customerName')],
+      ['Point of Contact', v('poc')],
+      ['IT Person', v('itPerson')],
+      ['Phone', v('itPhone')],
+      ['Email', v('itEmail')],
+      ['Location of Machine', v('location')],
+      ['Model', v('model')],
+      ['New Equipment ID', v('newEquipmentId')],
+      ['Serial Number', v('serialNumber')],
+      ['Equipment ID Being Replaced', v('equipmentId')]
+    ];
+    var callSection = '';
+    callFields.forEach(function(f) { if (f[1]) callSection += f[0] + ': ' + f[1] + '\n'; });
+    if (callSection) { out += '=== CALL NOTES ===\n' + callSection + '\n'; any = true; }
+
+    // IP Info
+    var ipMethodVal = v('ipMethod');
     if (ipMethodVal === 'Other') {
-      const oth = v('ipMethodOther');
-      ipMethodVal = oth ? 'Other: ' + oth : 'Other';
+      var otherText = v('ipMethodOther');
+      ipMethodVal = otherText ? 'Other: ' + otherText : 'Other';
+    }
+    var ipFields = [
+      ['IP Method', ipMethodVal],
+      ['IP Address', v('ip')],
+      ['Subnet', v('subnet')],
+      ['Gateway', v('gateway')],
+      ['DNS 1', v('dns1')],
+      ['DNS 2', v('dns2')],
+      ['DNS 3', v('dns3')]
+    ];
+    var ipSection = '';
+    ipFields.forEach(function(f) { if (f[1]) ipSection += f[0] + ': ' + f[1] + '\n'; });
+    if (ipSection) { out += '--- IP Info ---\n' + ipSection + '\n'; any = true; }
+
+    // Settings Transfer
+    var st = v('settingsTransfer');
+    if (st) { out += '--- Settings Transfer ---\nHow settings were transferred: ' + st + '\n\n'; any = true; }
+
+    // Scanning Info
+    var scanFields = [
+      ['Scan to Folder Type', v('scanType')],
+      ['Fax', rv('fax')]
+    ];
+    var scanSection = '';
+    scanFields.forEach(function(f) { if (f[1]) scanSection += f[0] + ': ' + f[1] + '\n'; });
+
+    // SMTP
+    var smtpFields = [
+      ['Server', v('smtpServer')],
+      ['Port', v('smtpPort')],
+      ['SSL/TLS', v('smtpSsl')],
+      ['Email', v('smtpEmail')]
+    ];
+    var smtpSection = '';
+    smtpFields.forEach(function(f) { if (f[1]) smtpSection += f[0] + ': ' + f[1] + '\n'; });
+
+    if (scanSection || smtpSection) {
+      if (scanSection) { out += '--- Scanning Info ---\n' + scanSection + '\n'; }
+      if (smtpSection) { out += '-- SMTP --\n' + smtpSection + '\n'; }
+      any = true;
     }
 
-    const sections = [];
+    // Reporting
+    var repFields = [
+      ['MPS', rv('mps')],
+      ['Manufacturer reporting enabled', rv('mfgReporting')]
+    ];
+    var repSection = '';
+    repFields.forEach(function(f) { if (f[1]) repSection += f[0] + ': ' + f[1] + '\n'; });
 
-    const cn = [];
-    if (v('customerName')) cn.push('Customer Name: ' + v('customerName'));
-    if (v('poc')) cn.push('Point of Contact: ' + v('poc'));
-    if (v('itPerson')) cn.push('IT Person: ' + v('itPerson'));
-    if (v('itPhone')) cn.push('Phone: ' + v('itPhone'));
-    if (v('itEmail')) cn.push('Email: ' + v('itEmail'));
-    if (v('location')) cn.push('Location of Machine: ' + v('location'));
-    if (v('model')) cn.push('Model: ' + v('model'));
-    if (v('newEquipmentId')) cn.push('New Equipment ID: ' + v('newEquipmentId'));
-    if (v('serialNumber')) cn.push('Serial Number: ' + v('serialNumber'));
-    if (v('equipmentId')) cn.push('Equipment ID Being Replaced: ' + v('equipmentId'));
-    if (cn.length) sections.push('=== CALL NOTES ===\n' + cn.join('\n'));
+    // Page Counts
+    var bw = v('bwCount');
+    var cl = v('colorCount');
+    var pcSection = '';
+    if (bw) pcSection += 'Black & White: ' + parseInt(bw).toLocaleString() + '\n';
+    if (cl) pcSection += 'Color: ' + parseInt(cl).toLocaleString() + '\n';
+    if (bw || cl) {
+      var total = (parseInt(bw) || 0) + (parseInt(cl) || 0);
+      pcSection += 'Total: ' + total.toLocaleString() + '\n';
+    }
 
-    const ip = [];
-    if (ipMethodVal) ip.push('IP Method: ' + ipMethodVal);
-    if (v('ip')) ip.push('IP Address: ' + v('ip'));
-    if (v('subnet')) ip.push('Subnet: ' + v('subnet'));
-    if (v('gateway')) ip.push('Gateway: ' + v('gateway'));
-    if (v('dns1')) ip.push('DNS 1: ' + v('dns1'));
-    if (v('dns2')) ip.push('DNS 2: ' + v('dns2'));
-    if (v('dns3')) ip.push('DNS 3: ' + v('dns3'));
-    if (ip.length) sections.push('--- IP Info ---\n' + ip.join('\n'));
+    if (repSection || pcSection) {
+      out += '--- Reporting ---\n';
+      if (repSection) out += repSection;
+      if (pcSection) out += '-- Page Counts --\n' + pcSection;
+      out += '\n';
+      any = true;
+    }
 
-    if (v('settingsTransfer')) sections.push('--- Settings Transfer ---\nHow settings were transferred: ' + v('settingsTransfer'));
+    // Additional Info
+    var ai = v('additionalInfo');
+    if (ai) { out += '--- Additional Info ---\n' + ai + '\n'; any = true; }
 
-    const sc = [];
-    if (v('scanType')) sc.push('Scan to Folder Type: ' + v('scanType'));
-    if (radio('fax')) sc.push('Fax: ' + radio('fax'));
-    if (sc.length) sections.push('--- Scanning Info ---\n' + sc.join('\n'));
+    if (!any) { showToast('No data to generate.'); return; }
 
-    const sm = [];
-    if (v('smtpServer')) sm.push('Server: ' + v('smtpServer'));
-    if (v('smtpPort')) sm.push('Port: ' + v('smtpPort'));
-    if (v('smtpSsl')) sm.push('SSL/TLS: ' + v('smtpSsl'));
-    if (v('smtpEmail')) sm.push('Email: ' + v('smtpEmail'));
-    if (sm.length) sections.push('-- SMTP --\n' + sm.join('\n'));
-
-    const rp = [];
-    if (radio('mps')) rp.push('MPS: ' + radio('mps'));
-    if (radio('mfgReporting')) rp.push('Manufacturer reporting enabled: ' + radio('mfgReporting'));
-    const bw = parseInt(v('bwCount')) || 0;
-    const col = parseInt(v('colorCount')) || 0;
-    const pcLines = [];
-    if (v('bwCount')) pcLines.push('Black & White: ' + bw.toLocaleString());
-    if (v('colorCount')) pcLines.push('Color: ' + col.toLocaleString());
-    if (pcLines.length) pcLines.push('Total: ' + (bw + col).toLocaleString());
-    if (pcLines.length) rp.push('-- Page Counts --\n' + pcLines.join('\n'));
-    if (rp.length) sections.push('--- Reporting ---\n' + rp.join('\n'));
-
-    if (v('additionalInfo')) sections.push('--- Additional Info ---\n' + v('additionalInfo'));
-
-    if (sections.length === 0) { showToast('No data to generate'); return; }
-
-    const output = sections.join('\n\n');
-    document.getElementById('outputBox').value = output;
-    saveField('outputBox');
+    var ob = document.getElementById('outputBox');
+    ob.value = out.trim();
+    sessionStorage.setItem('outputBox', ob.value);
     showToast('Summary generated!');
-  });
+  };
 
-  // === COPY TO CLIPBOARD ===
-  document.getElementById('btnCopy').addEventListener('click', async () => {
-    const text = document.getElementById('outputBox').value;
+  /* ---------- COPY TO CLIPBOARD ---------- */
+  window.copyToClipboard = async function() {
+    var text = document.getElementById('outputBox').value;
     if (!text.trim()) { showToast('Nothing to copy — generate summary first.'); return; }
     try {
       await navigator.clipboard.writeText(text);
       showToast('Copied to clipboard!');
     } catch(e) {
       try {
-        const ta = document.createElement('textarea');
+        var ta = document.createElement('textarea');
         ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
         document.body.appendChild(ta);
         ta.select();
         document.execCommand('copy');
@@ -778,105 +753,105 @@
         showToast('Failed to copy.');
       }
     }
-  });
+  };
 
-  // === DOWNLOAD PDF ===
-  document.getElementById('btnDownload').addEventListener('click', async () => {
-    const v = id => (document.getElementById(id)?.value || '').trim();
-    const bw = parseInt(v('bwCount')) || 0;
-    const col = parseInt(v('colorCount')) || 0;
-    const total = bw + col;
+  /* ---------- DOWNLOAD PDF ---------- */
+  window.downloadPDF = async function() {
+    var v = function(id) { return (document.getElementById(id).value || '').trim(); };
+    var bw = v('bwCount');
+    var cl = v('colorCount');
+    var total = ((parseInt(bw) || 0) + (parseInt(cl) || 0));
 
-    const mapping = {
+    var pdfMap = {
       'customer': v('customerName'),
       'equipID': v('newEquipmentId'),
       'model': v('model'),
-      'black': v('bwCount'),
-      'color': v('colorCount'),
-      'total': total ? String(total) : '',
+      'black': bw,
+      'color': cl,
+      'total': (bw || cl) ? String(total) : '',
       'ip': v('ip'),
       'subnet': v('subnet'),
       'gateway': v('gateway'),
       'dns1': v('dns1'),
       'dns2': v('dns2'),
       'city': v('city'),
-      'techName': v('techName')
+      'techName': v('techName'),
+      'location': v('location')
     };
 
-    const hasData = Object.values(mapping).some(x => x);
+    var hasData = false;
+    for (var k in pdfMap) { if (pdfMap[k]) { hasData = true; break; } }
     if (!hasData) { showToast('No data to fill in PDF.'); return; }
 
-    let pdfBytes;
+    var bytes;
     try {
-      const resp = await fetch('net_form_with_text_feilds.pdf');
+      var resp = await fetch('net_form_with_text_feilds.pdf');
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
-      pdfBytes = await resp.arrayBuffer();
+      bytes = await resp.arrayBuffer();
     } catch(e) {
-      showToast('Failed to fetch PDF: ' + e.message);
-      return;
+      showToast('Failed to fetch PDF: ' + e.message); return;
     }
 
     try {
-      const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
-      const form = pdfDoc.getForm();
-      let filledCount = 0;
-      for (const [field, val] of Object.entries(mapping)) {
-        if (!val) continue;
+      var pdfDoc = await PDFLib.PDFDocument.load(bytes);
+      var form = pdfDoc.getForm();
+      var filled = 0;
+      for (var fieldName in pdfMap) {
+        if (!pdfMap[fieldName]) continue;
         try {
-          form.getTextField(field).setText(val);
-          filledCount++;
+          form.getTextField(fieldName).setText(pdfMap[fieldName]);
+          filled++;
         } catch(e) {
-          console.warn('PDF field "' + field + '" not found or error:', e.message);
+          console.warn('PDF field "' + fieldName + '" not found or error:', e.message);
         }
       }
 
-      const savedBytes = await pdfDoc.save();
-      const custName = v('customerName') || 'Unknown';
-      const equipId = v('newEquipmentId') || 'NoID';
-      const sanitize = s => s.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
-      const filename = 'Network_Install_' + sanitize(custName) + '_' + sanitize(equipId) + '.pdf';
+      var pdfBytes = await pdfDoc.save();
+      var custName = v('customerName') || 'Unknown';
+      var equipId = v('newEquipmentId') || 'NoID';
+      var sanitize = function(s) { return s.replace(/[^a-zA-Z0-9_\-\.]/g, '_'); };
+      var filename = 'Network_Install_' + sanitize(custName) + '_' + sanitize(equipId) + '.pdf';
 
-      const blob = new Blob([savedBytes], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
+      var blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      showToast(filledCount + ' field(s) filled in PDF.');
+      showToast(filled + ' field(s) filled in PDF.');
     } catch(e) {
-      showToast('Error processing PDF: ' + e.message);
+      showToast('Error filling PDF: ' + e.message);
     }
-  });
+  };
 
-  // === CLEAR ALL ===
-  document.getElementById('btnClear').addEventListener('click', () => {
-    if (!confirm('Clear all fields and saved data?')) return;
+  /* ---------- CLEAR ALL ---------- */
+  window.clearAll = function() {
+    if (!window.confirm('Clear all fields and saved data?')) return;
 
-    textFieldIds.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-      sessionStorage.removeItem(id);
+    fieldIds.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        if (el.tagName === 'SELECT') el.selectedIndex = 0;
+        else el.value = '';
+        sessionStorage.removeItem(id);
+      }
     });
-    selectIds.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-      sessionStorage.removeItem(id);
+
+    radios.forEach(function(r) {
+      r.checked = false;
     });
-    radioNames.forEach(name => {
-      document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.checked = false);
+    ['fax','mps','mfgReporting'].forEach(function(name) {
       sessionStorage.removeItem('radio_' + name);
     });
 
     document.getElementById('totalDisplay').textContent = '0';
     toggleOtherIP();
     showToast('All fields cleared.');
-  });
+  };
 
-  restoreAll();
 })();
 </script>
 </body>
