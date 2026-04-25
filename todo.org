@@ -1,0 +1,9 @@
+* create a drop down for MPS
+- None, add link for jot form
+- Fixed broken connector
+- MPS already reporting
+- Installed MPS
+* create drop down for remote monitoring
+drop down has each vendor and name of service, when i select it a link appears for that service 
+* fix point of contact
+this should not change between machines for one customer

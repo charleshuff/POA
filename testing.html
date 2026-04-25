@@ -1,0 +1,874 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equipment Replacement Info</title>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+    background: #f8f9fa;
+    min-height: 100vh;
+    padding: 24px 8px;
+  }
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    padding: 32px 28px;
+  }
+  h1 { text-align: center; font-size: 1.5rem; color: #222; margin-bottom: 18px; }
+  h2 { font-size: 1.18rem; color: #2d3436; border-bottom: 2px solid #dee2e6; padding-bottom: 6px; margin: 28px 0 14px; }
+  h3 { font-size: 1.05rem; color: #444; margin: 22px 0 10px; }
+  h4 { font-size: 0.97rem; color: #555; margin: 18px 0 8px; }
+  label { display: block; font-size: 0.88rem; font-weight: 600; color: #333; margin-bottom: 4px; margin-top: 12px; }
+  input[type="text"], input[type="tel"], input[type="email"], input[type="number"], select, textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input[type="text"]:focus, input[type="tel"]:focus, input[type="email"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+    border-color: #74b9ff;
+    box-shadow: 0 0 0 3px rgba(116,185,255,0.35);
+  }
+  textarea { min-height: 60px; resize: vertical; }
+  .radio-group { display: flex; align-items: center; gap: 16px; margin-top: 4px; }
+  .radio-group label { display: inline-flex; align-items: center; gap: 5px; margin: 0; font-weight: 500; cursor: pointer; }
+  .radio-group input[type="radio"] {
+    -webkit-appearance: radio;
+    appearance: radio;
+    margin: 0;
+  }
+  .paste-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 4px; flex-wrap: wrap; }
+  .paste-row .btn { flex: 1 1 auto; min-width: 170px; }
+  .hint { text-align: center; font-size: 0.78rem; color: #888; margin-bottom: 14px; }
+  .btn {
+    display: inline-block;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    text-align: center;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn:hover { opacity: 0.92; }
+  .btn-paste-calls { background: #6c5ce7; }
+  .btn-paste-summary { background: #a29bfe; }
+  .btn-generate { background: #00b894; }
+  .btn-copy { background: #0984e3; }
+  .btn-download { background: #fdcb6e; color: #333; }
+  .btn-clear { background: #e17055; }
+  .btn-group { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 22px; }
+  .btn-group .btn { flex: 1 1 auto; min-width: 140px; }
+  .hidden { display: none !important; }
+  .page-counts-row { display: flex; gap: 14px; }
+  .page-counts-row .field { flex: 1; }
+  .total-display {
+    background: #f1f3f5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 1rem;
+    text-align: center;
+  }
+  .total-display span { font-weight: 700; color: #0984e3; }
+  #outputBox {
+    font-family: 'Courier New', Courier, monospace;
+    background: #f5f5f5;
+    width: 100%;
+    min-height: 120px;
+    resize: vertical;
+  }
+  .links-list { list-style: none; padding: 0; margin: 0 0 10px 0; }
+  .links-list li { margin: 5px 0; }
+  .links-list a { color: #0984e3; text-decoration: none; font-weight: 500; font-size: 0.93rem; }
+  .links-list a:hover { text-decoration: underline; }
+  @keyframes flashHighlight {
+    from { background-color: #dee2e6; }
+    to { background-color: transparent; }
+  }
+  .flash { animation: flashHighlight 1.5s ease; }
+  #toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #2d3436;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 0.93rem;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    z-index: 9999;
+    max-width: 90vw;
+    text-align: center;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  @media (max-width: 480px) {
+    .container { padding: 18px 10px; }
+    .paste-row { flex-direction: column; }
+    .paste-row .btn { width: 100%; min-width: unset; }
+    .btn-group { flex-direction: column; }
+    .btn-group .btn { width: 100%; min-width: unset; }
+    .page-counts-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Equipment Replacement Info</h1>
+
+  <div class="paste-row">
+    <button class="btn btn-paste-calls" onclick="pasteCalls()">📋 Paste Calls</button>
+    <button class="btn btn-paste-summary" onclick="pasteSummary()">📋 Paste Summary</button>
+  </div>
+  <div class="hint">Paste Calls: auto-fill from work order &nbsp;|&nbsp; Paste Summary: re-import a generated summary</div>
+
+  <h2>Call Notes</h2>
+
+  <label for="techName">Tech Name</label>
+  <input type="text" id="techName">
+
+  <label for="city">City</label>
+  <input type="text" id="city">
+
+  <label for="customerName">Customer Name</label>
+  <input type="text" id="customerName">
+
+  <label for="poc">Point of Contact</label>
+  <input type="text" id="poc">
+
+  <label for="itPerson">IT Person</label>
+  <input type="text" id="itPerson">
+
+  <label for="itPhone">Phone Number</label>
+  <input type="tel" id="itPhone">
+
+  <label for="itEmail">Email</label>
+  <input type="email" id="itEmail">
+
+  <label for="location">Location of Machine</label>
+  <input type="text" id="location">
+
+  <label for="model">Model</label>
+  <input type="text" id="model">
+
+  <label for="newEquipmentId">New Equipment ID</label>
+  <input type="text" id="newEquipmentId">
+
+  <label for="serialNumber">Serial Number</label>
+  <input type="text" id="serialNumber">
+
+  <label for="equipmentId">Equipment ID Being Replaced</label>
+  <input type="text" id="equipmentId">
+
+  <h3>IP Info</h3>
+
+  <label for="ipMethod">IP Method</label>
+  <select id="ipMethod" onchange="toggleOtherIP()">
+    <option value=""></option>
+    <option value="Reused">Reused</option>
+    <option value="Mac address reservation">Mac address reservation</option>
+    <option value="DHCP">DHCP</option>
+    <option value="IP scanner">IP scanner</option>
+    <option value="Other">Other</option>
+  </select>
+  <div id="ipMethodOtherWrap" class="hidden">
+    <label for="ipMethodOther">Specify Other</label>
+    <input type="text" id="ipMethodOther">
+  </div>
+
+  <label for="ip">IP Address</label>
+  <input type="text" id="ip">
+
+  <label for="subnet">Subnet</label>
+  <input type="text" id="subnet">
+
+  <label for="gateway">Gateway</label>
+  <input type="text" id="gateway">
+
+  <label for="dns1">DNS 1</label>
+  <input type="text" id="dns1">
+
+  <label for="dns2">DNS 2</label>
+  <input type="text" id="dns2">
+
+  <label for="dns3">DNS 3</label>
+  <input type="text" id="dns3">
+
+  <h3>Settings Transfer</h3>
+  <label for="settingsTransfer">How were settings transferred?</label>
+  <textarea id="settingsTransfer"></textarea>
+
+  <h3>Scanning Info</h3>
+
+  <label for="scanType">Scan to Folder Type</label>
+  <select id="scanType">
+    <option value=""></option>
+    <option value="SMB">SMB</option>
+    <option value="WebDAV">WebDAV</option>
+    <option value="FTP">FTP</option>
+  </select>
+
+  <label>Fax?</label>
+  <div class="radio-group">
+    <label><input type="radio" name="fax" value="Yes"> Yes</label>
+    <label><input type="radio" name="fax" value="No"> No</label>
+  </div>
+
+  <h4>SMTP</h4>
+
+  <label for="smtpServer">Server</label>
+  <input type="text" id="smtpServer">
+
+  <label for="smtpPort">Port</label>
+  <input type="text" id="smtpPort">
+
+  <label for="smtpSsl">SSL/TLS</label>
+  <select id="smtpSsl">
+    <option value=""></option>
+    <option value="None">None</option>
+    <option value="SSL">SSL</option>
+    <option value="TLS">TLS</option>
+    <option value="STARTTLS">STARTTLS</option>
+  </select>
+
+  <label for="smtpEmail">Email Address</label>
+  <input type="email" id="smtpEmail">
+
+  <h3>Reporting</h3>
+
+  <ul class="links-list">
+    <li><a href="https://portal.mpsmonitor.com/" target="_blank" rel="noopener">MPS Monitor Portal ↗</a></li>
+    <li><a href="https://form.jotform.com/250095273606153" target="_blank" rel="noopener">Jot Form ↗</a></li>
+    <li><a href="https://apps.kmbizhubvcare.com/vcaremobile/app/index.html#login?backUri=search" target="_blank" rel="noopener">Vcare ↗</a></li>
+    <li><a href="https://pacificoa.sharepoint.com/sites/POALearningandDevelopment/SitePages/Remote-Monitoring-Tools.aspx" target="_blank" rel="noopener">Sharepoint ↗</a></li>
+  </ul>
+
+  <!-- CHANGED: MPS radio buttons replaced with dropdown -->
+  <label for="mps">MPS</label>
+  <select id="mps">
+    <option value=""></option>
+    <option value="Already Reporting">Already Reporting</option>
+    <option value="Fixed Connector">Fixed Connector</option>
+    <option value="Installed MPS">Installed MPS</option>
+    <option value="No MPS">No MPS</option>
+  </select>
+
+  <label>Was manufacturer reporting enabled?</label>
+  <div class="radio-group">
+    <label><input type="radio" name="mfgReporting" value="Yes"> Yes</label>
+    <label><input type="radio" name="mfgReporting" value="No"> No</label>
+  </div>
+
+  <h4>Page Counts</h4>
+  <div class="page-counts-row">
+    <div class="field">
+      <label for="bwCount">Black &amp; White</label>
+      <input type="number" min="0" id="bwCount">
+    </div>
+    <div class="field">
+      <label for="colorCount">Color</label>
+      <input type="number" min="0" id="colorCount">
+    </div>
+  </div>
+  <div class="total-display">Total: <span id="totalDisplay">0</span></div>
+
+  <h3>Additional Info</h3>
+  <div style="font-size:0.8rem;color:#888;margin-bottom:4px;">Fax details, user box, etc.</div>
+  <textarea id="additionalInfo"></textarea>
+
+  <h3>Summary Output</h3>
+  <textarea id="outputBox" readonly></textarea>
+
+  <div class="btn-group">
+    <button class="btn btn-generate" onclick="generateSummary()">Generate Summary</button>
+    <button class="btn btn-copy" onclick="copyToClipboard()">Copy to Clipboard</button>
+    <button class="btn btn-download" onclick="downloadPDF()">📄 Download Filled PDF</button>
+    <button class="btn btn-clear" onclick="clearAll()">Clear All</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function() {
+
+  /* ---------- TOAST ---------- */
+  var toastTimer;
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { t.classList.remove('show'); }, 2200);
+  }
+  window.showToast = showToast;
+
+  /* ---------- TOGGLE OTHER IP ---------- */
+  function toggleOtherIP() {
+    var sel = document.getElementById('ipMethod');
+    var wrap = document.getElementById('ipMethodOtherWrap');
+    if (sel.value === 'Other') {
+      wrap.classList.remove('hidden');
+    } else {
+      wrap.classList.add('hidden');
+    }
+  }
+  window.toggleOtherIP = toggleOtherIP;
+
+  /* ---------- TOTAL UPDATE ---------- */
+  function updateTotal() {
+    var bw = parseInt(document.getElementById('bwCount').value) || 0;
+    var c  = parseInt(document.getElementById('colorCount').value) || 0;
+    document.getElementById('totalDisplay').textContent = (bw + c).toLocaleString();
+  }
+  window.updateTotal = updateTotal;
+
+  /* ---------- SESSION STORAGE: AUTO-SAVE ---------- */
+  /* CHANGED: Added 'mps' to fieldIds since it is now a <select> */
+  var fieldIds = [
+    'techName','city','customerName','poc','itPerson','itPhone','itEmail',
+    'location','model','newEquipmentId','serialNumber','equipmentId',
+    'ipMethod','ipMethodOther','ip','subnet','gateway','dns1','dns2','dns3',
+    'settingsTransfer','scanType','smtpServer','smtpPort','smtpSsl','smtpEmail',
+    'mps',
+    'bwCount','colorCount','additionalInfo','outputBox'
+  ];
+
+  fieldIds.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', function() {
+      sessionStorage.setItem(id, el.value);
+      if (id === 'bwCount' || id === 'colorCount') updateTotal();
+    });
+    el.addEventListener('change', function() {
+      sessionStorage.setItem(id, el.value);
+      if (id === 'ipMethod') toggleOtherIP();
+      if (id === 'bwCount' || id === 'colorCount') updateTotal();
+    });
+  });
+
+  // Radio buttons
+  var radios = document.querySelectorAll('input[type="radio"]');
+  radios.forEach(function(r) {
+    r.addEventListener('change', function() {
+      sessionStorage.setItem('radio_' + r.name, r.value);
+    });
+  });
+
+  /* ---------- SESSION STORAGE: RESTORE ---------- */
+  function restoreAll() {
+    fieldIds.forEach(function(id) {
+      var val = sessionStorage.getItem(id);
+      var el = document.getElementById(id);
+      if (val !== null && el) { el.value = val; }
+    });
+    // radios — CHANGED: removed 'mps' since it is now a <select> handled above
+    ['fax','mfgReporting'].forEach(function(name) {
+      var val = sessionStorage.getItem('radio_' + name);
+      if (val) {
+        var rb = document.querySelector('input[name="'+name+'"][value="'+val+'"]');
+        if (rb) rb.checked = true;
+      }
+    });
+    toggleOtherIP();
+    updateTotal();
+  }
+  restoreAll();
+
+  /* ---------- FLASH ANIMATION ---------- */
+  function flashField(el) {
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  }
+
+  /* ---------- PASTE CALLS ---------- */
+  window.pasteCalls = async function() {
+    var text;
+    try {
+      text = await navigator.clipboard.readText();
+    } catch(e) {
+      showToast('Clipboard access denied.'); return;
+    }
+    if (!text || !text.trim()) { showToast('Clipboard is empty.'); return; }
+
+    var lines = text.split('\n');
+    var count = 0;
+    var mapping = [
+      { keys: ['title','customer'], id: 'customerName' },
+      { keys: ['contact'], id: 'poc' },
+      { keys: ['item no','model'], id: 'model' },
+      { keys: ['serial'], id: 'serialNumber' },
+      { keys: ['equipment id','equipment'], id: 'newEquipmentId' },
+      { keys: ['city'], id: 'city' },
+      { keys: ['technician'], id: 'techName' }
+    ];
+
+    lines.forEach(function(line) {
+      var m = line.match(/^([^:]+):\s*(.+)/);
+      if (!m) return;
+      var key = m[1].trim().toLowerCase();
+      var val = m[2].trim();
+      mapping.forEach(function(map) {
+        map.keys.forEach(function(k) {
+          if (key.indexOf(k) !== -1) {
+            var el = document.getElementById(map.id);
+            if (el) {
+              el.value = val;
+              sessionStorage.setItem(map.id, val);
+              flashField(el);
+              count++;
+            }
+          }
+        });
+      });
+    });
+    if (count === 0) { showToast('No matching fields found.'); }
+    else { showToast(count + ' field(s) filled from clipboard.'); }
+  };
+
+  /* ---------- PASTE SUMMARY ---------- */
+  window.pasteSummary = async function() {
+    var text;
+    try {
+      text = await navigator.clipboard.readText();
+    } catch(e) {
+      showToast('Clipboard access denied.'); return;
+    }
+    if (!text || !text.trim()) { showToast('Clipboard is empty.'); return; }
+
+    var ignoredLabels = new Set([
+      'customer name','point of contact','model','serial number',
+      'new equipment id','equipment id being replaced',
+      'location of machine','ip address','black & white','color','total'
+    ]);
+
+    var labelMap = {
+      'it person': { id: 'itPerson', type: 'text' },
+      'phone': { id: 'itPhone', type: 'text' },
+      'email': { id: 'itEmail', type: 'text', smtpId: 'smtpEmail' },
+      'ip method': { id: 'ipMethod', type: 'ipmethod' },
+      'subnet': { id: 'subnet', type: 'text' },
+      'gateway': { id: 'gateway', type: 'text' },
+      'dns 1': { id: 'dns1', type: 'text' },
+      'dns 2': { id: 'dns2', type: 'text' },
+      'dns 3': { id: 'dns3', type: 'text' },
+      'how settings were transferred': { id: 'settingsTransfer', type: 'text' },
+      'scan to folder type': { id: 'scanType', type: 'select' },
+      'fax': { id: null, type: 'radio', name: 'fax' },
+      'server': { id: 'smtpServer', type: 'text' },
+      'port': { id: 'smtpPort', type: 'text' },
+      'ssl/tls': { id: 'smtpSsl', type: 'select' },
+      /* CHANGED: mps is now a select dropdown instead of radio */
+      'mps': { id: 'mps', type: 'select' },
+      'manufacturer reporting enabled': { id: null, type: 'radio', name: 'mfgReporting' }
+    };
+
+    var lines = text.split('\n');
+    var section = '';
+    var count = 0;
+    var inAdditional = false;
+    var additionalLines = [];
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      var trimmed = line.trim();
+
+      // Section header detection
+      if (/^===/.test(trimmed) || /^---/.test(trimmed) || /^--/.test(trimmed)) {
+        var headerText = trimmed.replace(/^[=\-\s]+/, '').replace(/[=\-\s]+$/, '').toLowerCase();
+        if (headerText.indexOf('smtp') !== -1) section = 'smtp';
+        else if (headerText.indexOf('additional') !== -1) { inAdditional = true; section = 'additional'; }
+        else if (headerText) { section = headerText; inAdditional = false; }
+        continue;
+      }
+
+      if (inAdditional) {
+        if (trimmed) additionalLines.push(trimmed);
+        continue;
+      }
+
+      var m = trimmed.match(/^([^:]+):\s*(.*)/);
+      if (!m) continue;
+      var label = m[1].trim();
+      var val = m[2].trim();
+      var labelLower = label.toLowerCase();
+
+      if (ignoredLabels.has(labelLower)) continue;
+
+      var mapEntry = labelMap[labelLower];
+      if (!mapEntry) continue;
+
+      // Email disambiguation
+      if (labelLower === 'email') {
+        var targetId = (section === 'smtp') ? 'smtpEmail' : 'itEmail';
+        var el = document.getElementById(targetId);
+        if (el) {
+          el.value = val;
+          sessionStorage.setItem(targetId, val);
+          flashField(el);
+          count++;
+        }
+        continue;
+      }
+
+      if (mapEntry.type === 'text') {
+        var el = document.getElementById(mapEntry.id);
+        if (el) {
+          el.value = val;
+          sessionStorage.setItem(mapEntry.id, val);
+          flashField(el);
+          count++;
+        }
+      } else if (mapEntry.type === 'select') {
+        var sel = document.getElementById(mapEntry.id);
+        if (sel) {
+          var opts = sel.options;
+          var found = false;
+          for (var j = 0; j < opts.length; j++) {
+            if (opts[j].value.toLowerCase() === val.toLowerCase()) {
+              sel.value = opts[j].value;
+              found = true; break;
+            }
+          }
+          if (!found) sel.value = val;
+          sessionStorage.setItem(mapEntry.id, sel.value);
+          flashField(sel);
+          count++;
+        }
+      } else if (mapEntry.type === 'radio') {
+        var rb = document.querySelector('input[name="'+mapEntry.name+'"][value="'+val+'"]');
+        if (rb) {
+          rb.checked = true;
+          sessionStorage.setItem('radio_' + mapEntry.name, val);
+          flashField(rb.parentElement);
+          count++;
+        }
+      } else if (mapEntry.type === 'ipmethod') {
+        var sel = document.getElementById('ipMethod');
+        var knownOpts = ['reused','mac address reservation','dhcp','ip scanner'];
+        var valLower = val.toLowerCase();
+        if (knownOpts.indexOf(valLower) !== -1) {
+          // match option
+          for (var j = 0; j < sel.options.length; j++) {
+            if (sel.options[j].value.toLowerCase() === valLower) {
+              sel.value = sel.options[j].value; break;
+            }
+          }
+          sessionStorage.setItem('ipMethod', sel.value);
+        } else if (valLower.indexOf('other:') === 0) {
+          sel.value = 'Other';
+          var otherVal = val.substring(6).trim();
+          document.getElementById('ipMethodOther').value = otherVal;
+          sessionStorage.setItem('ipMethod', 'Other');
+          sessionStorage.setItem('ipMethodOther', otherVal);
+        } else {
+          sel.value = 'Other';
+          document.getElementById('ipMethodOther').value = val;
+          sessionStorage.setItem('ipMethod', 'Other');
+          sessionStorage.setItem('ipMethodOther', val);
+        }
+        toggleOtherIP();
+        flashField(sel);
+        count++;
+      }
+    }
+
+    if (additionalLines.length > 0) {
+      var aiEl = document.getElementById('additionalInfo');
+      aiEl.value = additionalLines.join('\n');
+      sessionStorage.setItem('additionalInfo', aiEl.value);
+      flashField(aiEl);
+      count++;
+    }
+
+    if (count === 0) showToast('No matching fields found.');
+    else showToast(count + ' field(s) imported from summary.');
+  };
+
+  /* ---------- GENERATE SUMMARY ---------- */
+  window.generateSummary = function() {
+    var v = function(id) { return (document.getElementById(id).value || '').trim(); };
+    var rv = function(name) {
+      var checked = document.querySelector('input[name="'+name+'"]:checked');
+      return checked ? checked.value : '';
+    };
+
+    var out = '';
+    var any = false;
+
+    // Call Notes
+    var callFields = [
+      ['Customer Name', v('customerName')],
+      ['Point of Contact', v('poc')],
+      ['IT Person', v('itPerson')],
+      ['Phone', v('itPhone')],
+      ['Email', v('itEmail')],
+      ['Location of Machine', v('location')],
+      ['Model', v('model')],
+      ['New Equipment ID', v('newEquipmentId')],
+      ['Serial Number', v('serialNumber')],
+      ['Equipment ID Being Replaced', v('equipmentId')]
+    ];
+    var callSection = '';
+    callFields.forEach(function(f) { if (f[1]) callSection += f[0] + ': ' + f[1] + '\n'; });
+    if (callSection) { out += '=== CALL NOTES ===\n' + callSection + '\n'; any = true; }
+
+    // IP Info
+    var ipMethodVal = v('ipMethod');
+    if (ipMethodVal === 'Other') {
+      var otherText = v('ipMethodOther');
+      ipMethodVal = otherText ? 'Other: ' + otherText : 'Other';
+    }
+    var ipFields = [
+      ['IP Method', ipMethodVal],
+      ['IP Address', v('ip')],
+      ['Subnet', v('subnet')],
+      ['Gateway', v('gateway')],
+      ['DNS 1', v('dns1')],
+      ['DNS 2', v('dns2')],
+      ['DNS 3', v('dns3')]
+    ];
+    var ipSection = '';
+    ipFields.forEach(function(f) { if (f[1]) ipSection += f[0] + ': ' + f[1] + '\n'; });
+    if (ipSection) { out += '--- IP Info ---\n' + ipSection + '\n'; any = true; }
+
+    // Settings Transfer
+    var st = v('settingsTransfer');
+    if (st) { out += '--- Settings Transfer ---\nHow settings were transferred: ' + st + '\n\n'; any = true; }
+
+    // Scanning Info
+    var scanFields = [
+      ['Scan to Folder Type', v('scanType')],
+      ['Fax', rv('fax')]
+    ];
+    var scanSection = '';
+    scanFields.forEach(function(f) { if (f[1]) scanSection += f[0] + ': ' + f[1] + '\n'; });
+
+    // SMTP
+    var smtpFields = [
+      ['Server', v('smtpServer')],
+      ['Port', v('smtpPort')],
+      ['SSL/TLS', v('smtpSsl')],
+      ['Email', v('smtpEmail')]
+    ];
+    var smtpSection = '';
+    smtpFields.forEach(function(f) { if (f[1]) smtpSection += f[0] + ': ' + f[1] + '\n'; });
+
+    if (scanSection || smtpSection) {
+      if (scanSection) { out += '--- Scanning Info ---\n' + scanSection + '\n'; }
+      if (smtpSection) { out += '-- SMTP --\n' + smtpSection + '\n'; }
+      any = true;
+    }
+
+    // Reporting
+    /* CHANGED: MPS now uses v('mps') instead of rv('mps') since it's a <select> */
+    var repFields = [
+      ['MPS', v('mps')],
+      ['Manufacturer reporting enabled', rv('mfgReporting')]
+    ];
+    var repSection = '';
+    repFields.forEach(function(f) { if (f[1]) repSection += f[0] + ': ' + f[1] + '\n'; });
+
+    // Page Counts
+    var bw = v('bwCount');
+    var cl = v('colorCount');
+    var pcSection = '';
+    if (bw) pcSection += 'Black & White: ' + parseInt(bw).toLocaleString() + '\n';
+    if (cl) pcSection += 'Color: ' + parseInt(cl).toLocaleString() + '\n';
+    if (bw || cl) {
+      var total = (parseInt(bw) || 0) + (parseInt(cl) || 0);
+      pcSection += 'Total: ' + total.toLocaleString() + '\n';
+    }
+
+    if (repSection || pcSection) {
+      out += '--- Reporting ---\n';
+      if (repSection) out += repSection;
+      if (pcSection) out += '-- Page Counts --\n' + pcSection;
+      out += '\n';
+      any = true;
+    }
+
+    // Additional Info
+    var ai = v('additionalInfo');
+    if (ai) { out += '--- Additional Info ---\n' + ai + '\n'; any = true; }
+
+    if (!any) { showToast('No data to generate.'); return; }
+
+    var ob = document.getElementById('outputBox');
+    ob.value = out.trim();
+    sessionStorage.setItem('outputBox', ob.value);
+    showToast('Summary generated!');
+  };
+
+  /* ---------- COPY TO CLIPBOARD ---------- */
+  window.copyToClipboard = async function() {
+    var text = document.getElementById('outputBox').value;
+    if (!text.trim()) { showToast('Nothing to copy — generate summary first.'); return; }
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Copied to clipboard!');
+    } catch(e) {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Copied to clipboard!');
+      } catch(e2) {
+        showToast('Failed to copy.');
+      }
+    }
+  };
+
+  /* ---------- DOWNLOAD PDF ---------- */
+  window.downloadPDF = async function() {
+    var v = function(id) { return (document.getElementById(id).value || '').trim(); };
+    var bw = v('bwCount');
+    var cl = v('colorCount');
+    var total = ((parseInt(bw) || 0) + (parseInt(cl) || 0));
+
+    var pdfMap = {
+      'customer': v('customerName'),
+      'equipID': v('newEquipmentId'),
+      'model': v('model'),
+      'black': bw,
+      'color': cl,
+      'total': (bw || cl) ? String(total) : '',
+      'ip': v('ip'),
+      'subnet': v('subnet'),
+      'gateway': v('gateway'),
+      'dns1': v('dns1'),
+      'dns2': v('dns2'),
+      'city': v('city'),
+      'techName': v('techName'),
+      'location': v('location')
+    };
+
+    var hasData = false;
+    for (var k in pdfMap) { if (pdfMap[k]) { hasData = true; break; } }
+    if (!hasData) { showToast('No data to fill in PDF.'); return; }
+
+    var bytes;
+    try {
+      var resp = await fetch('net_form_with_text_feilds.pdf');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      bytes = await resp.arrayBuffer();
+    } catch(e) {
+      showToast('Failed to fetch PDF: ' + e.message); return;
+    }
+
+    try {
+      var pdfDoc = await PDFLib.PDFDocument.load(bytes);
+      var form = pdfDoc.getForm();
+      var filled = 0;
+      for (var fieldName in pdfMap) {
+        if (!pdfMap[fieldName]) continue;
+        try {
+          form.getTextField(fieldName).setText(pdfMap[fieldName]);
+          filled++;
+        } catch(e) {
+          console.warn('PDF field "' + fieldName + '" not found or error:', e.message);
+        }
+      }
+
+      var pdfBytes = await pdfDoc.save();
+      var custName = v('customerName') || 'Unknown';
+      var equipId = v('newEquipmentId') || 'NoID';
+      var sanitize = function(s) { return s.replace(/[^a-zA-Z0-9_\-\.]/g, '_'); };
+      var filename = 'Network_Install_' + sanitize(custName) + '_' + sanitize(equipId) + '.pdf';
+
+      var blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast(filled + ' field(s) filled in PDF.');
+    } catch(e) {
+      showToast('Error filling PDF: ' + e.message);
+    }
+  };
+
+  /* ---------- CLEAR ALL ---------- */
+  window.clearAll = function() {
+    if (!window.confirm('Clear all fields and saved data?')) return;
+
+    fieldIds.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        if (el.tagName === 'SELECT') el.selectedIndex = 0;
+        else el.value = '';
+        sessionStorage.removeItem(id);
+      }
+    });
+
+    radios.forEach(function(r) {
+      r.checked = false;
+    });
+    /* CHANGED: removed 'mps' since it is now cleared via fieldIds above */
+    ['fax','mfgReporting'].forEach(function(name) {
+      sessionStorage.removeItem('radio_' + name);
+    });
+
+    document.getElementById('totalDisplay').textContent = '0';
+    toggleOtherIP();
+    showToast('All fields cleared.');
+  };
+
+})();
+</script>
+</body>
+</html>
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    
