@@ -530,12 +530,13 @@
     if (!text || !text.trim()) { showToast('Clipboard is empty.'); return; }
 
     var ignoredLabels = new Set([
-      'customer name','point of contact','model','serial number',
+      'customer name','model','serial number',
       'new equipment id','equipment id being replaced',
       'location of machine','ip address','black & white','color','total'
     ]);
 
     var labelMap = {
+      'point of contact': { id: 'poc', type: 'text' },
       'it person': { id: 'itPerson', type: 'text' },
       'phone': { id: 'itPhone', type: 'text' },
       'email': { id: 'itEmail', type: 'text', smtpId: 'smtpEmail' },
