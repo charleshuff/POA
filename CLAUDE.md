@@ -103,9 +103,13 @@ Equipment ID: 8C28041
 
 ### Visual Design
 
-- Dark theme: background `#1a1a2e`, card gradient `#16213e` → `#1a1a3e`, border `#2a2a5a` (hover `#00d4ff55`).
-- Accent: `#00d4ff` (cyan). Text: `#e0e0e0`. Field labels: uppercase, small, `#666`.
-- Button colors: Paste `#00d4ff`/`#1a1a2e`, Upload `#6c5ce7`/white, Clear `#e74c3c`/white, Copy `#2ecc71`/`#1a1a2e`, Copy & Open `#3498db`/white, nav links transparent/`#3498db`, copied feedback state `#f39c12`/white.
+Both pages share the same light theme. Background `#f8f9fa`, white card container (`border-radius: 12px`, `box-shadow: 0 2px 16px rgba(0,0,0,0.07)`), dark text `#2d3436`.
+
+- Button colors: Paste `#6c5ce7`/white, Upload `#0984e3`/white, Clear `#e17055`/white, Copy `#00b894`/white, Copy & Open `#0984e3`/white, Copied feedback `#f39c12`/white.
+- Nav links: border/color `#0984e3`, hover fills with `#0984e3`.
+- Call cards: white bg, `#dee2e6` border, hover `#74b9ff` border with `rgba(116,185,255,0.15)` glow.
+- Call badge: `#e9ecef` bg / `#495057` text. Field tiles: `#f8f9fa` bg.
+- Status messages (inline, 5s auto-dismiss): success `#d4edda`/`#155724`, error `#f8d7da`/`#721c24`, info `#d1ecf1`/`#0c5460`.
 - Responsive at ≤600px: single-column grid, stacked buttons, full-width action buttons.
 
 ---
