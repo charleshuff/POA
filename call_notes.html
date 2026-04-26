@@ -291,10 +291,17 @@
   </select>
 
   <label>Was manufacturer reporting enabled?</label>
-  <div class="radio-group">
-    <label><input type="radio" name="mfgReporting" value="Yes"> Yes</label>
-    <label><input type="radio" name="mfgReporting" value="No"> No</label>
-  </div>
+  <select id="mfgReporting">
+    <option value=""></option>
+    <option value="Konica">Konica</option>
+    <option value="Canon">Canon</option>
+    <option value="Sharp">Sharp</option>
+    <option value="Ricoh">Ricoh</option>
+    <option value="Lexmark">Lexmark</option>
+    <option value="HP">HP</option>
+    <option value="Other">Other</option>
+    <option value="None">None</option>
+  </select>
 
   <h4>Page Counts</h4>
   <div class="page-counts-row">
@@ -367,7 +374,7 @@
     'location','model','newEquipmentId','serialNumber','equipmentId',
     'ipMethod','ipMethodOther','ip','subnet','gateway','dns1','dns2','dns3',
     'settingsTransfer','scanType','smtpServer','smtpPort','smtpSsl','smtpEmail',
-    'mps',
+    'mps','mfgReporting',
     'bwCount','colorCount','additionalInfo','outputBox'
   ];
 
@@ -400,8 +407,8 @@
       var el = document.getElementById(id);
       if (val !== null && el) { el.value = val; }
     });
-    // radios — CHANGED: removed 'mps' since it is now a <select> handled above
-    ['fax','mfgReporting'].forEach(function(name) {
+    // radios — CHANGED: removed 'mps' and 'mfgReporting' since both are now <select> handled above
+    ['fax'].forEach(function(name) {
       var val = sessionStorage.getItem('radio_' + name);
       if (val) {
         var rb = document.querySelector('input[name="'+name+'"][value="'+val+'"]');
@@ -499,7 +506,7 @@
       'ssl/tls': { id: 'smtpSsl', type: 'select' },
       /* CHANGED: mps is now a select dropdown instead of radio */
       'mps': { id: 'mps', type: 'select' },
-      'manufacturer reporting enabled': { id: null, type: 'radio', name: 'mfgReporting' }
+      'manufacturer reporting enabled': { id: 'mfgReporting', type: 'select' }
     };
 
     var lines = text.split('\n');
@@ -703,7 +710,7 @@
     /* CHANGED: MPS now uses v('mps') instead of rv('mps') since it's a <select> */
     var repFields = [
       ['MPS', v('mps')],
-      ['Manufacturer reporting enabled', rv('mfgReporting')]
+      ['Manufacturer reporting enabled', v('mfgReporting')]
     ];
     var repSection = '';
     repFields.forEach(function(f) { if (f[1]) repSection += f[0] + ': ' + f[1] + '\n'; });
@@ -851,8 +858,8 @@
     radios.forEach(function(r) {
       r.checked = false;
     });
-    /* CHANGED: removed 'mps' since it is now cleared via fieldIds above */
-    ['fax','mfgReporting'].forEach(function(name) {
+    /* CHANGED: removed 'mps' and 'mfgReporting' since both are now cleared via fieldIds above */
+    ['fax'].forEach(function(name) {
       sessionStorage.removeItem('radio_' + name);
     });
 
