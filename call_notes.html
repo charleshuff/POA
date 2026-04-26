@@ -276,8 +276,6 @@
   <ul class="links-list">
     <li><a href="https://portal.mpsmonitor.com/" target="_blank" rel="noopener">MPS Monitor Portal ↗</a></li>
     <li><a href="https://form.jotform.com/250095273606153" target="_blank" rel="noopener">Jot Form ↗</a></li>
-    <li><a href="https://apps.kmbizhubvcare.com/vcaremobile/app/index.html#login?backUri=search" target="_blank" rel="noopener">Vcare ↗</a></li>
-    <li><a href="https://pacificoa.sharepoint.com/sites/POALearningandDevelopment/SitePages/Remote-Monitoring-Tools.aspx" target="_blank" rel="noopener">Sharepoint ↗</a></li>
   </ul>
 
   <!-- CHANGED: MPS radio buttons replaced with dropdown -->
@@ -302,6 +300,18 @@
     <option value="Other">Other</option>
     <option value="None">None</option>
   </select>
+  <div id="mfgReportingInfo" class="hidden" style="margin-top:8px;">
+    <div id="mfgInfoLink" class="hidden">
+      <a id="mfgInfoAnchor" href="#" target="_blank" style="color:#0984e3;"></a>
+    </div>
+    <div id="mfgInfoHp" class="hidden" style="font-size:0.95em;color:#636e72;">Included in MPS</div>
+    <div id="mfgInfoComment" class="hidden">
+      <textarea id="mfgComment" placeholder="Comments..." rows="2" style="width:100%;box-sizing:border-box;"></textarea>
+    </div>
+    <div id="mfgInfoReason" class="hidden">
+      <textarea id="mfgReason" placeholder="Reason..." rows="2" style="width:100%;box-sizing:border-box;"></textarea>
+    </div>
+  </div>
 
   <h4>Page Counts</h4>
   <div class="page-counts-row">
@@ -359,6 +369,41 @@
   }
   window.toggleOtherIP = toggleOtherIP;
 
+  /* ---------- TOGGLE MFG REPORTING INFO ---------- */
+  var mfgLinks = {
+    'Konica':  { url: 'https://apps.kmbizhubvcare.com/vcaremobile/app/index.html#login?backUri=search', label: 'Vcare Portal ↗' },
+    'Canon':   { url: 'https://www.support.cusa.canon.com/e2/shared/login.jsp', label: 'Canon Support Portal ↗' },
+    'Sharp':   { url: 'https://pacificoa.sharepoint.com/sites/POALearningandDevelopment/SiteAssets/Forms/AllItems.aspx?id=%2Fsites%2FPOALearningandDevelopment%2FSiteAssets%2FSitePages%2Fjd5eshyb%2FHow%2Dto%2DInstall%2DMICAS%2Don%2DSharp%2DDevices%2Epdf&parent=%2Fsites%2FPOALearningandDevelopment%2FSiteAssets%2FSitePages%2Fjd5eshyb', label: 'How to Install MICAS on Sharp Devices ↗' },
+    'Ricoh':   { url: 'https://pacificoa.sharepoint.com/sites/POALearningandDevelopment/SiteAssets/Forms/AllItems.aspx?id=%2Fsites%2FPOALearningandDevelopment%2FSiteAssets%2FSitePages%2Fjd5eshyb%2FHow%2Dto%2DInstall%2D%40Remote%2Dvia%2DWIM%2Epdf&parent=%2Fsites%2FPOALearningandDevelopment%2FSiteAssets%2FSitePages%2Fjd5eshyb', label: 'How to Install @Remote via WIM ↗' },
+    'Lexmark': { url: 'https://idp.us.iss.lexmark.com/identity-routing-service/?client_id=dashboard-ui&redirect_uri=https://us.iss.lexmark.com&response_type=token&state=/overview', label: 'Lexmark ISS Portal ↗' }
+  };
+  function toggleMfgReportingInfo() {
+    var val = document.getElementById('mfgReporting').value;
+    var wrap = document.getElementById('mfgReportingInfo');
+    var elLink    = document.getElementById('mfgInfoLink');
+    var elHp      = document.getElementById('mfgInfoHp');
+    var elComment = document.getElementById('mfgInfoComment');
+    var elReason  = document.getElementById('mfgInfoReason');
+    // hide all sub-elements first
+    [elLink, elHp, elComment, elReason].forEach(function(el) { el.classList.add('hidden'); });
+    if (!val) { wrap.classList.add('hidden'); return; }
+    wrap.classList.remove('hidden');
+    if (mfgLinks[val]) {
+      var anchor = document.getElementById('mfgInfoAnchor');
+      anchor.href = mfgLinks[val].url;
+      anchor.textContent = mfgLinks[val].label;
+      elLink.classList.remove('hidden');
+    } else if (val === 'HP') {
+      elHp.classList.remove('hidden');
+    } else if (val === 'Other') {
+      elComment.classList.remove('hidden');
+    } else if (val === 'None') {
+      elReason.classList.remove('hidden');
+    }
+  }
+  window.toggleMfgReportingInfo = toggleMfgReportingInfo;
+  document.getElementById('mfgReporting').addEventListener('change', toggleMfgReportingInfo);
+
   /* ---------- TOTAL UPDATE ---------- */
   function updateTotal() {
     var bw = parseInt(document.getElementById('bwCount').value) || 0;
@@ -374,7 +419,7 @@
     'location','model','newEquipmentId','serialNumber','equipmentId',
     'ipMethod','ipMethodOther','ip','subnet','gateway','dns1','dns2','dns3',
     'settingsTransfer','scanType','smtpServer','smtpPort','smtpSsl','smtpEmail',
-    'mps','mfgReporting',
+    'mps','mfgReporting','mfgComment','mfgReason',
     'bwCount','colorCount','additionalInfo','outputBox'
   ];
 
@@ -388,6 +433,7 @@
     el.addEventListener('change', function() {
       sessionStorage.setItem(id, el.value);
       if (id === 'ipMethod') toggleOtherIP();
+      if (id === 'mfgReporting') toggleMfgReportingInfo();
       if (id === 'bwCount' || id === 'colorCount') updateTotal();
     });
   });
@@ -416,6 +462,7 @@
       }
     });
     toggleOtherIP();
+    toggleMfgReportingInfo();
     updateTotal();
   }
   restoreAll();
@@ -714,6 +761,9 @@
     ];
     var repSection = '';
     repFields.forEach(function(f) { if (f[1]) repSection += f[0] + ': ' + f[1] + '\n'; });
+    var mfgVal = v('mfgReporting');
+    if (mfgVal === 'Other' && v('mfgComment')) repSection += 'Manufacturer reporting comment: ' + v('mfgComment') + '\n';
+    if (mfgVal === 'None' && v('mfgReason')) repSection += 'Manufacturer reporting reason: ' + v('mfgReason') + '\n';
 
     // Page Counts
     var bw = v('bwCount');
@@ -865,6 +915,7 @@
 
     document.getElementById('totalDisplay').textContent = '0';
     toggleOtherIP();
+    toggleMfgReportingInfo();
     showToast('All fields cleared.');
   };
 
