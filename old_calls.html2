@@ -280,15 +280,11 @@
     <li><a href="https://pacificoa.sharepoint.com/sites/POALearningandDevelopment/SitePages/Remote-Monitoring-Tools.aspx" target="_blank" rel="noopener">Sharepoint ↗</a></li>
   </ul>
 
-  <!-- CHANGED: MPS radio buttons replaced with dropdown -->
-  <label for="mps">MPS</label>
-  <select id="mps">
-    <option value=""></option>
-    <option value="Already Reporting">Already Reporting</option>
-    <option value="Fixed Connector">Fixed Connector</option>
-    <option value="Installed MPS">Installed MPS</option>
-    <option value="No MPS">No MPS</option>
-  </select>
+  <label>MPS?</label>
+  <div class="radio-group">
+    <label><input type="radio" name="mps" value="Yes"> Yes</label>
+    <label><input type="radio" name="mps" value="No"> No</label>
+  </div>
 
   <label>Was manufacturer reporting enabled?</label>
   <div class="radio-group">
@@ -361,13 +357,11 @@
   window.updateTotal = updateTotal;
 
   /* ---------- SESSION STORAGE: AUTO-SAVE ---------- */
-  /* CHANGED: Added 'mps' to fieldIds since it is now a <select> */
   var fieldIds = [
     'techName','city','customerName','poc','itPerson','itPhone','itEmail',
     'location','model','newEquipmentId','serialNumber','equipmentId',
     'ipMethod','ipMethodOther','ip','subnet','gateway','dns1','dns2','dns3',
     'settingsTransfer','scanType','smtpServer','smtpPort','smtpSsl','smtpEmail',
-    'mps',
     'bwCount','colorCount','additionalInfo','outputBox'
   ];
 
@@ -400,8 +394,8 @@
       var el = document.getElementById(id);
       if (val !== null && el) { el.value = val; }
     });
-    // radios — CHANGED: removed 'mps' since it is now a <select> handled above
-    ['fax','mfgReporting'].forEach(function(name) {
+    // radios
+    ['fax','mps','mfgReporting'].forEach(function(name) {
       var val = sessionStorage.getItem('radio_' + name);
       if (val) {
         var rb = document.querySelector('input[name="'+name+'"][value="'+val+'"]');
@@ -497,8 +491,7 @@
       'server': { id: 'smtpServer', type: 'text' },
       'port': { id: 'smtpPort', type: 'text' },
       'ssl/tls': { id: 'smtpSsl', type: 'select' },
-      /* CHANGED: mps is now a select dropdown instead of radio */
-      'mps': { id: 'mps', type: 'select' },
+      'mps': { id: null, type: 'radio', name: 'mps' },
       'manufacturer reporting enabled': { id: null, type: 'radio', name: 'mfgReporting' }
     };
 
@@ -700,9 +693,8 @@
     }
 
     // Reporting
-    /* CHANGED: MPS now uses v('mps') instead of rv('mps') since it's a <select> */
     var repFields = [
-      ['MPS', v('mps')],
+      ['MPS', rv('mps')],
       ['Manufacturer reporting enabled', rv('mfgReporting')]
     ];
     var repSection = '';
@@ -851,8 +843,7 @@
     radios.forEach(function(r) {
       r.checked = false;
     });
-    /* CHANGED: removed 'mps' since it is now cleared via fieldIds above */
-    ['fax','mfgReporting'].forEach(function(name) {
+    ['fax','mps','mfgReporting'].forEach(function(name) {
       sessionStorage.removeItem('radio_' + name);
     });
 
