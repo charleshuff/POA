@@ -313,6 +313,17 @@
     </div>
   </div>
 
+  <label for="driver">Driver</label>
+  <select id="driver">
+    <option value=""></option>
+    <option value="Customer Installed">Customer Installed</option>
+    <option value="Tech Installed">Tech Installed</option>
+    <option value="Previously Installed">Previously Installed</option>
+  </select>
+
+  <label for="driverAdditional">Driver Additional Info</label>
+  <input type="text" id="driverAdditional">
+
   <h4>Page Counts</h4>
   <div class="page-counts-row">
     <div class="field">
@@ -419,7 +430,7 @@
     'location','model','newEquipmentId','serialNumber','equipmentId',
     'ipMethod','ipMethodOther','ip','subnet','gateway','dns1','dns2','dns3',
     'settingsTransfer','scanType','smtpServer','smtpPort','smtpSsl','smtpEmail',
-    'mps','mfgReporting','mfgComment','mfgReason',
+    'mps','mfgReporting','mfgComment','mfgReason','driver','driverAdditional',
     'bwCount','colorCount','additionalInfo','outputBox'
   ];
 
@@ -554,7 +565,9 @@
       'ssl/tls': { id: 'smtpSsl', type: 'select' },
       /* CHANGED: mps is now a select dropdown instead of radio */
       'mps': { id: 'mps', type: 'select' },
-      'manufacturer reporting enabled': { id: 'mfgReporting', type: 'select' }
+      'manufacturer reporting enabled': { id: 'mfgReporting', type: 'select' },
+      'driver': { id: 'driver', type: 'select' },
+      'driver additional info': { id: 'driverAdditional', type: 'text' }
     };
 
     var lines = text.split('\n');
@@ -758,13 +771,15 @@
     /* CHANGED: MPS now uses v('mps') instead of rv('mps') since it's a <select> */
     var repFields = [
       ['MPS', v('mps')],
-      ['Manufacturer reporting enabled', v('mfgReporting')]
+      ['Manufacturer reporting enabled', v('mfgReporting')],
+      ['Driver', v('driver')]
     ];
     var repSection = '';
     repFields.forEach(function(f) { if (f[1]) repSection += f[0] + ': ' + f[1] + '\n'; });
     var mfgVal = v('mfgReporting');
     if (mfgVal === 'Other' && v('mfgComment')) repSection += 'Manufacturer reporting comment: ' + v('mfgComment') + '\n';
     if (mfgVal === 'None' && v('mfgReason')) repSection += 'Manufacturer reporting reason: ' + v('mfgReason') + '\n';
+    if (v('driverAdditional')) repSection += 'Driver Additional Info: ' + v('driverAdditional') + '\n';
 
     // Page Counts
     var bw = v('bwCount');
