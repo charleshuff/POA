@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenshot Keeper</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f8f9fa;
+            color: #2d3436;
+            line-height: 1.5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+            padding: 32px 28px;
+        }
+        h1 { font-size: 1.5rem; margin-bottom: 8px; }
+        .hint { color: #636e72; font-size: 0.9rem; margin-bottom: 20px; }
+        .paste-zone {
+            border: 2px dashed #b2bec3;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            color: #636e72;
+            margin-bottom: 24px;
+            transition: border-color 0.2s, background 0.2s;
+            cursor: pointer;
+        }
+        .paste-zone:hover, .paste-zone.active {
+            border-color: #0984e3;
+            background: rgba(116,185,255,0.08);
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+            cursor: pointer;
+        }
+        .card-body {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .card-name {
+            font-weight: 600;
+            word-break: break-word;
+        }
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: #0984e3; color: #fff; }
+        .btn-success { background: #00b894; color: #fff; }
+        .btn-danger { background: #e17055; color: #fff; }
+        .btn-full { width: 100%; }
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+        }
+        .modal h3 { margin-bottom: 12px; }
+        .modal img {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #74b9ff;
+            box-shadow: 0 0 0 3px rgba(116,185,255,0.35);
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .empty-state {
+            text-align: center;
+            color: #b2bec3;
+            padding: 40px 20px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #2d3436;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            z-index: 2000;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 20px;
+        }
+        .lightbox-overlay.show { display: flex; }
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 100vh;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 28px;
+            font-size: 2.5rem;
+            color: #fff;
+            cursor: pointer;
+            line-height: 1;
+            user-select: none;
+        }
+        .lightbox-label {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            background: rgba(0,0,0,0.6);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 1rem;
+            max-width: 90%;
+            text-align: center;
+            word-break: break-word;
+        }
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            .container { padding: 20px 16px; }
+            .paste-zone { padding: 28px 20px; }
+            .gallery { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            .actions { flex-direction: column; }
+            .actions .btn { width: 100%; }
+            .card-actions { flex-direction: column; }
+            .card-actions .btn { width: 100%; }
+            .lightbox-close { top: 12px; right: 16px; font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Screenshot Keeper</h1>
+        <p class="hint">Paste an image from your clipboard (Ctrl+V) anywhere on the page. Then name it and save.</p>
+
+        <div class="paste-zone" id="pasteZone">
+            Click here and press Ctrl+V (or Cmd+V) to paste an image
+        </div>
+
+        <div id="gallery" class="gallery"></div>
+
+        <div class="actions" id="actions" style="display:none;">
+            <button class="btn btn-success" id="downloadAllBtn">Download All</button>
+            <button class="btn btn-danger" id="clearAllBtn">Clear All</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h3>Name this image</h3>
+            <img id="modalPreview" src="" alt="Preview">
+            <input type="text" class="form-input" id="modalInput" placeholder="e.g., IP, Network Settings, Error">
+            <div class="modal-actions">
+                <button class="btn" id="modalCancel" style="background:#e9ecef;color:#495057;">Cancel</button>
+                <button class="btn btn-primary" id="modalSave">Save Image</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="lightbox-overlay" id="lightboxOverlay">
+        <span class="lightbox-close" id="lightboxClose">&times;</span>
+        <img class="lightbox-img" id="lightboxImg" src="" alt="">
+        <div class="lightbox-label" id="lightboxLabel"></div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        const STORAGE_KEY = 'screenshotKeeperData';
+        let images = [];
+        let pendingImage = null;
+
+        const pasteZone = document.getElementById('pasteZone');
+        const gallery = document.getElementById('gallery');
+        const actions = document.getElementById('actions');
+        const downloadAllBtn = document.getElementById('downloadAllBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalPreview = document.getElementById('modalPreview');
+        const modalInput = document.getElementById('modalInput');
+        const modalSave = document.getElementById('modalSave');
+        const modalCancel = document.getElementById('modalCancel');
+        const lightboxOverlay = document.getElementById('lightboxOverlay');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxLabel = document.getElementById('lightboxLabel');
+        const lightboxClose = document.getElementById('lightboxClose');
+        const toast = document.getElementById('toast');
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        function escapeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function saveData() {
+            try {
+                sessionStorage.setItem(STORAGE_KEY, JSON.stringify(images));
+            } catch (e) {
+                showToast('Storage full — could not save');
+            }
+        }
+
+        function loadData() {
+            try {
+                const raw = sessionStorage.getItem(STORAGE_KEY);
+                if (raw) images = JSON.parse(raw);
+            } catch (e) {
+                images = [];
+            }
+        }
+
+        function render() {
+            gallery.innerHTML = '';
+            if (images.length === 0) {
+                gallery.innerHTML = '<div class="empty-state">No images saved yet. Paste one to get started.</div>';
+                actions.style.display = 'none';
+            } else {
+                actions.style.display = 'flex';
+                images.forEach((img, idx) => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML =
+                        '<img src="' + img.dataUrl + '" alt="' + escapeHTML(img.name) + '" data-idx="' + idx + '">' +
+                        '<div class="card-body">' +
+                            '<div class="card-name">' + escapeHTML(img.name) + '</div>' +
+                            '<div class="card-actions">' +
+                                '<button class="btn btn-primary btn-full download-btn" data-idx="' + idx + '">Download</button>' +
+                                '<button class="btn btn-danger delete-btn" data-idx="' + idx + '">Delete</button>' +
+                            '</div>' +
+                        '</div>';
+                    gallery.appendChild(card);
+                });
+            }
+        }
+
+        function addImage(name, dataUrl) {
+            images.push({ name: name.trim() || 'Untitled', dataUrl: dataUrl });
+            saveData();
+            render();
+            showToast('Image saved');
+        }
+
+        function deleteImage(idx) {
+            images.splice(idx, 1);
+            saveData();
+            render();
+            showToast('Image deleted');
+        }
+
+        function downloadImage(img) {
+            const a = document.createElement('a');
+            a.href = img.dataUrl;
+            const ext = (img.dataUrl.split(';')[0].split('/')[1] || 'png');
+            const safeName = (img.name || 'image').replace(/[^a-z0-9]/gi, '_');
+            a.download = safeName + '.' + ext;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function downloadAll() {
+            images.forEach(function(img, i) {
+                setTimeout(function() { downloadImage(img); }, i * 250);
+            });
+            showToast('Downloading all images...');
+        }
+
+        function openModal(dataUrl) {
+            pendingImage = dataUrl;
+            modalPreview.src = dataUrl;
+            modalInput.value = '';
+            modalOverlay.classList.add('show');
+            setTimeout(function() { modalInput.focus(); }, 50);
+        }
+
+        function closeModal() {
+            pendingImage = null;
+            modalOverlay.classList.remove('show');
+        }
+
+        function openLightbox(idx) {
+            const img = images[idx];
+            if (!img) return;
+            lightboxImg.src = img.dataUrl;
+            lightboxLabel.textContent = img.name || '';
+            lightboxOverlay.classList.add('show');
+        }
+
+        function closeLightbox() {
+            lightboxOverlay.classList.remove('show');
+            lightboxImg.src = '';
+        }
+
+        function handlePaste(e) {
+            if (modalOverlay.classList.contains('show')) return;
+            const items = e.clipboardData.items;
+            let found = false;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        openModal(evt.target.result);
+                    };
+                    reader.readAsDataURL(blob);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                showToast('No image found in clipboard');
+            }
+        }
+
+        pasteZone.addEventListener('click', function() {
+            pasteZone.classList.add('active');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!pasteZone.contains(e.target)) pasteZone.classList.remove('active');
+        });
+
+        window.addEventListener('paste', handlePaste);
+
+        modalSave.addEventListener('click', function() {
+            if (!pendingImage) return;
+            addImage(modalInput.value, pendingImage);
+            closeModal();
+        });
+
+        modalCancel.addEventListener('click', closeModal);
+
+        modalInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') modalSave.click();
+            if (e.key === 'Escape') closeModal();
+        });
+
+        gallery.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-btn')) {
+                const idx = parseInt(e.target.dataset.idx, 10);
+                deleteImage(idx);
+            } else if (e.target.classList.contains('download-btn')) {
+                const idx = parseInt(e.target.dataset.idx, 10);
+                downloadImage(images[idx]);
+            } else if (e.target.tagName === 'IMG') {
+                const idx = parseInt(e.target.dataset.idx, 10);
+                openLightbox(idx);
+            }
+        });
+
+        lightboxOverlay.addEventListener('click', function(e) {
+            if (e.target === lightboxOverlay || e.target === lightboxClose) {
+                closeLightbox();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && lightboxOverlay.classList.contains('show')) {
+                closeLightbox();
+            }
+        });
+
+        downloadAllBtn.addEventListener('click', downloadAll);
+
+        clearAllBtn.addEventListener('click', function() {
+            if (images.length && confirm('Clear all saved images?')) {
+                images = [];
+                saveData();
+                render();
+                showToast('All images cleared');
+            }
+        });
+
+        loadData();
+        render();
+    })();
+    </script>
+</body>
+</html>
