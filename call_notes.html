@@ -434,12 +434,18 @@
     'bwCount','colorCount','additionalInfo','outputBox'
   ];
 
+  function updateTitleFromEquipmentId() {
+    var val = document.getElementById('newEquipmentId').value.trim();
+    document.title = val ? val : 'Equipment Replacement Info';
+  }
+
   fieldIds.forEach(function(id) {
     var el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('input', function() {
       sessionStorage.setItem(id, el.value);
       if (id === 'bwCount' || id === 'colorCount') updateTotal();
+      if (id === 'newEquipmentId') updateTitleFromEquipmentId();
     });
     el.addEventListener('change', function() {
       sessionStorage.setItem(id, el.value);
@@ -475,6 +481,7 @@
     toggleOtherIP();
     toggleMfgReportingInfo();
     updateTotal();
+    updateTitleFromEquipmentId();
   }
   restoreAll();
 
