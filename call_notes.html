@@ -275,7 +275,7 @@
   <h3>Reporting</h3>
 
   <ul class="links-list">
-    <li><a href="https://portal.mpsmonitor.com/" target="_blank" rel="noopener">MPS Monitor Portal ↗</a></li>
+    <li><a href="https://portal.mpsmonitor.com/" target="_blank" rel="noopener" onclick="copyCustomerName()">MPS Monitor Portal ↗</a></li>
     <li><a href="https://form.jotform.com/250095273606153" target="_blank" rel="noopener">Jot Form ↗</a></li>
   </ul>
 
@@ -368,6 +368,21 @@
     toastTimer = setTimeout(function() { t.classList.remove('show'); }, 2200);
   }
   window.showToast = showToast;
+
+  /* ---------- COPY CUSTOMER NAME ---------- */
+  function copyCustomerName() {
+    var name = document.getElementById('customerName').value.trim();
+    if (!name) { showToast('No customer name to copy.'); return; }
+    try {
+      navigator.clipboard.writeText(name).then(function() {
+        showToast('Customer name copied: ' + name);
+      }).catch(function() {
+        showToast('Failed to copy customer name.');
+      });
+    } catch(e) {
+      showToast('Failed to copy customer name.');
+    }
+  }
 
   /* ---------- TOGGLE OTHER IP ---------- */
   function toggleOtherIP() {
