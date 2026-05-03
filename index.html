@@ -1,19 +1,4 @@
-
-                        <!DOCTYPE html>
-                        <html lang="en">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-							<style>
-								body {
-									background-color: white; /* Ensure the iframe has a white background */
-								}
-
-								
-							</style>
-                        </head>
-                        <body>
-                            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -670,7 +655,7 @@ body {
     // --- Session Storage ---
     function saveCalls(calls) {
         try {
-            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(calls));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(calls));
         } catch (e) {
             // silently fail
         }
@@ -678,7 +663,7 @@ body {
 
     function loadCalls() {
         try {
-            const data = sessionStorage.getItem(STORAGE_KEY);
+            const data = localStorage.getItem(STORAGE_KEY);
             if (data) {
                 return JSON.parse(data);
             }
@@ -690,7 +675,7 @@ body {
 
     function clearCalls() {
         try {
-            sessionStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(STORAGE_KEY);
         } catch (e) {
             // silently fail
         }
@@ -767,10 +752,3 @@ body {
 </script>
 </body>
 </html>
-
-							<script>
-                            	
-							</script>
-                        </body>
-                        </html>
-                    
