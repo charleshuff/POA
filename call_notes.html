@@ -385,7 +385,21 @@
   }
   window.copyCustomerName = copyCustomerName;
 
-  /* ---------- TOGGLE OTHER IP ---------- */
+  /* ---------- COPY SERIAL NUMBER ---------- */
+  function copySerialNumber() {
+    var serial = document.getElementById('serialNumber').value.trim();
+    if (!serial) { showToast('No serial number to copy.'); return; }
+    try {
+      navigator.clipboard.writeText(serial).then(function() {
+        showToast('Serial number copied: ' + serial);
+      }).catch(function() {
+        showToast('Failed to copy serial number.');
+      });
+    } catch(e) {
+      showToast('Failed to copy serial number.');
+    }
+  }
+  window.copySerialNumber = copySerialNumber;
   function toggleOtherIP() {
     var sel = document.getElementById('ipMethod');
     var wrap = document.getElementById('ipMethodOtherWrap');
@@ -420,6 +434,11 @@
       var anchor = document.getElementById('mfgInfoAnchor');
       anchor.href = mfgLinks[val].url;
       anchor.textContent = mfgLinks[val].label;
+      if (val === 'Konica' || val === 'Canon') {
+        anchor.setAttribute('onclick', 'copySerialNumber()');
+      } else {
+        anchor.removeAttribute('onclick');
+      }
       elLink.classList.remove('hidden');
     } else if (val === 'HP') {
       elHp.classList.remove('hidden');
@@ -717,7 +736,7 @@
   };
 
   /* ---------- GENERATE SUMMARY ---------- */
-  window.generateSummary = function() {
+  window.generateSummary = async function() {
     var v = function(id) { return (document.getElementById(id).value || '').trim(); };
     var rv = function(name) {
       var checked = document.querySelector('input[name="'+name+'"]:checked');
@@ -834,6 +853,13 @@
     ob.value = out.trim();
     sessionStorage.setItem('outputBox', ob.value);
     showToast('Summary generated!');
+
+    try {
+      await navigator.clipboard.writeText(ob.value);
+      showToast('Summary generated & copied!');
+    } catch(e) {
+      showToast('Summary generated! (copy failed)');
+    }
   };
 
   /* ---------- COPY TO CLIPBOARD ---------- */
