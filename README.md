@@ -28,7 +28,7 @@ Parses raw HTML copied from the ETMS web portal into structured call cards.
 
 1. Open the Call List Parser.
 2. Click **🌐 Open ETMS**. This opens ETMS in a new tab *and* copies `view-source:https://etms.pacificoffice.com` to your clipboard.
-3. In the new ETMS tab, paste that URL into the address bar and press Enter. The browser will render the raw HTML source of the page instead of the styled page.
+3. In the new ETMS tab, paste that URL into the address bar and press Enter or tap on the suggested link. The browser will render the raw HTML source of the page instead of the styled page.
 4. Select all of the source and copy it.
 5. Return to the Call List Parser and click **Paste from Clipboard**. The app parses the HTML and displays a card for each call with: Customer, Contact, City, Model, Serial Number, Equipment ID, and Technician.
 6. Click **Copy & Open Call Notes** on any card to copy that call's details and jump straight to the Call Notes page.
