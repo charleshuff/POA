@@ -353,7 +353,8 @@ body {
         <div class="nav-links">
             <a href="https://poa.charleshuff.net/call_notes.html" target="_blank" rel="noopener noreferrer">📝 Open Call Notes Page</a>
             <a href="https://poa.charleshuff.net/screenshot_keeper.html" target="_blank" rel="noopener noreferrer">📸 Screenshot Keeper</a>
-            <a href="https://etms.pacificoffice.com/" target="_blank" rel="noopener noreferrer">🌐 Open ETMS</a>
+            <a href="https://etms.pacificoffice.com/" id="etmsLink" target="_blank" rel="noopener noreferrer">🌐 Open ETMS</a>
+            <a href="https://github.com/charleshuff/poa" target="_blank" rel="noopener noreferrer">💻 GitHub Repo</a>
         </div>
     </div>
 
@@ -730,6 +731,20 @@ body {
         reader.readAsText(file);
         // Reset so same file can be re-uploaded
         e.target.value = '';
+    });
+
+    // Copy view-source URL when ETMS link is clicked
+    document.getElementById('etmsLink').addEventListener('click', function() {
+        var text = 'view-source:https://etms.pacificoffice.com';
+        try {
+            navigator.clipboard.writeText(text).then(function() {
+                showStatus('📋 Copied to clipboard: ' + text, 'info');
+            }).catch(function() {
+                showStatus('Failed to copy view-source URL', 'error');
+            });
+        } catch (e) {
+            showStatus('Clipboard API not available', 'error');
+        }
     });
 
     // Clear All
