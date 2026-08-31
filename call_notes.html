@@ -91,6 +91,10 @@
   .btn-group { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 22px; }
   .btn-group .btn { flex: 1 1 auto; min-width: 140px; }
   .hidden { display: none !important; }
+  .ip-row { display: flex; gap: 8px; align-items: stretch; }
+  .ip-row input { flex: 1 1 auto; }
+  .ip-row .btn { padding: 0 14px; font-size: 0.9rem; white-space: nowrap; }
+  .btn-open-ip { background: #0984e3; }
   .page-counts-row { display: flex; gap: 14px; }
   .page-counts-row .field { flex: 1; }
   .total-display {
@@ -214,7 +218,10 @@
   </div>
 
   <label for="ip">IP Address</label>
-  <input type="text" id="ip">
+  <div class="ip-row">
+    <input type="text" id="ip">
+    <button type="button" class="btn btn-open-ip" onclick="openIP()">🌐 Open</button>
+  </div>
 
   <label for="subnet">Subnet</label>
   <input type="text" id="subnet">
@@ -410,6 +417,13 @@
     }
   }
   window.toggleOtherIP = toggleOtherIP;
+  function openIP() {
+    var ip = document.getElementById('ip').value.trim();
+    if (!ip) { showToast('Enter an IP address first.'); return; }
+    var url = /^https?:\/\//i.test(ip) ? ip : 'http://' + ip;
+    window.open(url, '_blank', 'noopener');
+  }
+  window.openIP = openIP;
 
   /* ---------- TOGGLE MFG REPORTING INFO ---------- */
   var mfgLinks = {
