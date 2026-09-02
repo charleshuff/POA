@@ -484,8 +484,8 @@
     'bwCount','colorCount','additionalInfo','outputBox'
   ];
 
-  function updateTitleFromEquipmentId() {
-    var val = document.getElementById('newEquipmentId').value.trim();
+  function updateTitleFromLocation() {
+    var val = document.getElementById('location').value.trim();
     document.title = val ? val : 'Equipment Replacement Info';
   }
 
@@ -495,7 +495,7 @@
     el.addEventListener('input', function() {
       sessionStorage.setItem(id, el.value);
       if (id === 'bwCount' || id === 'colorCount') updateTotal();
-      if (id === 'newEquipmentId') updateTitleFromEquipmentId();
+      if (id === 'location') updateTitleFromLocation();
     });
     el.addEventListener('change', function() {
       sessionStorage.setItem(id, el.value);
@@ -531,7 +531,7 @@
     toggleOtherIP();
     toggleMfgReportingInfo();
     updateTotal();
-    updateTitleFromEquipmentId();
+    updateTitleFromLocation();
   }
   restoreAll();
 
